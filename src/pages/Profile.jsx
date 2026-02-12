@@ -11,6 +11,7 @@ import DemographicsForm from '@/components/community/DemographicsForm';
 import BioEditor from '@/components/profile/BioEditor';
 import PortfolioShowcase from '@/components/profile/PortfolioShowcase';
 import ProfileActivityFeed from '@/components/profile/ProfileActivityFeed';
+import SocialMediaLinks from '@/components/profile/SocialMediaLinks';
 import ChallengeUser from '@/components/challenges/ChallengeUser';
 import FriendButton from '@/components/social/FriendButton';
 import FriendsList from '@/components/messaging/FriendsList';
