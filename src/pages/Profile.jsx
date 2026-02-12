@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
 import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart } from 'lucide-react';
 import FollowButton from '@/components/community/FollowButton';
+import DemographicsForm from '@/components/community/DemographicsForm';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -70,6 +71,15 @@ export default function Profile() {
     setFollowers(followerData);
     setFollowing(followingData);
     
+    const handleDemographicsSave = async (data) => {
+      try {
+        await base44.entities.UserProfile.update(profiles[0].id, data);
+        await loadProfile();
+      } catch (err) {
+        console.error('Error saving demographics:', err);
+      }
+    };
+    
     setStats({
       total: allVotes.length,
       correct,
@@ -82,6 +92,15 @@ export default function Profile() {
   
   const getNextLevelPoints = (level) => level * 100;
   const levelProgress = profile ? (profile.points % getNextLevelPoints(profile.level)) / getNextLevelPoints(profile.level) * 100 : 0;
+
+  const handleDemographicsSave = async (data) => {
+    try {
+      await base44.entities.UserProfile.update(profile.id, data);
+      setProfile(prev => ({ ...prev, ...data }));
+    } catch (err) {
+      console.error('Error saving demographics:', err);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -207,6 +226,9 @@ export default function Profile() {
           </CardContent>
         </Card>
         
+        {/* Demographics */}
+        <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
+
         {/* Badges */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
