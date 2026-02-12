@@ -71,8 +71,8 @@ export default function HieroglyphicRain() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none opacity-40"
-      style={{ zIndex: 1 }}
+      className="fixed inset-0 pointer-events-none opacity-30 top-0 left-0"
+      style={{ zIndex: 2 }}
     />
   );
 }
