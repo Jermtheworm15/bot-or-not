@@ -162,11 +162,14 @@ export default function Home() {
       streak: newStreak
     }));
     
+    // Get current user
+    const user = await base44.auth.me();
+
     // Update user profile with points and challenges
     if (userProfile) {
       const pointsEarned = correct ? 10 : 5;
       const newBadges = [...(userProfile.badges || [])];
-      
+
       // Award badges
       if (stats.total === 0 && !newBadges.includes('first_vote')) {
         newBadges.push('first_vote');
@@ -177,7 +180,7 @@ export default function Home() {
       if (newStreak === 10 && !newBadges.includes('streak_10')) {
         newBadges.push('streak_10');
       }
-      
+
       const updatedProfile = await base44.entities.UserProfile.update(userProfile.id, {
         points: (userProfile.points || 0) + pointsEarned,
         daily_votes: (userProfile.daily_votes || 0) + 1,
@@ -186,7 +189,7 @@ export default function Home() {
         badges: newBadges,
         last_vote_date: new Date().toISOString()
       });
-      
+
       // Create activity for real-time feed
       await base44.entities.Activity.create({
         user_email: user.email,
@@ -225,12 +228,9 @@ export default function Home() {
       }
       
       await loadUserProfile();
-    }
-    
-    // Get current user
-    const user = await base44.auth.me();
-    
-    // Save vote (without rating yet)
+      }
+
+      // Save vote (without rating yet)
     if (contentType === 'image') {
       await base44.entities.Vote.create({
         image_id: currentItem.id,
