@@ -58,20 +58,12 @@ Deno.serve(async (req) => {
     ];
 
     const totalToFetch = Math.min(MAX_PER_BATCH, DAILY_LIMIT - todayCount);
-
     const newImages = [];
-    let skipped = 0;
 
-    // Get existing hashes for deduplication (sample last 1000 for speed)
-    const existingImages = await base44.asServiceRole.entities.Image.list('-created_date', 1000);
-    const existingHashes = existingImages
-      .map(img => img.data?.perceptual_hash || img.perceptual_hash)
-      .filter(h => h);
-
-    // Batch 1: Generate AI images with perceptual hashing (sequential to prevent timeout)
+    // Simplified: Skip deduplication and hashing to prevent timeouts
+    // Just fetch and store quickly
     const aiBatchSize = Math.ceil(totalToFetch / 2);
-    let aiCount = 0;
-    for (let i = 0; i < aiBatchSize && aiCount < 5 && totalToFetch - newImages.length > 0; i++) {
+    for (let i = 0; i < aiBatchSize && totalToFetch - newImages.length > 0; i++) {
       try {
         const keyword = aiKeywords[Math.floor(Math.random() * aiKeywords.length)];
         const result = await base44.asServiceRole.integrations.Core.GenerateImage({
@@ -79,39 +71,20 @@ Deno.serve(async (req) => {
         });
 
         if (result?.url) {
-          const hash = await fetchAndHashImage(result.url);
-          
-          if (hash) {
-            // Check for similar images using Hamming distance
-            let isDuplicate = false;
-            for (const existingHash of existingHashes) {
-              if (hammingDistance(hash, existingHash) <= HASH_SIMILARITY_THRESHOLD) {
-                isDuplicate = true;
-                skipped++;
-                break;
-              }
-            }
-
-            if (!isDuplicate) {
-              existingHashes.push(hash);
-              await base44.asServiceRole.entities.Image.create({
-                url: result.url,
-                is_bot: true,
-                source: 'ai_generated',
-                user_uploaded: false,
-                perceptual_hash: hash
-              });
-              newImages.push({ url: result.url, is_bot: true, hash });
-              aiCount++;
-            }
-          }
+          await base44.asServiceRole.entities.Image.create({
+            url: result.url,
+            is_bot: true,
+            source: 'ai_generated',
+            user_uploaded: false
+          });
+          newImages.push({ url: result.url, is_bot: true });
         }
       } catch (error) {
         console.error('AI generation error:', error);
       }
     }
 
-    // Batch 2: Fetch real images with perceptual hashing from multiple sources
+    // Batch 2: Fetch real images from multiple sources
     const realBatchSize = totalToFetch - newImages.length;
     
     // Expanded Unsplash photo IDs (100+)
