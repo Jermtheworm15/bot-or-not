@@ -10,7 +10,7 @@ export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
-      className="w-full max-w-md mx-auto space-y-6"
+      className="w-full max-w-md mx-auto space-y-8 mb-8"
     >
       <div className="text-center">
         <p className="text-zinc-400 text-sm uppercase tracking-wider mb-2">Would you date this image</p>
