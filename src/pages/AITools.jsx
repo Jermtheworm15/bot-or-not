@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Lightbulb, FileText, Settings } from 'lucide-react';
+import { Lightbulb, FileText, Settings, Wand2 } from 'lucide-react';
 import ContentIdeaGenerator from '@/components/ai/ContentIdeaGenerator';
 import ArticleGenerator from '@/components/ai/ArticleGenerator';
 import MetadataGenerator from '@/components/ai/MetadataGenerator';
+import ImageGenerator from '@/components/ai/ImageGenerator';
 
 export default function AITools() {
   const [activeTab, setActiveTab] = useState('ideas');
@@ -35,7 +36,7 @@ export default function AITools() {
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 bg-zinc-800">
+                <TabsList className="grid w-full grid-cols-4 bg-zinc-800">
                   <TabsTrigger value="ideas" className="flex items-center gap-2">
                     <Lightbulb className="w-4 h-4" />
                     <span className="hidden sm:inline">Ideas</span>
@@ -47,6 +48,10 @@ export default function AITools() {
                   <TabsTrigger value="metadata" className="flex items-center gap-2">
                     <Settings className="w-4 h-4" />
                     <span className="hidden sm:inline">Metadata</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="images" className="flex items-center gap-2">
+                    <Wand2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Generate</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -77,7 +82,16 @@ export default function AITools() {
                     </div>
                     <MetadataGenerator />
                   </TabsContent>
-                </div>
+
+                  <TabsContent value="images" className="space-y-6">
+                    <div className="bg-zinc-800/50 border border-purple-500/20 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-zinc-300">
+                        Generate AI images from text descriptions and add them directly to the voting pool.
+                      </p>
+                    </div>
+                    <ImageGenerator />
+                  </TabsContent>
+                  </div>
               </Tabs>
             </CardContent>
           </Card>
