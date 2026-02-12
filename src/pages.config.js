@@ -47,7 +47,6 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import AITools from './pages/AITools';
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
 import AdminImagePopulator from './pages/AdminImagePopulator';
@@ -63,11 +62,11 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
+import AITools from './pages/AITools';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "AITools": AITools,
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
     "AdminImagePopulator": AdminImagePopulator,
@@ -83,6 +82,7 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
+    "AITools": AITools,
 }
 
 export const pagesConfig = {
