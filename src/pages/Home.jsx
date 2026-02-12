@@ -74,17 +74,32 @@ export default function Home() {
     setCurrentIndex(0);
     setHasVoted(false);
     
-    const data = contentType === 'image' 
-      ? await base44.entities.Image.list()
-      : await base44.entities.Video.list();
-    
-    // Shuffle content with Fisher-Yates algorithm for better randomization
-    const shuffled = [...data];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    try {
+      const data = contentType === 'image' 
+        ? await base44.entities.Image.list()
+        : await base44.entities.Video.list();
+      
+      // Filter out any invalid URLs
+      const validData = data.filter(item => item.url && item.url.trim() !== '');
+      
+      if (validData.length === 0) {
+        console.error('No valid content found');
+        setItems([]);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Shuffle content with Fisher-Yates algorithm for better randomization
+      const shuffled = [...validData];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      setItems(shuffled);
+    } catch (err) {
+      console.error('Error loading content:', err);
+      setItems([]);
     }
-    setItems(shuffled);
     setIsLoading(false);
   };
   

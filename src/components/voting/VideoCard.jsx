@@ -1,17 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasCorrect, onError }) {
   const timeoutRef = useRef(null);
   const videoRef = useRef(null);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoading && videoUrl) {
+      setIsVideoLoading(true);
+      
       // Set 10 second timeout for video loading
       timeoutRef.current = setTimeout(() => {
-        if (videoRef.current && videoRef.current.readyState < 3) {
+        if (videoRef.current && videoRef.current.readyState < 2) {
           // Video hasn't loaded enough data, skip it
+          console.log('Video timeout - skipping');
           onError();
         }
       }, 10000);
@@ -35,6 +39,11 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
           <Skeleton className="w-full h-full bg-zinc-800" />
         ) : (
           <div className="relative w-full h-full bg-black">
+            {isVideoLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                <div className="text-white text-sm">Loading video...</div>
+              </div>
+            )}
             <video
               ref={videoRef}
               src={videoUrl}
@@ -43,12 +52,20 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
               loop
               muted
               playsInline
-              onError={onError}
-              onLoadedData={() => {
-                // Clear timeout once video loads successfully
+              preload="auto"
+              onError={(e) => {
+                console.log('Video error:', e);
+                onError();
+              }}
+              onCanPlay={() => {
+                setIsVideoLoading(false);
+                // Clear timeout once video can play
                 if (timeoutRef.current) {
                   clearTimeout(timeoutRef.current);
                 }
+              }}
+              onLoadedMetadata={() => {
+                console.log('Video metadata loaded');
               }}
             />
             
