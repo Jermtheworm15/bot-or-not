@@ -66,107 +66,34 @@ Deno.serve(async (req) => {
 
     const DAILY_LIMIT = 2000;
     const MAX_PER_BATCH = 100;
-    const HASH_SIMILARITY_THRESHOLD = 5; // Hamming distance threshold
+    const HASH_SIMILARITY_THRESHOLD = 5;
     const today = new Date().toDateString();
 
     // Get or create daily counter
-    let dailyCounter = await base44.asServiceRole.entities.ImageCounter?.filter?.({ date: today }) || [];
+    let dailyCounter = await base44.asServiceRole.entities.ImageCounter.filter({ date: today });
     let todayCount = dailyCounter.length > 0 ? dailyCounter[0].count : 0;
 
     // Check if daily limit reached
     if (todayCount >= DAILY_LIMIT) {
       return Response.json({ 
         success: false,
-        message: 'Daily fetch limit of 2,000 images reached',
+        message: 'Daily fetch limit reached',
         today_count: todayCount
       });
     }
 
-    // 100+ rotating keywords for diverse content
-    const aiKeywords = [
-      "AI portrait photorealistic", "AI generated face", "synthetic human", "CGI character",
-      "neural network portrait", "AI art realistic", "machine learning face", "digital human",
-      "AI professional headshot", "AI fashion portrait", "AI beauty shot", "AI lifestyle",
-      "synthetic person", "generated character", "AI celebrity", "digital person",
-      "AI model portrait", "generated model", "synthetic model", "AI headshot",
-      "AI corporate portrait", "AI influencer", "AI actor", "AI person realistic",
-      "digital face", "AI anime character", "AI 3D render", "unreal engine person",
-      "AI illustration", "AI painting", "AI digital art", "AI concept art",
-      "AI fantasy character", "AI sci-fi character", "AI steampunk", "AI cyberpunk person",
-      "AI retro portrait", "AI vintage style", "AI baroque portrait", "AI renaissance",
-      "AI noir character", "AI film still", "AI movie character", "AI tv character",
-      "synthetic celebrity lookalike", "AI deepfake", "AI voice actor", "AI face swap"
-    ];
-
-    const realKeywords = [
-      "real person portrait", "candid photography", "professional headshot", "stock photo person",
-      "documentary portrait", "lifestyle photography", "fashion model", "beauty portrait",
-      "studio portrait", "natural portrait", "corporate headshot", "editorial photo",
-      "street photography", "travel portrait", "cultural portrait", "environmental portrait",
-      "business portrait", "professional photo", "social media person", "influencer photo",
-      "couple portrait", "family photo", "group portrait", "wedding portrait",
-      "engagement photo", "casual portrait", "candid moment", "everyday people",
-      "authentic portrait", "real people", "genuine expression", "natural lighting",
-      "outdoor portrait", "indoor portrait", "daylight portrait", "evening portrait",
-      "fashion photography", "model photoshoot", "glamour portrait", "celebrity photo",
-      "athlete photo", "fitness model", "lifestyle model", "product model",
-      "user generated content", "authentic people", "diverse people", "multicultural"
-    ];
-
     const totalToFetch = Math.min(MAX_PER_BATCH, DAILY_LIMIT - todayCount);
-
     const newImages = [];
     let skipped = 0;
 
     // Get existing hashes for deduplication
     const existingImages = await base44.asServiceRole.entities.Image.list('-created_date', 5000);
     const existingHashes = existingImages
-      .map(img => img.data?.perceptual_hash || img.perceptual_hash)
+      .map(img => img.perceptual_hash)
       .filter(h => h);
 
-    // Batch 1: Generate AI images with perceptual hashing
-    const aiBatchSize = Math.ceil(totalToFetch / 2);
-    for (let i = 0; i < aiBatchSize && totalToFetch - newImages.length > 0; i++) {
-      try {
-        const keyword = aiKeywords[Math.floor(Math.random() * aiKeywords.length)];
-        const result = await base44.asServiceRole.integrations.Core.GenerateImage({
-          prompt: `photorealistic ${keyword}`
-        });
-
-        if (result?.url) {
-          const hash = await fetchAndHashImage(result.url);
-          
-          if (hash) {
-            // Check for similar images using Hamming distance
-            let isDuplicate = false;
-            for (const existingHash of existingHashes) {
-              if (hammingDistance(hash, existingHash) <= HASH_SIMILARITY_THRESHOLD) {
-                isDuplicate = true;
-                skipped++;
-                break;
-              }
-            }
-
-            if (!isDuplicate) {
-              existingHashes.push(hash);
-              await base44.asServiceRole.entities.Image.create({
-                url: result.url,
-                is_bot: true,
-                source: 'ai_generated',
-                user_uploaded: false,
-                perceptual_hash: hash
-              });
-              newImages.push({ url: result.url, is_bot: true, hash });
-            }
-          }
-        }
-      } catch (error) {
-        console.error('AI generation error:', error);
-      }
-    }
-
-    // Batch 2: Fetch real images with perceptual hashing
-    const realBatchSize = totalToFetch - newImages.length;
+    // Fetch real images from Unsplash (no AI generation = no credits used)
+    const realBatchSize = totalToFetch;
     const realPhotoIds = [
       "1494790108377-be9c29b29330", "1507003211169-0a1dd7228f2d", "1438761681033-6461ffad8d80",
       "1500648767791-00dcc994a43e", "1534528741775-53994a69daeb", "1522075469751-3a6694fb2f61",
