@@ -30,7 +30,7 @@ export default function ContentEnhancementPanel({ topic, onClose, onApply }) {
       setError(err.message || 'Error generating enhancements');
       console.error(err);
     }
-    setIsLoading(false);
+    setLoading(false);
   };
 
   const copyToClipboard = (text, type) => {
