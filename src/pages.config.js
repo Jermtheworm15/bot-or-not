@@ -47,34 +47,36 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import Leaderboard from './pages/Leaderboard';
-import StreakLeaderboard from './pages/StreakLeaderboard';
-import Upload from './pages/Upload';
-import Profile from './pages/Profile';
-import UsernameSetup from './pages/UsernameSetup';
 import Achievements from './pages/Achievements';
+import AdminContentManager from './pages/AdminContentManager';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Discover from './pages/Discover';
+import Home from './pages/Home';
+import Leaderboard from './pages/Leaderboard';
 import Onboarding from './pages/Onboarding';
+import Profile from './pages/Profile';
 import Referrals from './pages/Referrals';
-import AdminContentManager from './pages/AdminContentManager';
+import StreakLeaderboard from './pages/StreakLeaderboard';
+import Upload from './pages/Upload';
+import UsernameSetup from './pages/UsernameSetup';
+import SideGames from './pages/SideGames';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Leaderboard": Leaderboard,
-    "StreakLeaderboard": StreakLeaderboard,
-    "Upload": Upload,
-    "Profile": Profile,
-    "UsernameSetup": UsernameSetup,
     "Achievements": Achievements,
+    "AdminContentManager": AdminContentManager,
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "Discover": Discover,
+    "Home": Home,
+    "Leaderboard": Leaderboard,
     "Onboarding": Onboarding,
+    "Profile": Profile,
     "Referrals": Referrals,
-    "AdminContentManager": AdminContentManager,
+    "StreakLeaderboard": StreakLeaderboard,
+    "Upload": Upload,
+    "UsernameSetup": UsernameSetup,
+    "SideGames": SideGames,
 }
 
 export const pagesConfig = {

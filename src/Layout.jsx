@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Trophy, Upload, Flame, Eye, User, Compass, Users } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Compass, Users, Gamepad2 } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
@@ -152,6 +152,17 @@ export default function Layout({ children, currentPageName }) {
             >
               <Trophy className="w-5 h-5" />
               <span className="text-xs uppercase tracking-wide">Achieve</span>
+            </Link>
+            <Link
+              to={createPageUrl('SideGames')}
+              className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
+                currentPageName === 'SideGames'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <Gamepad2 className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">Games</span>
             </Link>
             <Link
               to={createPageUrl('Referrals')}
