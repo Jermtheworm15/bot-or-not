@@ -61,6 +61,15 @@ export default function Profile() {
     const sortedByPoints = [...allProfiles].sort((a, b) => (b.points || 0) - (a.points || 0));
     const rank = sortedByPoints.findIndex(p => p.user_email === currentUser.email) + 1;
     
+    // Load followers and following
+    const [followerData, followingData] = await Promise.all([
+      base44.entities.Follow.filter({ following_email: currentUser.email }),
+      base44.entities.Follow.filter({ follower_email: currentUser.email })
+    ]);
+    
+    setFollowers(followerData);
+    setFollowing(followingData);
+    
     setStats({
       total: allVotes.length,
       correct,
