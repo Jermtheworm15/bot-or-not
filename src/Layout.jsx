@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Trophy, Upload, Flame, Eye, User, Compass, Users, Gamepad2 } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2 } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
