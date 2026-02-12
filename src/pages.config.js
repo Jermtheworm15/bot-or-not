@@ -53,6 +53,8 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import Profile from './pages/Profile';
 import UsernameSetup from './pages/UsernameSetup';
+import Achievements from './pages/Achievements';
+import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +65,8 @@ export const PAGES = {
     "Upload": Upload,
     "Profile": Profile,
     "UsernameSetup": UsernameSetup,
+    "Achievements": Achievements,
+    "ChallengeLeaderboard": ChallengeLeaderboard,
 }
 
 export const pagesConfig = {
