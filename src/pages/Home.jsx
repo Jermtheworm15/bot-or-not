@@ -358,18 +358,6 @@ export default function Home() {
       <SuccessExplosion show={showExplosion} />
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
-        {/* Discover More Button */}
-        <div className="w-full max-w-2xl mb-6">
-          <Button
-            onClick={refreshContent}
-            disabled={isRefreshing}
-            className="w-full bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-700 hover:to-green-700 text-white font-bold py-6 text-lg shadow-lg"
-          >
-            <RefreshCw className={`w-5 h-5 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Discover More'}
-          </Button>
-        </div>
-
         {/* Content Display - Main Focal Point */}
         <div className="w-full max-w-3xl mb-6">
           <ImageCard
