@@ -61,6 +61,7 @@ import Upload from './pages/Upload';
 import UsernameSetup from './pages/UsernameSetup';
 import SideGames from './pages/SideGames';
 import UserLeaderboard from './pages/UserLeaderboard';
+import AdminImagePopulator from './pages/AdminImagePopulator';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "UsernameSetup": UsernameSetup,
     "SideGames": SideGames,
     "UserLeaderboard": UserLeaderboard,
+    "AdminImagePopulator": AdminImagePopulator,
 }
 
 export const pagesConfig = {

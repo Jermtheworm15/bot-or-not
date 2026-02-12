@@ -46,12 +46,32 @@ export default function Discover() {
   const loadContent = async () => {
     setIsLoading(true);
     try {
-      const [imageData, videoData, imageVotes, videoVotes] = await Promise.all([
+      const [rawImageData, videoData, imageVotes, videoVotes] = await Promise.all([
         base44.entities.Image.list(),
         base44.entities.Video.list(),
         base44.entities.Vote.list(),
         base44.entities.VideoVote.list()
       ]);
+
+      // Filter and validate image URLs
+      const imageData = rawImageData.filter(item => {
+        const url = item.data?.url || item.url;
+        if (!url || url.trim() === '') return false;
+        try {
+          new URL(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }).map(item => ({
+        id: item.id,
+        url: item.data?.url || item.url,
+        is_bot: item.data?.is_bot ?? item.is_bot,
+        source: item.data?.source || item.source,
+        user_uploaded: item.data?.user_uploaded || item.user_uploaded,
+        uploader_name: item.data?.uploader_name || item.uploader_name,
+        created_date: item.created_date
+      }));
 
       // Calculate engagement scores for images
       const imageEngagement = imageVotes.reduce((acc, vote) => {

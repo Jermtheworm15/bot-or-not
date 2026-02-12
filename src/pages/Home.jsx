@@ -127,7 +127,7 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
       
-      // Flatten data structure if needed
+      // Flatten data structure and validate URLs
       const data = rawData.map(item => ({
         id: item.id,
         url: item.data?.url || item.url,
@@ -135,20 +135,25 @@ export default function Home() {
         source: item.data?.source || item.source,
         user_uploaded: item.data?.user_uploaded || item.user_uploaded,
         uploader_name: item.data?.uploader_name || item.uploader_name
-      }));
+      })).filter(item => {
+        // Filter out invalid URLs
+        if (!item.url || item.url.trim() === '') return false;
+        try {
+          new URL(item.url);
+          return true;
+        } catch {
+          return false;
+        }
+      });
       
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
       
-      // Filter out invalid URLs and already-voted items
-      const unseenData = data.filter(item => 
-        item.url && 
-        item.url.trim() !== '' && 
-        !votedIds.has(item.id)
-      );
+      // Filter out already-voted items
+      const unseenData = data.filter(item => !votedIds.has(item.id));
       
       // If user has seen everything, show all items again
-      const validData = unseenData.length > 0 ? unseenData : data.filter(item => item.url && item.url.trim() !== '');
+      const validData = unseenData.length > 0 ? unseenData : data;
       
       if (validData.length === 0) {
         setItems([]);
