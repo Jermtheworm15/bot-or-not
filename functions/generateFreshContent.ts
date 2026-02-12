@@ -153,40 +153,48 @@ Deno.serve(async (req) => {
             const needed = MIN_IMAGES - totalImages;
             const toGenerate = Math.ceil(needed / 2);
 
-            // Generate bot images
+            const aiKeywordsToUse = getRandomKeywords(toGenerate);
+            const realKeywordsToUse = getRandomKeywords(toGenerate);
+
+            // Generate AI images with rotating keywords
             for (let i = 0; i < toGenerate; i++) {
               try {
-                const prompt = botPrompts[Math.floor(Math.random() * botPrompts.length)];
-                const result = await base44.asServiceRole.integrations.Core.GenerateImage({ prompt });
+                const keyword = aiKeywordsToUse[i];
+                const result = await base44.asServiceRole.integrations.Core.GenerateImage({ 
+                  prompt: `photorealistic ${keyword}` 
+                });
 
                 const imageRecord = await base44.asServiceRole.entities.Image.create({
                   url: result.url,
                   is_bot: true,
-                  source: 'ai_generated'
+                  source: 'ai_generated',
+                  metadata: { keyword }
                 });
                 newImages.push(imageRecord);
                 totalImages++;
               } catch (error) {
-                console.error('Bot generation error:', error);
+                console.error('AI image generation error:', error);
               }
             }
 
-            // Add human images
+            // Add real images with rotating keywords
             for (let i = 0; i < toGenerate; i++) {
               try {
-                const photoId = humanIds[Math.floor(Math.random() * humanIds.length)];
+                const photoId = realPhotoIds[Math.floor(Math.random() * realPhotoIds.length)];
+                const keyword = realKeywordsToUse[i];
                 const uniqueSig = `${Date.now()}-${Math.random()}`;
                 const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${uniqueSig}`;
 
                 const imageRecord = await base44.asServiceRole.entities.Image.create({
                   url,
                   is_bot: false,
-                  source: 'unsplash'
+                  source: 'unsplash',
+                  metadata: { keyword }
                 });
                 newImages.push(imageRecord);
                 totalImages++;
               } catch (error) {
-                console.error('Human image error:', error);
+                console.error('Real image error:', error);
               }
             }
           }
