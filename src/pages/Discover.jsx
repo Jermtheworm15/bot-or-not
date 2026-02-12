@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Search, TrendingUp, Calendar, Flame } from 'lucide-react';
+import { Search, TrendingUp, Calendar, Flame, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -23,10 +23,18 @@ export default function Discover() {
   const [dateFilter, setDateFilter] = useState('all'); // all, today, week, month
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(24);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadContent();
   }, []);
+
+  const refreshContent = async () => {
+    setIsRefreshing(true);
+    await loadContent();
+    setDisplayCount(24);
+    setIsRefreshing(false);
+  };
 
   const loadContent = async () => {
     setIsLoading(true);
@@ -205,6 +213,18 @@ export default function Discover() {
           </h1>
           <p className="text-zinc-400">Explore trending content and discover what's hot</p>
         </motion.div>
+
+        {/* Discover More Button */}
+        <div className="mb-6">
+          <Button
+            onClick={refreshContent}
+            disabled={isRefreshing}
+            className="w-full bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-700 hover:to-green-700 text-white font-bold py-6 text-lg shadow-lg"
+          >
+            <RefreshCw className={`w-5 h-5 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Discover More'}
+          </Button>
+        </div>
 
         {/* Search and Filters */}
         <div className="space-y-4 mb-8">
