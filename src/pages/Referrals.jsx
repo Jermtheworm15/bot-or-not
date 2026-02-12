@@ -143,6 +143,49 @@ export default function Referrals() {
           </CardContent>
         </Card>
 
+        {/* Referral Rewards */}
+        <Card className="bg-zinc-900 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Zap className="w-6 h-6 text-amber-400" />
+              Referral Rewards
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {referralRewards.map((reward, idx) => {
+                const IconComponent = reward.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className={`flex items-center justify-between p-3 rounded-lg border ${
+                      reward.completed 
+                        ? 'bg-green-900/20 border-green-500/30' 
+                        : 'bg-zinc-800 border-zinc-700/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconComponent className={`w-5 h-5 ${reward.completed ? 'text-green-400' : 'text-zinc-500'}`} />
+                      <div>
+                        <p className={`font-medium ${reward.completed ? 'text-white' : 'text-zinc-300'}`}>
+                          {reward.title}
+                        </p>
+                        <p className="text-xs text-zinc-400">{reward.reward}</p>
+                      </div>
+                    </div>
+                    {reward.completed && (
+                      <div className="text-green-400 text-xs font-bold">✓ Earned</div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Premium Features */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
