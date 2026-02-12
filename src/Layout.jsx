@@ -225,6 +225,39 @@ export default function Layout({ children, currentPageName }) {
               <span className="text-xs uppercase tracking-wide">Refer</span>
             </Link>
             <Link
+              to={createPageUrl('AttributeGame')}
+              className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
+                currentPageName === 'AttributeGame'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <Sparkles className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">Attrbt</span>
+            </Link>
+            <Link
+              to={createPageUrl('AttributeLeaderboard')}
+              className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
+                currentPageName === 'AttributeLeaderboard'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <Trophy className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">AttrRank</span>
+            </Link>
+            <Link
+              to={createPageUrl('Analytics')}
+              className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
+                currentPageName === 'Analytics'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <TrendingUp className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">Analytics</span>
+            </Link>
+            <Link
               to={createPageUrl('Profile')}
               className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                 currentPageName === 'Profile'
