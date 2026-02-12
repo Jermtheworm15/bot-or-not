@@ -45,12 +45,12 @@ export default function Home() {
       }
     }
 
-    // Set 10-second timeout to skip to next image if current doesn't load
-    if (!hasVoted && items[currentIndex]?.url) {
-      const timeout = setTimeout(() => {
-        handleContentError();
-      }, 10000);
-      setImageLoadTimeout(timeout);
+    // Set 5-second timeout to skip to next image if current doesn't load
+        if (!hasVoted && items[currentIndex]?.url) {
+          const timeout = setTimeout(() => {
+            handleContentError();
+          }, 5000);
+          setImageLoadTimeout(timeout);
 
       return () => clearTimeout(timeout);
     }
@@ -340,9 +340,22 @@ export default function Home() {
     });
   };
   
-  const handleContentError = () => {
-    // Clear timeout and skip to next image
+  const deleteBrokenImage = async (imageId) => {
+    try {
+      await base44.entities.Image.delete(imageId);
+    } catch (err) {
+      console.log('Error deleting broken image:', err);
+    }
+  };
+
+  const handleContentError = async () => {
+    // Clear timeout and remove broken image
     if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
+
+    if (currentItem?.id) {
+      await deleteBrokenImage(currentItem.id);
+    }
+
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
