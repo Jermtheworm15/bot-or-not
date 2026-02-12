@@ -236,7 +236,7 @@ export default function Home() {
       streak: newStreak
     }));
     
-    // Update user profile with points and challenges
+    // Update user profile with points and challenges  
     if (userProfile) {
       const pointsEarned = correct ? 10 : 5;
       const newBadges = [...(userProfile.badges || [])];
