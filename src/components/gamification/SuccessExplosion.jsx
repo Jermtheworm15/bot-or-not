@@ -51,7 +51,7 @@ export default function SuccessExplosion({ show, onComplete }) {
         initial={{ scale: 0 }}
         animate={{ scale: [0, 1.5, 1] }}
         transition={{ duration: 0.5 }}
-        className="text-6xl font-black text-green-400 drop-shadow-[0_0_20px_rgba(34,197,94,0.8)]"
+        className="text-4xl sm:text-6xl font-black text-green-400 drop-shadow-[0_0_20px_rgba(34,197,94,0.8)] px-4"
       >
         ✓ CORRECT!
       </motion.div>
