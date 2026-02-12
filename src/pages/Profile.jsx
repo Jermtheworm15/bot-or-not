@@ -181,7 +181,35 @@ export default function Profile() {
             <BadgeDisplay badges={profile?.badges || []} size="lg" />
           </CardContent>
         </Card>
-      </div>
-    </div>
-  );
-}
+
+        {/* Share Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="bg-zinc-900 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-6 h-6 text-green-400" />
+                Share Your Achievement
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-zinc-400 text-sm mb-4">
+                Show off your stats to friends and challenge them to beat your score!
+              </p>
+              <ShareButton 
+                userStats={{
+                  totalVotes: stats.total,
+                  accuracy: stats.accuracy,
+                  streak: profile?.perfect_streak || 0
+                }}
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+        </div>
+        </div>
+        );
+        }
