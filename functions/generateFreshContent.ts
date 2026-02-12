@@ -184,7 +184,6 @@ Deno.serve(async (req) => {
       success: true,
       fetched_today: newCount,
       new_images: newImages.length,
-      duplicates_skipped: skipped,
       daily_limit: DAILY_LIMIT,
       limit_reached: newCount >= DAILY_LIMIT,
       timestamp: new Date().toISOString()
