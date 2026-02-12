@@ -8,6 +8,9 @@ import BadgeDisplay from '@/components/gamification/BadgeDisplay';
 import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart } from 'lucide-react';
 import FollowButton from '@/components/community/FollowButton';
 import DemographicsForm from '@/components/community/DemographicsForm';
+import BioEditor from '@/components/profile/BioEditor';
+import PortfolioShowcase from '@/components/profile/PortfolioShowcase';
+import ProfileActivityFeed from '@/components/profile/ProfileActivityFeed';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -99,6 +102,15 @@ export default function Profile() {
       setProfile(prev => ({ ...prev, ...data }));
     } catch (err) {
       console.error('Error saving demographics:', err);
+    }
+  };
+
+  const handleBioSave = async (bio) => {
+    try {
+      await base44.entities.UserProfile.update(profile.id, { bio });
+      setProfile(prev => ({ ...prev, bio }));
+    } catch (err) {
+      console.error('Error saving bio:', err);
     }
   };
   
@@ -226,6 +238,15 @@ export default function Profile() {
           </CardContent>
         </Card>
         
+        {/* Bio */}
+        <BioEditor bio={profile?.bio} onSave={handleBioSave} />
+
+        {/* Portfolio */}
+        <PortfolioShowcase userEmail={user?.email} isOwnProfile={true} />
+
+        {/* Activity Feed */}
+        <ProfileActivityFeed userEmail={user?.email} />
+
         {/* Demographics */}
         <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
 
