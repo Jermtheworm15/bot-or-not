@@ -23,38 +23,58 @@ export default function Leaderboard() {
       base44.entities.Vote.list()
     ]);
 
-    // Calculate average ratings per image
+    // Calculate weighted ratings per image
     const imageRatings = {};
     votes.forEach(vote => {
       if (vote.rating && vote.image_id) {
         if (!imageRatings[vote.image_id]) {
-          imageRatings[vote.image_id] = { total: 0, count: 0 };
+          imageRatings[vote.image_id] = { total: 0, count: 0, correct: 0 };
         }
         imageRatings[vote.image_id].total += vote.rating;
         imageRatings[vote.image_id].count += 1;
+        if (vote.was_correct) {
+          imageRatings[vote.image_id].correct += 1;
+        }
       }
     });
 
-    // Add average ratings to images
+    // Add weighted ratings to images
     const imagesWithRatings = images
-      .map(img => ({
-        ...img,
-        avgRating: imageRatings[img.id]
-          ? imageRatings[img.id].total / imageRatings[img.id].count
-          : 0,
-        voteCount: imageRatings[img.id]?.count || 0
-      }))
-      .filter(img => img.voteCount > 0); // Only show images with votes
+      .map(img => {
+        const stats = imageRatings[img.id];
+        if (!stats || stats.count < 3) return null; // Minimum 3 votes
+        
+        const avgRating = stats.total / stats.count;
+        const accuracy = stats.correct / stats.count;
+        // Difficulty multiplier: harder images get bonus
+        const difficultyBonus = 1 + (1 - accuracy) * 0.3;
+        const weightedScore = avgRating * difficultyBonus;
+        
+        return {
+          ...img,
+          avgRating,
+          voteCount: stats.count,
+          accuracy,
+          weightedScore
+        };
+      })
+      .filter(img => img !== null);
 
-    // Split into bots and humans, sort by rating
+    // Split into bots and humans, sort by weighted score then vote count
     const bots = imagesWithRatings
       .filter(img => img.is_bot)
-      .sort((a, b) => b.avgRating - a.avgRating)
+      .sort((a, b) => {
+        const scoreDiff = b.weightedScore - a.weightedScore;
+        return Math.abs(scoreDiff) > 0.1 ? scoreDiff : b.voteCount - a.voteCount;
+      })
       .slice(0, 10);
 
     const humans = imagesWithRatings
       .filter(img => !img.is_bot)
-      .sort((a, b) => b.avgRating - a.avgRating)
+      .sort((a, b) => {
+        const scoreDiff = b.weightedScore - a.weightedScore;
+        return Math.abs(scoreDiff) > 0.1 ? scoreDiff : b.voteCount - a.voteCount;
+      })
       .slice(0, 10);
 
     setBotLeaderboard(bots);
