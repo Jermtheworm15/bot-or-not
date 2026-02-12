@@ -64,6 +64,7 @@ import Profile from './pages/Profile';
 import AITools from './pages/AITools';
 import Home from './pages/Home';
 import Community from './pages/Community';
+import Board from './pages/Board';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +86,7 @@ export const PAGES = {
     "AITools": AITools,
     "Home": Home,
     "Community": Community,
+    "Board": Board,
 }
 
 export const pagesConfig = {
