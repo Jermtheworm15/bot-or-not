@@ -466,13 +466,15 @@ export default function Home() {
           </AnimatePresence>
         </div>
         
-        {/* Compact bottom controls */}
-        <div className="absolute top-4 right-4 z-20">
-          <InviteFriends />
-        </div>
-        
-        {/* Stats bar at bottom */}
-        <div className="absolute bottom-32 left-4 right-4">
+        {/* Compact bottom controls - Desktop only */}
+        {!isMobile && (
+          <div className="absolute top-4 right-4 z-20">
+            <InviteFriends />
+          </div>
+        )}
+
+        {/* Stats bar - positioned to not overlap on mobile */}
+        <div className={`${isMobile ? 'relative mt-4 mb-4' : 'absolute bottom-32 left-4 right-4'}`}>
           <StatsBar 
             totalVotes={stats.total}
             correctVotes={stats.correct}
