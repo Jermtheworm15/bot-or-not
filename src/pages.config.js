@@ -49,6 +49,7 @@
  */
 import AIBattleLeaderboard from './pages/AIBattleLeaderboard';
 import AIChallenge from './pages/AIChallenge';
+import AIImageGenerator from './pages/AIImageGenerator';
 import AITools from './pages/AITools';
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
@@ -69,13 +70,13 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import AIImageGenerator from './pages/AIImageGenerator';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AIBattleLeaderboard": AIBattleLeaderboard,
     "AIChallenge": AIChallenge,
+    "AIImageGenerator": AIImageGenerator,
     "AITools": AITools,
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
@@ -96,7 +97,6 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "AIImageGenerator": AIImageGenerator,
 }
 
 export const pagesConfig = {

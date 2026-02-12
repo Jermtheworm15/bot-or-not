@@ -115,8 +115,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex justify-around gap-2">
+        <div className="w-full px-2 py-3">
+          <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollBehavior: 'smooth' }}>
             <Link
               to={createPageUrl('Home')}
               className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
