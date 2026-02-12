@@ -125,9 +125,10 @@ Deno.serve(async (req) => {
       .map(img => img.data?.perceptual_hash || img.perceptual_hash)
       .filter(h => h);
 
-    // Batch 1: Generate AI images with perceptual hashing
+    // Batch 1: Generate AI images with perceptual hashing (sequential to prevent timeout)
     const aiBatchSize = Math.ceil(totalToFetch / 2);
-    for (let i = 0; i < aiBatchSize && totalToFetch - newImages.length > 0; i++) {
+    let aiCount = 0;
+    for (let i = 0; i < aiBatchSize && aiCount < 5 && totalToFetch - newImages.length > 0; i++) {
       try {
         const keyword = aiKeywords[Math.floor(Math.random() * aiKeywords.length)];
         const result = await base44.asServiceRole.integrations.Core.GenerateImage({
@@ -158,6 +159,7 @@ Deno.serve(async (req) => {
                 perceptual_hash: hash
               });
               newImages.push({ url: result.url, is_bot: true, hash });
+              aiCount++;
             }
           }
         }
