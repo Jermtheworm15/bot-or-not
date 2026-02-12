@@ -54,6 +54,30 @@ export default function Upload() {
       // Upload the file
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       
+      // AI Moderation check
+      const moderation = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this image for content moderation. Check if it contains:
+- Inappropriate content (nudity, violence, hate symbols)
+- A clear human or AI-generated face/selfie
+- Spam or irrelevant content
+
+Respond with: is_appropriate (boolean), reason (string explaining why it passed or failed)`,
+        file_urls: [file_url],
+        response_json_schema: {
+          type: "object",
+          properties: {
+            is_appropriate: { type: "boolean" },
+            reason: { type: "string" }
+          }
+        }
+      });
+
+      if (!moderation.is_appropriate) {
+        toast.error(`Image rejected: ${moderation.reason}`);
+        setIsUploading(false);
+        return;
+      }
+      
       // Create the image record
       await base44.entities.Image.create({
         url: file_url,
@@ -218,7 +242,7 @@ export default function Upload() {
                       Uploaded Successfully!
                     </>
                   ) : isUploading ? (
-                    'Uploading...'
+                   'Uploading & Checking...'
                   ) : (
                     <>
                       <UploadIcon className="w-5 h-5 mr-2" />
