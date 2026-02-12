@@ -137,7 +137,7 @@ export default function AIChallenge() {
     }, 2000);
   };
 
-  const skipImage = () => {
+  const skipImage = async () => {
     const image = images[currentIndex];
     setUserAnswers(prev => [...prev, {
       imageId: image.id,
@@ -146,14 +146,29 @@ export default function AIChallenge() {
       timestamp: new Date()
     }]);
 
-    // AI also skips sometimes on easy mode
-    if (difficulty === 1 && Math.random() < 0.3) {
-      setAiAnswers(prev => [...prev, {
+    // AI always responds, even when player skips
+    try {
+      const aiResponse = await base44.functions.invoke('generateAIOpponentMove', {
         imageId: image.id,
-        guessed: null,
-        correct: false,
+        isBot: image.is_bot,
+        difficulty,
+        playerAccuracy: playerStats.accuracy
+      });
+
+      const aiCorrect = aiResponse.data.guessedBot === image.is_bot;
+      const aiAnswer = {
+        imageId: image.id,
+        guessed: aiResponse.data.guessedBot,
+        correct: aiCorrect,
+        confidence: aiResponse.data.confidence,
+        reasoning: aiResponse.data.reasoning,
         timestamp: new Date()
-      }]);
+      };
+      
+      setAiAnswers(prev => [...prev, aiAnswer]);
+      if (aiCorrect) setAiScore(prev => prev + 10);
+    } catch (err) {
+      console.error('Error getting AI decision:', err);
     }
 
     setIsAnswering(false);
