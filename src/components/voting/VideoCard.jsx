@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasCorrect, onError }) {
+  const timeoutRef = useRef(null);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (!isLoading && videoUrl) {
+      // Set 10 second timeout for video loading
+      timeoutRef.current = setTimeout(() => {
+        if (videoRef.current && videoRef.current.readyState < 3) {
+          // Video hasn't loaded enough data, skip it
+          onError();
+        }
+      }, 10000);
+
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }
+  }, [videoUrl, isLoading, onError]);
   return (
     <div className="relative w-full max-w-md mx-auto aspect-[9/16]">
       <motion.div
@@ -16,6 +36,7 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
         ) : (
           <div className="relative w-full h-full bg-black">
             <video
+              ref={videoRef}
               src={videoUrl}
               className="w-full h-full object-cover"
               autoPlay
@@ -23,6 +44,12 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
               muted
               playsInline
               onError={onError}
+              onLoadedData={() => {
+                // Clear timeout once video loads successfully
+                if (timeoutRef.current) {
+                  clearTimeout(timeoutRef.current);
+                }
+              }}
             />
             
             {/* Gradient overlay */}
