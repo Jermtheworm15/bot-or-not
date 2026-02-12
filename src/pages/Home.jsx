@@ -10,6 +10,7 @@ import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
+import { RefreshCw } from 'lucide-react';
 
 export default function Home() {
   const [items, setItems] = useState([]);
