@@ -119,13 +119,11 @@ Deno.serve(async (req) => {
     for (let i = 0; i < realBatchSize && totalToFetch - newImages.length > 0; i++) {
       try {
         const photoId = realPhotoIds[Math.floor(Math.random() * realPhotoIds.length)];
-        const uniqueSig = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${uniqueSig}`;
+        const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80`;
 
         const hash = await fetchAndHashImage(url);
         
         if (hash) {
-          // Check for similar images using Hamming distance
           let isDuplicate = false;
           for (const existingHash of existingHashes) {
             if (hammingDistance(hash, existingHash) <= HASH_SIMILARITY_THRESHOLD) {
