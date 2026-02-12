@@ -67,6 +67,8 @@ import Community from './pages/Community';
 import Board from './pages/Board';
 import BlitzGame from './pages/BlitzGame';
 import AIChallenge from './pages/AIChallenge';
+import BlitzChallengeLeaderboard from './pages/BlitzChallengeLeaderboard';
+import AIBattleLeaderboard from './pages/AIBattleLeaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -91,6 +93,8 @@ export const PAGES = {
     "Board": Board,
     "BlitzGame": BlitzGame,
     "AIChallenge": AIChallenge,
+    "BlitzChallengeLeaderboard": BlitzChallengeLeaderboard,
+    "AIBattleLeaderboard": AIBattleLeaderboard,
 }
 
 export const pagesConfig = {
