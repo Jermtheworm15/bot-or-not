@@ -172,12 +172,18 @@ export default function Home() {
       
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
-      
+
       // Filter out already-voted items
       const unseenData = data.filter(item => !votedIds.has(item.id));
-      
-      // If user has seen everything, show all items again
-      const validData = unseenData.length > 0 ? unseenData : data;
+
+      // If user has seen everything, generate fresh content
+      if (unseenData.length === 0) {
+        await base44.functions.invoke('generateFreshContent', { count: 50 });
+        // Reload after generating new content
+        return loadContent();
+      }
+
+      const validData = unseenData;
       
       if (validData.length === 0) {
         setItems([]);
