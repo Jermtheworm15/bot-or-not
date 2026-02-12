@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
+import HieroglyphicRain from './components/HieroglyphicRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
