@@ -102,7 +102,7 @@ export default function Layout({ children, currentPageName }) {
       <HieroglyphicRain />
       
       {/* Cyberpunk animated grid background */}
-      <div className="fixed inset-0 cyberpunk-grid opacity-30 pointer-events-none" style={{ zIndex: 2 }} />
+      <div className="fixed inset-0 cyberpunk-grid opacity-30 pointer-events-none top-0 left-0 w-screen h-screen" style={{ zIndex: 3 }} />
       
       {/* Gradient overlays */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-950/40 via-black to-green-950/40 pointer-events-none" />
