@@ -63,6 +63,7 @@ import UsernameSetup from './pages/UsernameSetup';
 import Profile from './pages/Profile';
 import AITools from './pages/AITools';
 import Home from './pages/Home';
+import Community from './pages/Community';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +84,7 @@ export const PAGES = {
     "Profile": Profile,
     "AITools": AITools,
     "Home": Home,
+    "Community": Community,
 }
 
 export const pagesConfig = {
