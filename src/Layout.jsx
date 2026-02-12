@@ -4,13 +4,11 @@ import { createPageUrl } from './utils';
 import { Trophy, Upload, Flame, Eye, User, Compass, Users } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
-import LaunchChallenge from './components/LaunchChallenge';
 import LiveActivityFeed from './components/LiveActivityFeed';
 
 export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
-    <LaunchChallenge />
     <LiveActivityFeed />
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
