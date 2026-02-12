@@ -353,6 +353,9 @@ export default function Home() {
     // Move to next item
     setRating(5);
     setHasVoted(false);
+
+    // Clean up points animations
+    setPointsAnimations(prev => prev.slice(-5));
     
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
@@ -372,7 +375,32 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-950 text-white">
       {/* Gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
-      
+
+      {/* Combo Counter */}
+      <ComboCounter 
+        combo={combo} 
+        onMilestone={(m) => {
+          setMilestone(m);
+          setShowMilestone(true);
+          setTimeout(() => setShowMilestone(false), 2500);
+        }}
+      />
+
+      {/* Milestone Popup */}
+      <MilestonePopup milestone={milestone} isVisible={showMilestone} />
+
+      {/* Points Animations */}
+      {pointsAnimations.map(anim => (
+        <PointsAnimation
+          key={anim.id}
+          points={anim.points}
+          combo={anim.combo}
+          x={anim.x}
+          y={anim.y}
+          isCorrect={anim.isCorrect}
+        />
+      ))}
+
       {/* Success Explosion */}
       <SuccessExplosion show={showExplosion} />
       
