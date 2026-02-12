@@ -179,13 +179,39 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-white">Share Your Result</h3>
+                <h3 className="text-xl font-bold text-white">Share</h3>
                 <button onClick={() => setShowShare(false)} className="text-zinc-400 hover:text-white">
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <p className="text-zinc-400 text-sm mb-6">{shareText}</p>
+              {/* Share Mode Toggle */}
+              {userStats && (
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setShareMode('result')}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      shareMode === 'result'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                    }`}
+                  >
+                    This Result
+                  </button>
+                  <button
+                    onClick={() => setShareMode('stats')}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      shareMode === 'stats'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                    }`}
+                  >
+                    Your Stats
+                  </button>
+                </div>
+              )}
+
+              <p className="text-zinc-400 text-sm mb-6">{shareMode === 'result' ? shareText : statsText}</p>
 
               {/* Challenge Friends Section */}
               <div className="mb-6 p-4 bg-gradient-to-r from-purple-900/30 to-green-900/30 border border-purple-500/30 rounded-lg">
