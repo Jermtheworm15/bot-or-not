@@ -236,9 +236,6 @@ export default function Home() {
       streak: newStreak
     }));
     
-    // Get current user
-    const user = await base44.auth.me();
-
     // Update user profile with points and challenges
     if (userProfile) {
       const pointsEarned = correct ? 10 : 5;
