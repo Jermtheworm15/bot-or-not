@@ -13,7 +13,7 @@ export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
       className="w-full max-w-md mx-auto space-y-6"
     >
       <div className="text-center">
-        <p className="text-zinc-400 text-sm uppercase tracking-wider mb-2">Rate this image</p>
+        <p className="text-zinc-400 text-sm uppercase tracking-wider mb-2">Date this image</p>
         <div className="flex items-center justify-center gap-2">
           <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
           <span className="text-4xl font-bold text-white">{rating}</span>
