@@ -21,10 +21,22 @@ Deno.serve(async (req) => {
       const image = allImages[i];
       
       try {
+        // Download image and convert to base64
+        const imgResponse = await fetch(image.url);
+        if (!imgResponse.ok) {
+          errors.push(`Image ${image.id}: Failed to download image`);
+          continue;
+        }
+        
+        const buffer = await imgResponse.arrayBuffer();
+        const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
+        const mimeType = imgResponse.headers.get('content-type') || 'image/jpeg';
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+        
         // Use LLM with vision to check if image contains a face
         const response = await base44.integrations.Core.InvokeLLM({
           prompt: 'Does this image contain a human or AI-generated face/head as the main subject? Answer with only YES or NO.',
-          file_urls: [image.url],
+          file_urls: [dataUrl],
           response_json_schema: {
             type: 'object',
             properties: {
