@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp, Menu, X } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp, Menu, X, ChevronLeft } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
