@@ -9,6 +9,7 @@ import HieroglyphicRain from './components/HieroglyphicRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
