@@ -10,7 +10,7 @@ export default function LiveActivityFeed() {
   useEffect(() => {
     // Subscribe to real-time activity updates
     const unsubscribe = base44.entities.Activity.subscribe((event) => {
-      if (event.type === 'create') {
+      if (event.type === 'create' && event.data.action_type !== 'streak') {
         setCurrentActivity(event.data);
         setIsVisible(true);
         
