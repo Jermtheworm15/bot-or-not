@@ -172,21 +172,26 @@ export default function Home() {
       
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
-      
+
       // Filter out already-voted items
       const unseenData = data.filter(item => !votedIds.has(item.id));
-      
-      // If user has seen everything, show all items again
-      const validData = unseenData.length > 0 ? unseenData : data;
-      
-      if (validData.length === 0) {
-        setItems([]);
+
+      // If no unseen content, generate fresh content
+      if (unseenData.length === 0) {
+        try {
+          await base44.functions.invoke('generateFreshContent', { count: 50 });
+          // Reload after generating fresh content
+          setTimeout(() => loadContent(), 1000);
+        } catch (error) {
+          console.error('Error generating fresh content:', error);
+          setItems([]);
+        }
         setIsLoading(false);
         return;
       }
       
       // Sort by newest first, then shuffle within groups
-      const sorted = validData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      const sorted = unseenData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
       // Shuffle images efficiently
       const shuffled = [...sorted];

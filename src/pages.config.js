@@ -52,17 +52,17 @@ import AdminContentManager from './pages/AdminContentManager';
 import AdminImagePopulator from './pages/AdminImagePopulator';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Discover from './pages/Discover';
-import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Onboarding from './pages/Onboarding';
-import Profile from './pages/Profile';
 import Referrals from './pages/Referrals';
 import SideGames from './pages/SideGames';
 import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
+import Profile from './pages/Profile';
 import AITools from './pages/AITools';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -72,17 +72,17 @@ export const PAGES = {
     "AdminImagePopulator": AdminImagePopulator,
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "Discover": Discover,
-    "Home": Home,
     "Leaderboard": Leaderboard,
     "Onboarding": Onboarding,
-    "Profile": Profile,
     "Referrals": Referrals,
     "SideGames": SideGames,
     "StreakLeaderboard": StreakLeaderboard,
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
+    "Profile": Profile,
     "AITools": AITools,
+    "Home": Home,
 }
 
 export const pagesConfig = {
