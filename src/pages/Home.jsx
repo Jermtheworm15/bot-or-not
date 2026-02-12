@@ -29,7 +29,14 @@ export default function Home() {
   const [pointsAnimations, setPointsAnimations] = useState([]);
   const [milestone, setMilestone] = useState(null);
   const [showMilestone, setShowMilestone] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const currentItem = items[currentIndex];
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     checkUsernameAndLoad();
