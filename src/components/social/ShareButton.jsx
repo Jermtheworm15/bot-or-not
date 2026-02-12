@@ -45,6 +45,13 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareText)}`
   };
+
+  const statsLinks = {
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(statsText)}&url=${encodeURIComponent(appUrl)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}&quote=${encodeURIComponent(statsText)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(appUrl)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(statsText)}`
+  };
   
   const challengeLinks = {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(challengeText)}&url=${encodeURIComponent(appUrl)}`,
