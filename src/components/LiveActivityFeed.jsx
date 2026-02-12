@@ -37,48 +37,34 @@ export default function LiveActivityFeed() {
     }
   };
 
-  if (!isVisible || activities.length === 0) return null;
+  if (!isVisible || !currentActivity) return null;
 
   return (
-    <div className="fixed bottom-24 right-4 z-40 w-80 max-h-96 overflow-hidden">
-      <div className="bg-black/80 backdrop-blur-md border border-purple-500/30 rounded-xl p-4 shadow-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-bold text-sm flex items-center gap-2">
-            <Zap className="w-4 h-4 text-green-400" />
-            Live Activity
-          </h3>
-          <button
-            onClick={() => setIsVisible(false)}
-            className="text-zinc-500 hover:text-white text-xs"
+    <div className="fixed bottom-24 right-4 z-40">
+      <AnimatePresence mode="wait">
+        {isVisible && currentActivity && (
+          <motion.div
+            key={currentActivity.id}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="bg-black/80 backdrop-blur-md border border-purple-500/30 rounded-xl p-4 shadow-2xl w-80"
           >
-            Hide
-          </button>
-        </div>
-
-        <div className="space-y-2 overflow-y-auto max-h-80">
-          <AnimatePresence mode="popLayout">
-            {activities.map((activity) => (
-              <motion.div
-                key={activity.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex items-start gap-2 bg-zinc-900/50 p-2 rounded-lg"
-              >
-                <div className="mt-1">{getIcon(activity.action_type)}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-white font-medium truncate">
-                    {activity.username || 'User'}
-                  </p>
-                  <p className="text-xs text-zinc-400 truncate">
-                    {activity.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5">{getIcon(currentActivity.action_type)}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium truncate">
+                  {currentActivity.username || 'User'}
+                </p>
+                <p className="text-sm text-zinc-400 truncate">
+                  {currentActivity.description}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
