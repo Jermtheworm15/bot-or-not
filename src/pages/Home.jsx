@@ -252,15 +252,17 @@ export default function Home() {
       const multiplier = Math.floor(1 + newCombo * 0.1);
       const totalPoints = pointsEarned * multiplier;
 
-      // Add points animation
-      setPointsAnimations(prev => [...prev, {
-        id: Date.now(),
-        points: pointsEarned,
-        combo: newCombo,
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-        isCorrect: correct
-      }]);
+      // Add points animation (desktop only)
+      if (!isMobile) {
+        setPointsAnimations(prev => [...prev, {
+          id: Date.now(),
+          points: pointsEarned,
+          combo: newCombo,
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          isCorrect: correct
+        }]);
+      }
       const newBadges = [...(userProfile.badges || [])];
 
       // Award badges
