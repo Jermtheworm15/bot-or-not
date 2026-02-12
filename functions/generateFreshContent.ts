@@ -65,7 +65,8 @@ Deno.serve(async (req) => {
     }
 
     const DAILY_LIMIT = 2000;
-    const MAX_PER_BATCH = 100;
+    const MAX_PER_BATCH = 15; // Reduced from 100 to prevent timeouts
+    const MAX_CONCURRENT_GENERATIONS = 3; // Limit concurrent AI image generation
     const HASH_SIMILARITY_THRESHOLD = 5; // Hamming distance threshold
     const today = new Date().toDateString();
 
