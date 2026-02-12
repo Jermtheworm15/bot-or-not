@@ -10,6 +10,7 @@ import VotingButtons from '@/components/voting/VotingButtons';
 export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [username, setUsername] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [demoImage, setDemoImage] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [wasCorrect, setWasCorrect] = useState(false);
@@ -31,15 +32,16 @@ export default function Onboarding() {
   };
 
   const handleUsernameSubmit = async () => {
-    if (!username.trim()) return;
+    if (!username.trim() || !zipCode.trim()) return;
     
     try {
       const user = await base44.auth.me();
       await base44.auth.updateMe({ username });
       
-      // Create user profile
+      // Create user profile with zip code
       const profile = await base44.entities.UserProfile.create({
         user_email: user.email,
+        zip_code: zipCode,
         points: 0,
         level: 1,
         badges: ['newcomer'],
@@ -118,14 +120,24 @@ export default function Onboarding() {
                   placeholder="Choose your username..."
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleUsernameSubmit()}
+                  onKeyPress={(e) => e.key === 'Enter' && zipCode.trim() && handleUsernameSubmit()}
                   className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
                   autoFocus
                 />
                 
+                <input
+                  type="text"
+                  placeholder="Enter your zip code..."
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && username.trim() && handleUsernameSubmit()}
+                  maxLength="5"
+                  className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
+                />
+                
                 <Button
                   onClick={handleUsernameSubmit}
-                  disabled={!username.trim()}
+                  disabled={!username.trim() || !zipCode.trim()}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-bold"
                 >
                   Start Playing <ArrowRight className="ml-2 w-5 h-5" />
