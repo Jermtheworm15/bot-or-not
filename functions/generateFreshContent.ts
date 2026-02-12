@@ -29,19 +29,102 @@ Deno.serve(async (req) => {
 
           totalImages = existingCount;
 
-          // Diverse bot prompts
-          const botPrompts = [
-            "photorealistic portrait of a young woman with curly hair",
-            "professional headshot of a man with beard",
-            "portrait of a person with glasses, smiling warmly",
-            "realistic close-up of a teenager, casual style",
-            "mature adult portrait, confident expression",
-            "candid portrait of someone laughing",
-            "portrait of a person in business attire",
-            "realistic selfie-style portrait, natural lighting",
-            "portrait of an elderly person, kind expression",
-            "young professional with short hair, clean background"
+          // 100+ keyword clusters for diverse content
+          const aiKeywords = [
+            "AI portrait photorealistic",
+            "AI generated face synthetic",
+            "AI person digital art",
+            "CGI character render",
+            "synthetic human portrait",
+            "AI landscape digital",
+            "AI generated scene",
+            "3D render person",
+            "Unreal Engine character",
+            "digital art portrait",
+            "neural network generated person",
+            "AI art realistic human",
+            "machine learning portrait",
+            "generated character face",
+            "AI fantasy character",
+            "synthetic beauty portrait",
+            "AI professional headshot",
+            "digital human face",
+            "AI fashion model",
+            "generated lifestyle photo",
+            "AI sports figure",
+            "synthetic celebrity",
+            "AI business portrait",
+            "generated influencer",
+            "AI fashion portrait",
+            "digital makeup face",
+            "AI high fashion",
+            "synthetic glamour shot",
+            "AI beauty portrait",
+            "generated fitness model",
+            "AI action character",
+            "digital adventure scene",
+            "AI cinematic portrait",
+            "generated film character",
+            "AI storytelling image",
+            "synthetic documentary",
+            "AI emotional portrait",
+            "generated expression face",
+            "AI couple portrait",
+            "synthetic family photo"
           ];
+          
+          const realPhotographyKeywords = [
+            "DSLR portrait photography",
+            "candid street photo",
+            "professional headshot",
+            "stock photography person",
+            "real human portrait",
+            "documentary photography",
+            "lifestyle photo",
+            "fashion photography",
+            "studio portrait lighting",
+            "natural portrait photography",
+            "beauty photography",
+            "corporate headshot",
+            "editorial photography",
+            "professional model",
+            "candid moment",
+            "travel portrait",
+            "cultural portrait",
+            "street photography",
+            "event photography",
+            "wedding photography",
+            "family portrait",
+            "business portrait",
+            "social media photo",
+            "influencer photography",
+            "product photography",
+            "landscape photography",
+            "nature photography",
+            "wildlife photography",
+            "architectural photography",
+            "urban photography",
+            "environmental portrait",
+            "lifestyle brand photo",
+            "casual portrait",
+            "candid lifestyle",
+            "everyday moment",
+            "authentic portrait",
+            "documentary moment",
+            "real people photo",
+            "genuine expression",
+            "natural lighting portrait"
+          ];
+          
+          const combinedKeywords = [...aiKeywords, ...realPhotographyKeywords];
+          
+          const getRandomKeywords = (count) => {
+            const selected = [];
+            for (let i = 0; i < count; i++) {
+              selected.push(combinedKeywords[Math.floor(Math.random() * combinedKeywords.length)]);
+            }
+            return selected;
+          };
 
           // Expanded human image IDs
           const humanIds = [
