@@ -58,6 +58,7 @@ import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Discover from './pages/Discover';
 import Onboarding from './pages/Onboarding';
 import Referrals from './pages/Referrals';
+import AdminContentManager from './pages/AdminContentManager';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +74,7 @@ export const PAGES = {
     "Discover": Discover,
     "Onboarding": Onboarding,
     "Referrals": Referrals,
+    "AdminContentManager": AdminContentManager,
 }
 
 export const pagesConfig = {
