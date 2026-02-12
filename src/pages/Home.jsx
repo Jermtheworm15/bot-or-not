@@ -151,6 +151,14 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
+      if (!rawData || rawData.length === 0) {
+        console.log('No images available, generating fresh content...');
+        await base44.functions.invoke('generateFreshContent', { count: 50 });
+        setTimeout(() => loadContent(), 1500);
+        setIsLoading(false);
+        return;
+      }
+
       // Flatten data structure and validate URLs
       const data = rawData.map(item => ({
         id: item.id,
@@ -179,27 +187,15 @@ export default function Home() {
 
       // If no unseen images, generate fresh content
       if (unseenData.length === 0) {
-        try {
-          await base44.functions.invoke('generateFreshContent', { count: 20 });
-          // Recursively reload to get the newly generated content
-          setTimeout(() => loadContent(), 1000);
-        } catch (error) {
-          console.error('Error generating fresh content:', error);
-        }
+        console.log('No unseen images, generating fresh content...');
+        await base44.functions.invoke('generateFreshContent', { count: 50 });
+        setTimeout(() => loadContent(), 1500);
         setIsLoading(false);
         return;
       }
 
-      const validData = unseenData;
-
-      if (validData.length === 0) {
-        setItems([]);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Sort by newest first, then shuffle within groups
-      const sorted = validData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      // Sort by newest first, then shuffle
+      const sorted = unseenData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
       // Shuffle images efficiently
       const shuffled = [...sorted];
@@ -208,18 +204,13 @@ export default function Home() {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
 
-      // Preload first 3 images for smooth transitions
-      shuffled.slice(0, 3).forEach(item => {
-        const img = new Image();
-        img.src = item.url;
-      });
-
       setItems(shuffled);
+      setIsLoading(false);
     } catch (err) {
       console.error('Error loading content:', err);
       setItems([]);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   
