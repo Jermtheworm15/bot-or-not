@@ -62,6 +62,7 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
+import AITools from './pages/AITools';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +82,7 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
+    "AITools": AITools,
 }
 
 export const pagesConfig = {
