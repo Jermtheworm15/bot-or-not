@@ -141,16 +141,16 @@ export default function Home() {
     setIsLoading(true);
     setCurrentIndex(0);
     setHasVoted(false);
-    
+
     try {
       const user = await base44.auth.me();
-      
+
       // Load images and user's votes in parallel
       const [rawData, userVotes] = await Promise.all([
         base44.entities.Image.list(),
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
-      
+
       // Flatten data structure and validate URLs
       const data = rawData.map(item => ({
         id: item.id,
@@ -169,16 +169,28 @@ export default function Home() {
           return false;
         }
       });
-      
+
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
-      
-      // Filter out already-voted items
+
+      // Filter out already-voted items - never show the same image twice
       const unseenData = data.filter(item => !votedIds.has(item.id));
-      
-      // If user has seen everything, show all items again
-      const validData = unseenData.length > 0 ? unseenData : data;
-      
+
+      // If no unseen images, generate fresh content
+      if (unseenData.length === 0) {
+        try {
+          await base44.functions.invoke('generateFreshContent', { count: 20 });
+          // Recursively reload to get the newly generated content
+          setTimeout(() => loadContent(), 1000);
+        } catch (error) {
+          console.error('Error generating fresh content:', error);
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      const validData = unseenData;
+
       if (validData.length === 0) {
         setItems([]);
         setIsLoading(false);
