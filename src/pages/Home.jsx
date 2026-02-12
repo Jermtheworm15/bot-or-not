@@ -224,6 +224,10 @@ export default function Home() {
       setTimeout(() => setShowExplosion(false), 2500);
     }
     
+    // Get current user (do before updating stats)
+    const user = await base44.auth.me();
+    if (!user) return;
+
     // Update stats
     const newStreak = correct ? stats.streak + 1 : 0;
     setStats(prev => ({
