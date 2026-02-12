@@ -298,7 +298,13 @@ export default function Home() {
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Reload and shuffle content
+      // Generate fresh content and reload
+      setIsLoading(true);
+      try {
+        await base44.functions.invoke('generateFreshContent', { count: 6 });
+      } catch (error) {
+        console.error('Error generating fresh content:', error);
+      }
       await loadContent();
     }
   };
