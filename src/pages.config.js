@@ -55,6 +55,7 @@ import Profile from './pages/Profile';
 import UsernameSetup from './pages/UsernameSetup';
 import Achievements from './pages/Achievements';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
+import Discover from './pages/Discover';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +68,7 @@ export const PAGES = {
     "UsernameSetup": UsernameSetup,
     "Achievements": Achievements,
     "ChallengeLeaderboard": ChallengeLeaderboard,
+    "Discover": Discover,
 }
 
 export const pagesConfig = {
