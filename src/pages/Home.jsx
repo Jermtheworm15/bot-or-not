@@ -111,12 +111,30 @@ export default function Home() {
     setHasVoted(false);
     
     try {
-      const data = contentType === 'image' 
-        ? await base44.entities.Image.list()
-        : await base44.entities.Video.list();
+      const user = await base44.auth.me();
       
-      // Filter out any invalid URLs
-      const validData = data.filter(item => item.url && item.url.trim() !== '');
+      // Load content and user's votes
+      const [data, userVotes] = await Promise.all([
+        contentType === 'image' 
+          ? base44.entities.Image.list()
+          : base44.entities.Video.list(),
+        contentType === 'image'
+          ? base44.entities.Vote.filter({ user_email: user.email })
+          : base44.entities.VideoVote.filter({ user_email: user.email })
+      ]);
+      
+      // Get IDs of items user has already voted on
+      const votedIds = new Set(userVotes.map(v => contentType === 'image' ? v.image_id : v.video_id));
+      
+      // Filter out invalid URLs and already-voted items
+      const unseenData = data.filter(item => 
+        item.url && 
+        item.url.trim() !== '' && 
+        !votedIds.has(item.id)
+      );
+      
+      // If user has seen everything, show all items again
+      const validData = unseenData.length > 0 ? unseenData : data.filter(item => item.url && item.url.trim() !== '');
       
       if (validData.length === 0) {
         console.error('No valid content found');
@@ -125,7 +143,7 @@ export default function Home() {
         return;
       }
       
-      // Shuffle content with Fisher-Yates algorithm for better randomization
+      // Shuffle content with Fisher-Yates algorithm
       const shuffled = [...validData];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
