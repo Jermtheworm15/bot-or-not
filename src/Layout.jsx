@@ -10,27 +10,54 @@ import LiveActivityFeed from './components/LiveActivityFeed';
 export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
-      <LaunchChallenge />
-      <LiveActivityFeed />
-      <style>{`
-        @keyframes gridMove {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(60px); }
-        }
-        .cyberpunk-grid {
-          background-image: 
-            linear-gradient(rgba(147, 51, 234, 0.15) 2px, transparent 2px),
-            linear-gradient(90deg, rgba(34, 197, 94, 0.15) 2px, transparent 2px);
-          background-size: 60px 60px;
-          animation: gridMove 2s linear infinite;
-        }
-        .neon-glow {
-          box-shadow: 0 0 20px rgba(147, 51, 234, 0.5), 0 0 40px rgba(34, 197, 94, 0.3);
-        }
-        .neon-text {
-          text-shadow: 0 0 10px rgba(147, 51, 234, 0.8), 0 0 20px rgba(147, 51, 234, 0.5);
-        }
-      `}</style>
+    <LaunchChallenge />
+    <LiveActivityFeed />
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+      * {
+        font-family: 'Orbitron', sans-serif !important;
+      }
+
+      body, p, span, div, h1, h2, h3, h4, h5, h6, button, a, label, input, textarea {
+        color: #22c55e !important;
+        text-shadow: 
+          0 0 10px rgba(34, 197, 94, 0.8),
+          0 0 20px rgba(34, 197, 94, 0.6),
+          0 0 30px rgba(34, 197, 94, 0.4),
+          2px 2px 4px rgba(0, 0, 0, 0.8),
+          4px 4px 8px rgba(0, 0, 0, 0.6) !important;
+      }
+
+      h1, h2, h3, .font-black, .font-bold {
+        text-shadow: 
+          0 0 15px rgba(34, 197, 94, 1),
+          0 0 25px rgba(34, 197, 94, 0.8),
+          0 0 35px rgba(34, 197, 94, 0.6),
+          3px 3px 6px rgba(0, 0, 0, 0.9),
+          6px 6px 12px rgba(0, 0, 0, 0.7),
+          0 8px 16px rgba(34, 197, 94, 0.3) !important;
+        letter-spacing: 0.05em !important;
+      }
+
+      @keyframes gridMove {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(60px); }
+      }
+      .cyberpunk-grid {
+        background-image: 
+          linear-gradient(rgba(147, 51, 234, 0.15) 2px, transparent 2px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.15) 2px, transparent 2px);
+        background-size: 60px 60px;
+        animation: gridMove 2s linear infinite;
+      }
+      .neon-glow {
+        box-shadow: 0 0 20px rgba(147, 51, 234, 0.5), 0 0 40px rgba(34, 197, 94, 0.3);
+      }
+      .neon-text {
+        text-shadow: 0 0 10px rgba(147, 51, 234, 0.8), 0 0 20px rgba(147, 51, 234, 0.5);
+      }
+    `}</style>
       
       {/* Matrix Rain Effect */}
       <MatrixRain />
