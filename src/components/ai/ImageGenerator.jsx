@@ -4,15 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from 'framer-motion';
-import { Wand2, Copy, CheckCircle } from 'lucide-react';
+import { Wand2, Copy, CheckCircle, Square, Maximize, Minimize } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ImageGenerator() {
   const [prompt, setPrompt] = useState('');
+  const [negativePrompt, setNegativePrompt] = useState('');
+  const [aspectRatio, setAspectRatio] = useState('square');
+  const [quality, setQuality] = useState('medium');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const aspectRatios = {
+    square: { label: '1:1 Square', icon: Square },
+    landscape: { label: '16:9 Landscape', icon: Maximize },
+    portrait: { label: '9:16 Portrait', icon: Minimize }
+  };
+
+  const qualityLevels = {
+    low: 'Low (Basic)',
+    medium: 'Medium (Detailed)',
+    high: 'High (Very Detailed)'
+  };
+
+  const buildEnhancedPrompt = () => {
+    let enhancedPrompt = `${prompt}. Generate a photo-realistic image of either a real human or an AI-generated bot. Make it ambiguous and challenging to distinguish.`;
+    
+    // Add quality instructions
+    if (quality === 'high') {
+      enhancedPrompt += ' High quality, intricate details, professional photography, sharp focus, studio lighting.';
+    } else if (quality === 'medium') {
+      enhancedPrompt += ' Good quality, clear details, natural lighting.';
+    } else {
+      enhancedPrompt += ' Standard quality image.';
+    }
+
+    return enhancedPrompt;
+  };
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -22,8 +52,15 @@ export default function ImageGenerator() {
 
     setIsGenerating(true);
     try {
+      const enhancedPrompt = buildEnhancedPrompt();
+      let fullPrompt = enhancedPrompt;
+
+      if (negativePrompt.trim()) {
+        fullPrompt = `${enhancedPrompt} (Avoid: ${negativePrompt})`;
+      }
+
       const { url } = await base44.integrations.Core.GenerateImage({
-        prompt: `${prompt}. Generate a photo-realistic image of either a real human or an AI-generated bot. Make it ambiguous and challenging to distinguish.`
+        prompt: fullPrompt
       });
 
       setGeneratedImageUrl(url);
@@ -87,6 +124,54 @@ export default function ImageGenerator() {
         <p className="text-xs text-zinc-400">
           Be descriptive! The better your prompt, the better the generated image.
         </p>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-white font-semibold">Negative Prompt (Optional)</label>
+        <Textarea
+          placeholder="What to exclude from the image... (e.g., 'blur, watermark, low quality, distorted faces')"
+          value={negativePrompt}
+          onChange={(e) => setNegativePrompt(e.target.value)}
+          className="bg-zinc-800 border-zinc-700 text-white min-h-16"
+        />
+        <p className="text-xs text-zinc-400">
+          Describe things you don't want in the image.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <label className="text-white font-semibold text-sm">Aspect Ratio</label>
+          <div className="grid grid-cols-3 gap-2">
+            {Object.entries(aspectRatios).map(([key, { label, icon: Icon }]) => (
+              <button
+                key={key}
+                onClick={() => setAspectRatio(key)}
+                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition-all text-xs font-medium ${
+                  aspectRatio === key
+                    ? 'bg-purple-600 text-white shadow-lg'
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label.split(' ')[0]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <label className="text-white font-semibold text-sm">Quality Level</label>
+          <select
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}
+            className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-3 py-2 text-sm"
+          >
+            {Object.entries(qualityLevels).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <Button
