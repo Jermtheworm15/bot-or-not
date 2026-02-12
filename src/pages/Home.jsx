@@ -369,32 +369,32 @@ export default function Home() {
 
 
   
+  const handleSkip = () => {
+    if (currentIndex < items.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      // Generate fresh content if at end
+      setIsLoading(true);
+      base44.functions.invoke('generateFreshContent', { count: 50 }).catch(console.error);
+      loadContent();
+    }
+  };
+
   const handleSubmitRating = async () => {
     // Update the vote with rating
     const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
     if (votes.length > 0) {
       await base44.entities.Vote.update(votes[0].id, { rating });
     }
-    
+
     // Move to next item
     setRating(5);
     setHasVoted(false);
 
     // Clean up points animations
     setPointsAnimations(prev => prev.slice(-5));
-    
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      // Generate fresh content and reload
-      setIsLoading(true);
-      try {
-        await base44.functions.invoke('generateFreshContent', { count: 6 });
-      } catch (error) {
-        console.error('Error generating fresh content:', error);
-      }
-      await loadContent();
-    }
+
+    handleSkip();
   };
   
   return (
@@ -480,6 +480,18 @@ export default function Home() {
                   />
                 </div>
               </motion.div>
+            )}
+            </AnimatePresence>
+
+            {!hasVoted && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              onClick={handleSkip}
+              className="mt-4 px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
+            >
+              Skip →
+            </motion.button>
             )}
           </AnimatePresence>
         </div>
