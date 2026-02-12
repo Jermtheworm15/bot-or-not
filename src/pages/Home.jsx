@@ -32,8 +32,12 @@ export default function Home() {
       ? await base44.entities.Image.list()
       : await base44.entities.Video.list();
     
-    // Shuffle content
-    const shuffled = [...data].sort(() => Math.random() - 0.5);
+    // Shuffle content with Fisher-Yates algorithm for better randomization
+    const shuffled = [...data];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     setItems(shuffled);
     setIsLoading(false);
   };
