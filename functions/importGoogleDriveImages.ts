@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
 
     // Import images to database
     const importedImages = [];
-    for (const file of imageFiles) {
+    for (const file of allImages) {
       try {
         // Get direct download link for the image
         const downloadUrl = `https://drive.google.com/uc?export=download&id=${file.id}`;
