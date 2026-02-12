@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Bot, Trophy, Upload } from 'lucide-react';
+import { Bot, Trophy, Upload, Flame } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   return (
@@ -34,6 +34,17 @@ export default function Layout({ children, currentPageName }) {
               >
                 <Trophy className="w-4 h-4" />
                 Top 10
+              </Link>
+              <Link
+                to={createPageUrl('StreakLeaderboard')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                  currentPageName === 'StreakLeaderboard'
+                    ? 'bg-violet-600 text-white'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                }`}
+              >
+                <Flame className="w-4 h-4" />
+                Streaks
               </Link>
               <Link
                 to={createPageUrl('Upload')}

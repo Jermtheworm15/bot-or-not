@@ -50,6 +50,7 @@
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Upload from './pages/Upload';
+import StreakLeaderboard from './pages/StreakLeaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -57,6 +58,7 @@ export const PAGES = {
     "Home": Home,
     "Leaderboard": Leaderboard,
     "Upload": Upload,
+    "StreakLeaderboard": StreakLeaderboard,
 }
 
 export const pagesConfig = {

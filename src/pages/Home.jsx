@@ -45,11 +45,15 @@ export default function Home() {
       streak: correct ? prev.streak + 1 : 0
     }));
     
+    // Get current user
+    const user = await base44.auth.me();
+    
     // Save vote (without rating yet)
     await base44.entities.Vote.create({
       image_id: currentImage.id,
       guessed_bot: guessedBot,
-      was_correct: correct
+      was_correct: correct,
+      user_email: user.email
     });
   };
   
