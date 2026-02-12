@@ -47,15 +47,12 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import AIImageLibraries from './pages/AIImageLibraries';
-import AITools from './pages/AITools';
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
 import AdminImagePopulator from './pages/AdminImagePopulator';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Discover from './pages/Discover';
 import Home from './pages/Home';
-import ImageGenerator from './pages/ImageGenerator';
 import Leaderboard from './pages/Leaderboard';
 import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
@@ -65,20 +62,17 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import PersonalizedDiscovery from './pages/PersonalizedDiscovery';
+import AITools from './pages/AITools';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "AIImageLibraries": AIImageLibraries,
-    "AITools": AITools,
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
     "AdminImagePopulator": AdminImagePopulator,
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "Discover": Discover,
     "Home": Home,
-    "ImageGenerator": ImageGenerator,
     "Leaderboard": Leaderboard,
     "Onboarding": Onboarding,
     "Profile": Profile,
@@ -88,7 +82,7 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "PersonalizedDiscovery": PersonalizedDiscovery,
+    "AITools": AITools,
 }
 
 export const pagesConfig = {

@@ -172,19 +172,12 @@ export default function Home() {
       
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
-
-      // Filter out already-voted items - never show same image twice
+      
+      // Filter out already-voted items
       const unseenData = data.filter(item => !votedIds.has(item.id));
-
-      // If user has seen everything, generate fresh content instead of recycling
-      if (unseenData.length === 0) {
-        setIsLoading(false);
-        // Trigger fresh content generation
-        base44.functions.invoke('generateFreshContent', { count: 50 }).catch(console.error);
-        return;
-      }
-
-      const validData = unseenData;
+      
+      // If user has seen everything, show all items again
+      const validData = unseenData.length > 0 ? unseenData : data;
       
       if (validData.length === 0) {
         setItems([]);
@@ -205,7 +198,6 @@ export default function Home() {
       // Preload first 3 images for smooth transitions
       shuffled.slice(0, 3).forEach(item => {
         const img = new Image();
-        img.crossOrigin = 'anonymous';
         img.src = item.url;
       });
 
@@ -368,10 +360,10 @@ export default function Home() {
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Reached end of unseen content - generate fresh and reload
+      // Generate fresh content and reload
       setIsLoading(true);
       try {
-        await base44.functions.invoke('generateFreshContent', { count: 50 });
+        await base44.functions.invoke('generateFreshContent', { count: 6 });
       } catch (error) {
         console.error('Error generating fresh content:', error);
       }
