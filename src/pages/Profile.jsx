@@ -5,7 +5,8 @@ import ShareButton from '@/components/social/ShareButton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
-import { Trophy, Star, Zap, Target, TrendingUp } from 'lucide-react';
+import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart } from 'lucide-react';
+import FollowButton from '@/components/community/FollowButton';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
