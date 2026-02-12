@@ -26,7 +26,10 @@ export default function ChatbotWindow() {
   const initializeChat = async () => {
     try {
       const user = await base44.auth.me();
-      if (!user) return;
+      if (!user) {
+        setIsInitializing(false);
+        return;
+      }
 
       const conv = await base44.agents.createConversation({
         agent_name: 'supportAssistant',
@@ -36,10 +39,14 @@ export default function ChatbotWindow() {
         }
       });
 
-      setConversation(conv);
-      setMessages(conv.messages || []);
+      if (conv && conv.id) {
+        setConversation(conv);
+        setMessages(conv.messages && Array.isArray(conv.messages) ? conv.messages : []);
+      }
     } catch (err) {
       console.error('Error initializing chat:', err);
+      setConversation(null);
+      setMessages([]);
     }
     setIsInitializing(false);
   };
@@ -54,15 +61,22 @@ export default function ChatbotWindow() {
         content: newMessage
       });
 
-      setMessages(updatedConversation.messages);
-      setNewMessage('');
+      if (updatedConversation && updatedConversation.messages) {
+        setMessages(updatedConversation.messages);
+        setConversation(updatedConversation);
+        setNewMessage('');
 
-      // Subscribe to updates for streaming response
-      const unsubscribe = base44.agents.subscribeToConversation(updatedConversation.id, (data) => {
-        setMessages(data.messages);
-      });
+        // Subscribe to updates for streaming response
+        if (updatedConversation.id) {
+          const unsubscribe = base44.agents.subscribeToConversation(updatedConversation.id, (data) => {
+            if (data && data.messages && Array.isArray(data.messages)) {
+              setMessages(data.messages);
+            }
+          });
 
-      return () => unsubscribe();
+          return () => unsubscribe();
+        }
+      }
     } catch (err) {
       console.error('Error sending message:', err);
     }
@@ -108,7 +122,7 @@ export default function ChatbotWindow() {
                   <div className="text-zinc-500 text-xs flex items-center justify-center h-full">
                     Initializing chat...
                   </div>
-                ) : messages.length === 0 ? (
+                ) : !messages || messages.length === 0 ? (
                   <div className="text-zinc-400 text-xs space-y-2 h-full flex flex-col justify-center">
                     <p className="font-bold text-purple-400">👋 Welcome!</p>
                     <p>I'm here to help with:</p>
@@ -120,7 +134,7 @@ export default function ChatbotWindow() {
                     </ul>
                   </div>
                 ) : (
-                  messages.map((msg, idx) => (
+                  Array.isArray(messages) && messages.map((msg, idx) => (
                     <motion.div
                       key={idx}
                       initial={{ opacity: 0, y: 5 }}
