@@ -32,13 +32,11 @@ export default function Discover() {
   const refreshContent = async () => {
     setIsRefreshing(true);
     try {
-      // Generate fresh content (3 bots + 3 humans)
-      await base44.functions.invoke('generateFreshContent', { count: 6 });
-      // Reload all content
+      // Reshuffle and reload existing content
       await loadContent();
       setDisplayCount(24);
     } catch (error) {
-      console.error('Error generating fresh content:', error);
+      console.error('Error refreshing content:', error);
     }
     setIsRefreshing(false);
   };
