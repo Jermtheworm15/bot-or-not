@@ -35,7 +35,8 @@ Deno.serve(async (req) => {
         });
 
         if (result.url) {
-          await base44.asServiceRole.entities.Image.create({
+          // Use user context with admin role instead of service role for RLS bypass
+          await base44.entities.Image.create({
             url: result.url,
             is_bot: true,
             source: 'ai_generated',
