@@ -435,55 +435,56 @@ export default function Home() {
         </div>
         
         {/* Voting/Rating Section */}
-        <div className="w-full max-w-2xl">
-          <AnimatePresence mode="wait">
-            {!hasVoted ? (
-              <motion.div
-                key="voting"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <VotingButtons
-                  onVote={handleVote}
-                  disabled={isLoading || !currentItem}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="rating"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-3"
-              >
-                <RatingSlider
-                  rating={rating}
-                  onRatingChange={setRating}
-                  onSubmit={handleSubmitRating}
-                />
-                <div className="flex justify-center">
-                  <ShareButton
-                    contentUrl={currentItem?.url}
-                    contentType="image"
-                    isBot={currentItem?.is_bot}
-                    wasCorrect={wasCorrect}
-                  />
-                </div>
-              </motion.div>
-            )}
-            {!hasVoted && (
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                onClick={handleSkip}
-                className="mt-4 px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
-              >
-                Skip →
-              </motion.button>
-            )}
-          </AnimatePresence>
-        </div>
+         <div className="w-full max-w-2xl">
+           <AnimatePresence>
+             {!hasVoted ? (
+               <motion.div
+                 key="voting"
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 className="space-y-4"
+               >
+                 <VotingButtons
+                   onVote={handleVote}
+                   disabled={isLoading || !currentItem}
+                 />
+                 <div className="flex justify-center">
+                   <motion.button
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     onClick={handleSkip}
+                     className="px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
+                   >
+                     Skip →
+                   </motion.button>
+                 </div>
+               </motion.div>
+             ) : (
+               <motion.div
+                 key="rating"
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 className="space-y-3"
+               >
+                 <RatingSlider
+                   rating={rating}
+                   onRatingChange={setRating}
+                   onSubmit={handleSubmitRating}
+                 />
+                 <div className="flex justify-center">
+                   <ShareButton
+                     contentUrl={currentItem?.url}
+                     contentType="image"
+                     isBot={currentItem?.is_bot}
+                     wasCorrect={wasCorrect}
+                   />
+                 </div>
+               </motion.div>
+             )}
+           </AnimatePresence>
+         </div>
         
         {/* Compact bottom controls */}
         <div className="absolute top-4 right-4 z-20">
