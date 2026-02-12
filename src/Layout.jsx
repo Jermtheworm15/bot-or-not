@@ -9,6 +9,7 @@ import LiveActivityFeed from './components/LiveActivityFeed';
 export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
+      <div hidden>Creator: Jeromy Padgett</div>
     <LiveActivityFeed />
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
