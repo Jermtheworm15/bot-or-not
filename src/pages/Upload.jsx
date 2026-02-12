@@ -19,6 +19,8 @@ export default function Upload() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [aiEnhancements, setAiEnhancements] = useState(null);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
