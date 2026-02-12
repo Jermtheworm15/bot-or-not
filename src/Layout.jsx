@@ -119,7 +119,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollBehavior: 'smooth' }}>
             <Link
               to={createPageUrl('Home')}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
+              className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                 currentPageName === 'Home'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
                   : 'text-green-400 hover:text-white hover:bg-purple-900/30'
