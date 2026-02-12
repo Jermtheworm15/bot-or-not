@@ -8,6 +8,8 @@ import RatingSlider from '@/components/voting/RatingSlider';
 import StatsBar from '@/components/voting/StatsBar';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
+import SuccessExplosion from '@/components/gamification/SuccessExplosion';
+import ChallengesSidebar from '@/components/gamification/ChallengesSidebar';
 import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -20,10 +22,37 @@ export default function Home() {
   const [wasCorrect, setWasCorrect] = useState(false);
   const [rating, setRating] = useState(5);
   const [stats, setStats] = useState({ total: 0, correct: 0, streak: 0 });
+  const [showExplosion, setShowExplosion] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   
   useEffect(() => {
     loadContent();
+    loadUserProfile();
   }, [contentType]);
+  
+  const loadUserProfile = async () => {
+    try {
+      const user = await base44.auth.me();
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      
+      if (profiles.length === 0) {
+        const newProfile = await base44.entities.UserProfile.create({
+          user_email: user.email,
+          points: 0,
+          level: 1,
+          badges: [],
+          daily_votes: 0,
+          weekly_votes: 0,
+          perfect_streak: 0
+        });
+        setUserProfile(newProfile);
+      } else {
+        setUserProfile(profiles[0]);
+      }
+    } catch (err) {
+      console.log('Profile load error:', err);
+    }
+  };
   
   const loadContent = async () => {
     setIsLoading(true);
@@ -53,12 +82,47 @@ export default function Home() {
     setWasCorrect(correct);
     setHasVoted(true);
     
+    // Show explosion effect for correct answers
+    if (correct) {
+      setShowExplosion(true);
+      setTimeout(() => setShowExplosion(false), 2500);
+    }
+    
     // Update stats
+    const newStreak = correct ? stats.streak + 1 : 0;
     setStats(prev => ({
       total: prev.total + 1,
       correct: prev.correct + (correct ? 1 : 0),
-      streak: correct ? prev.streak + 1 : 0
+      streak: newStreak
     }));
+    
+    // Update user profile with points and challenges
+    if (userProfile) {
+      const pointsEarned = correct ? 10 : 5;
+      const newBadges = [...(userProfile.badges || [])];
+      
+      // Award badges
+      if (stats.total === 0 && !newBadges.includes('first_vote')) {
+        newBadges.push('first_vote');
+      }
+      if (newStreak === 5 && !newBadges.includes('streak_5')) {
+        newBadges.push('streak_5');
+      }
+      if (newStreak === 10 && !newBadges.includes('streak_10')) {
+        newBadges.push('streak_10');
+      }
+      
+      await base44.entities.UserProfile.update(userProfile.id, {
+        points: (userProfile.points || 0) + pointsEarned,
+        daily_votes: (userProfile.daily_votes || 0) + 1,
+        weekly_votes: (userProfile.weekly_votes || 0) + 1,
+        perfect_streak: Math.max(userProfile.perfect_streak || 0, newStreak),
+        badges: newBadges,
+        last_vote_date: new Date().toISOString()
+      });
+      
+      await loadUserProfile();
+    }
     
     // Get current user
     const user = await base44.auth.me();
@@ -112,6 +176,12 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-950 text-white">
       {/* Gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+      
+      {/* Success Explosion */}
+      <SuccessExplosion show={showExplosion} />
+      
+      {/* Challenges Sidebar */}
+      <ChallengesSidebar userProfile={userProfile} />
       
       <div className="relative z-10 max-w-lg mx-auto px-4 py-8 space-y-8">
         {/* Header */}

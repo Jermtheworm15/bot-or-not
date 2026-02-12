@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Trophy, Upload, Flame, Eye } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 
@@ -105,6 +105,17 @@ export default function Layout({ children, currentPageName }) {
             >
               <Upload className="w-5 h-5" />
               <span className="text-xs uppercase tracking-wide">Upload</span>
+            </Link>
+            <Link
+              to={createPageUrl('Profile')}
+              className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
+                currentPageName === 'Profile'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <User className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">Profile</span>
             </Link>
           </div>
         </div>
