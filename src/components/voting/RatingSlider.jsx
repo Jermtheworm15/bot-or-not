@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { Star, ArrowRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSubmit();
+    }, 1500); // Auto-submit after 1.5 seconds of rating being set
+    return () => clearTimeout(timer);
+  }, [rating, onSubmit]);
+
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
