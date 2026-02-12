@@ -24,6 +24,16 @@ export default function Layout({ children, currentPageName }) {
     loadUser();
   }, []);
 
+  React.useEffect(() => {
+    // Load Google Picker API
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/api.js';
+    script.onload = () => {
+      window.gapi.load('picker', { callback: () => {} });
+    };
+    document.head.appendChild(script);
+  }, []);
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
       <div hidden>Creator: Jeromy Padgett</div>

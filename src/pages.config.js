@@ -47,54 +47,54 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AIBattleLeaderboard from './pages/AIBattleLeaderboard';
+import AIChallenge from './pages/AIChallenge';
+import AITools from './pages/AITools';
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
 import AdminImagePopulator from './pages/AdminImagePopulator';
+import BlitzChallengeLeaderboard from './pages/BlitzChallengeLeaderboard';
+import BlitzGame from './pages/BlitzGame';
+import Board from './pages/Board';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
+import Community from './pages/Community';
 import Discover from './pages/Discover';
+import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Onboarding from './pages/Onboarding';
+import Profile from './pages/Profile';
 import Referrals from './pages/Referrals';
 import SideGames from './pages/SideGames';
 import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import Profile from './pages/Profile';
-import AITools from './pages/AITools';
-import Home from './pages/Home';
-import Community from './pages/Community';
-import Board from './pages/Board';
-import BlitzGame from './pages/BlitzGame';
-import AIChallenge from './pages/AIChallenge';
-import BlitzChallengeLeaderboard from './pages/BlitzChallengeLeaderboard';
-import AIBattleLeaderboard from './pages/AIBattleLeaderboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AIBattleLeaderboard": AIBattleLeaderboard,
+    "AIChallenge": AIChallenge,
+    "AITools": AITools,
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
     "AdminImagePopulator": AdminImagePopulator,
+    "BlitzChallengeLeaderboard": BlitzChallengeLeaderboard,
+    "BlitzGame": BlitzGame,
+    "Board": Board,
     "ChallengeLeaderboard": ChallengeLeaderboard,
+    "Community": Community,
     "Discover": Discover,
+    "Home": Home,
     "Leaderboard": Leaderboard,
     "Onboarding": Onboarding,
+    "Profile": Profile,
     "Referrals": Referrals,
     "SideGames": SideGames,
     "StreakLeaderboard": StreakLeaderboard,
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "Profile": Profile,
-    "AITools": AITools,
-    "Home": Home,
-    "Community": Community,
-    "Board": Board,
-    "BlitzGame": BlitzGame,
-    "AIChallenge": AIChallenge,
-    "BlitzChallengeLeaderboard": BlitzChallengeLeaderboard,
-    "AIBattleLeaderboard": AIBattleLeaderboard,
 }
 
 export const pagesConfig = {
