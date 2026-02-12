@@ -385,21 +385,20 @@ export default function Home() {
       {/* Gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
 
-      {/* Combo Counter */}
-      <ComboCounter 
-        combo={combo} 
-        onMilestone={(m) => {
-          setMilestone(m);
-          setShowMilestone(true);
-          setTimeout(() => setShowMilestone(false), 2500);
-        }}
-      />
+      {/* Combo Counter - Desktop only */}
+      {!isMobile && (
+        <ComboCounter 
+          combo={combo} 
+          onMilestone={(m) => {
+            setMilestone(m);
+            setShowMilestone(true);
+            setTimeout(() => setShowMilestone(false), 2500);
+          }}
+        />
+      )}
 
-      {/* Milestone Popup */}
-      <MilestonePopup milestone={milestone} isVisible={showMilestone} />
-
-      {/* Points Animations */}
-      {pointsAnimations.map(anim => (
+      {/* Points Animations - Desktop only */}
+      {!isMobile && pointsAnimations.map(anim => (
         <PointsAnimation
           key={anim.id}
           points={anim.points}
@@ -410,8 +409,8 @@ export default function Home() {
         />
       ))}
 
-      {/* Success Explosion */}
-      <SuccessExplosion show={showExplosion} />
+      {/* Success Explosion - Desktop only */}
+      {!isMobile && <SuccessExplosion show={showExplosion} />}
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
         {/* Content Display - Main Focal Point */}
