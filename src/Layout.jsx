@@ -74,12 +74,8 @@ export default function Layout({ children, currentPageName }) {
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-end">
           <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
-            <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/50 overflow-hidden">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/54fb7f90c_botornot.jpg" 
-                alt="Bot or Not" 
-                className="w-full h-full object-cover"
-              />
+            <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+              <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
             </div>
             <span className="tracking-wider uppercase">Bot or Not</span>
           </Link>
