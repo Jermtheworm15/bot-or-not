@@ -322,17 +322,7 @@ export default function Home() {
     }
   };
 
-  const refreshContent = async () => {
-    setIsRefreshing(true);
-    try {
-      await base44.functions.invoke('generateFreshContent', { count: 50 });
-      await loadContent();
-      setCurrentIndex(0);
-    } catch (error) {
-      console.error('Error refreshing content:', error);
-    }
-    setIsRefreshing(false);
-  };
+
   
   const handleSubmitRating = async () => {
     // Update the vote with rating
