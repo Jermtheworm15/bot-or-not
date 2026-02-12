@@ -147,58 +147,54 @@ export default function Home() {
 
       // Load images and user's votes in parallel
       const [rawData, userVotes] = await Promise.all([
-        base44.entities.Image.list(),
+        base44.entities.Image.list('-created_date', 500),
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
       if (!rawData || rawData.length === 0) {
         console.log('No images available, generating fresh content...');
         await base44.functions.invoke('generateFreshContent', { count: 50 });
-        setTimeout(() => loadContent(), 1500);
+        setTimeout(() => loadContent(), 2000);
         setIsLoading(false);
         return;
       }
-
-      // Flatten data structure and validate URLs
-      const data = rawData.map(item => ({
-        id: item.id,
-        url: item.url,
-        is_bot: item.is_bot,
-        source: item.source,
-        user_uploaded: item.user_uploaded,
-        uploader_name: item.uploader_name,
-        created_date: item.created_date
-      })).filter(item => {
-        // Filter out invalid URLs
-        if (!item.url || typeof item.url !== 'string' || item.url.trim() === '') return false;
-        try {
-          new URL(item.url);
-          return true;
-        } catch {
-          return false;
-        }
-      });
 
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
 
-      // Filter out already-voted items - never show the same image twice
-      const unseenData = data.filter(item => !votedIds.has(item.id));
+      // Filter: valid URLs and unseen images only
+      const data = rawData
+        .filter(item => {
+          if (!item.url || typeof item.url !== 'string' || item.url.trim() === '') return false;
+          if (votedIds.has(item.id)) return false;
+          try {
+            new URL(item.url);
+            return true;
+          } catch {
+            return false;
+          }
+        })
+        .map(item => ({
+          id: item.id,
+          url: item.url,
+          is_bot: item.is_bot,
+          source: item.source,
+          user_uploaded: item.user_uploaded,
+          uploader_name: item.uploader_name,
+          created_date: item.created_date
+        }));
 
       // If no unseen images, generate fresh content
-      if (unseenData.length === 0) {
+      if (data.length === 0) {
         console.log('No unseen images, generating fresh content...');
         await base44.functions.invoke('generateFreshContent', { count: 50 });
-        setTimeout(() => loadContent(), 1500);
+        setTimeout(() => loadContent(), 2000);
         setIsLoading(false);
         return;
       }
 
-      // Sort by newest first, then shuffle
-      const sorted = unseenData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-
-      // Shuffle images efficiently
-      const shuffled = [...sorted];
+      // Shuffle images
+      const shuffled = [...data];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
