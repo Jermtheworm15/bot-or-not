@@ -1,15 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
+import { base44 } from '@/api/base44Client';
 import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2 } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
+import PendingChallenges from './components/challenges/PendingChallenges';
 
 export default function Layout({ children, currentPageName }) {
+  const [currentUser, setCurrentUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await base44.auth.me();
+        setCurrentUser(user);
+      } catch (err) {
+        console.log('Auth error:', err);
+      }
+    };
+    loadUser();
+  }, []);
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
       <div hidden>Creator: Jeromy Padgett</div>
+    {currentUser && <PendingChallenges userEmail={currentUser.email} />}
     <LiveActivityFeed />
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');

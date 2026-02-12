@@ -11,6 +11,7 @@ import DemographicsForm from '@/components/community/DemographicsForm';
 import BioEditor from '@/components/profile/BioEditor';
 import PortfolioShowcase from '@/components/profile/PortfolioShowcase';
 import ProfileActivityFeed from '@/components/profile/ProfileActivityFeed';
+import ChallengeUser from '@/components/challenges/ChallengeUser';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -147,7 +148,7 @@ export default function Profile() {
           >
             <Card className="bg-gradient-to-r from-purple-900/30 to-green-900/30 border-purple-500/50">
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center">
                       <Trophy className="w-8 h-8 text-white" />
@@ -162,6 +163,14 @@ export default function Profile() {
                     <a href="/UserLeaderboard" className="text-purple-400 text-sm hover:underline">View Leaderboard →</a>
                   </div>
                 </div>
+                {user && user.email !== user?.email && (
+                  <ChallengeUser 
+                    targetUserEmail={user?.email} 
+                    targetUserName={user?.username || user?.email}
+                    currentUserEmail={user?.email}
+                    currentUserName={user?.username || user?.email}
+                  />
+                )}
               </CardContent>
             </Card>
           </motion.div>

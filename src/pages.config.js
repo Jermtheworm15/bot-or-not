@@ -65,6 +65,7 @@ import AITools from './pages/AITools';
 import Home from './pages/Home';
 import Community from './pages/Community';
 import Board from './pages/Board';
+import BlitzGame from './pages/BlitzGame';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +88,7 @@ export const PAGES = {
     "Home": Home,
     "Community": Community,
     "Board": Board,
+    "BlitzGame": BlitzGame,
 }
 
 export const pagesConfig = {
