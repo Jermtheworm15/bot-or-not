@@ -136,6 +136,32 @@ export default function Profile() {
           </motion.div>
         )}
 
+        {/* Follow Stats */}
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="grid grid-cols-2 gap-4"
+        >
+          <Card className="bg-zinc-900 border-purple-500/30">
+            <CardContent className="pt-6 flex items-center gap-3">
+              <Heart className="w-6 h-6 text-red-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">{followers.length}</p>
+                <p className="text-xs text-zinc-400">Followers</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-zinc-900 border-purple-500/30">
+            <CardContent className="pt-6 flex items-center gap-3">
+              <Users className="w-6 h-6 text-purple-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">{following.length}</p>
+                <p className="text-xs text-zinc-400">Following</p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Level & Points */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
