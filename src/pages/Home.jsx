@@ -10,7 +10,7 @@ import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import { createPageUrl } from '@/utils';
-import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
+import { Bot, Image as ImageIcon, Video as VideoIcon, SkipForward, RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -284,6 +284,24 @@ export default function Home() {
     }
   };
   
+  const handleSkip = () => {
+    setHasVoted(false);
+    setRating(5);
+    
+    if (currentIndex < items.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setCurrentIndex(0);
+    }
+  };
+  
+  const handleReload = async () => {
+    setHasVoted(false);
+    setRating(5);
+    await loadContent();
+    setCurrentIndex(0);
+  };
+  
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       {/* Gradient background */}
@@ -325,11 +343,32 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                className="space-y-3"
               >
                 <VotingButtons
                   onVote={handleVote}
                   disabled={isLoading || !currentItem}
                 />
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    onClick={handleSkip}
+                    disabled={isLoading || !currentItem}
+                    variant="outline"
+                    className="border-purple-500/50 text-green-400 hover:bg-purple-900/30 flex-1 max-w-xs"
+                  >
+                    <SkipForward className="w-4 h-4 mr-2" />
+                    Skip
+                  </Button>
+                  <Button
+                    onClick={handleReload}
+                    disabled={isLoading || !currentItem}
+                    variant="outline"
+                    className="border-purple-500/50 text-green-400 hover:bg-purple-900/30 flex-1 max-w-xs"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reload
+                  </Button>
+                </div>
               </motion.div>
             ) : (
               <motion.div
