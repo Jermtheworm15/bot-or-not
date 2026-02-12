@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import ImagePrompt from '@/components/generation/ImagePrompt';
-import GeneratedImageCard from '@/components/generation/GeneratedImageCard';
+import GeneratedImageCardWithTags from '@/components/generation/GeneratedImageCardWithTags';
 
 export default function ImageGenerator() {
   const [generatedImages, setGeneratedImages] = useState([]);
@@ -36,19 +36,21 @@ export default function ImageGenerator() {
     setIsGenerating(false);
   };
 
-  const handleAddToLibrary = async (image) => {
+  const handleAddToLibrary = async (image, tags = []) => {
     setAddingToLibrary(prev => ({ ...prev, [image.id]: true }));
 
     try {
       const user = await base44.auth.me();
 
-      // Create image in database
+      // Create image in database with tags
       await base44.entities.Image.create({
         url: image.url,
         is_bot: true,
         source: 'User Generated',
         user_uploaded: true,
-        uploader_name: user.full_name || user.email
+        uploader_name: user.full_name || user.email,
+        tags: tags,
+        ai_model: 'Base44 Generated'
       });
 
       setAddingToLibrary(prev => {
@@ -113,10 +115,10 @@ export default function ImageGenerator() {
             <h2 className="text-2xl font-bold mb-6">Your Generated Images</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {generatedImages.map(image => (
-                <GeneratedImageCard
+                <GeneratedImageCardWithTags
                   key={image.id}
                   image={image}
-                  onAddToLibrary={() => handleAddToLibrary(image)}
+                  onAddToLibrary={handleAddToLibrary}
                   isAdding={addingToLibrary[image.id]}
                   isAdded={false}
                 />
