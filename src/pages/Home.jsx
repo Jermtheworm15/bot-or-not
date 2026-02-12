@@ -296,123 +296,107 @@ export default function Home() {
       {/* Challenges Sidebar */}
       <ChallengesSidebar userProfile={userProfile} />
       
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-center space-y-4"
-        >
-          <div className="flex items-center justify-center gap-3">
-            <h1 className="text-4xl font-black tracking-tight">
-              Bot or Not
-            </h1>
-          </div>
-          <div className="flex items-center justify-center gap-3">
-            <p className="text-zinc-400">
-              {contentType === 'image' ? 'Can you spot the AI-generated faces?' : 'Can you spot the AI-generated characters?'}
-            </p>
-            <InviteFriends />
-          </div>
-          
-          {/* Content Type Selector */}
-          <div className="flex gap-3 justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
+        {/* Content Display - Main Focal Point */}
+        <div className="w-full max-w-3xl mb-6">
+          {contentType === 'image' ? (
+            <ImageCard
+              imageUrl={currentItem?.url}
+              isLoading={isLoading || !currentItem}
+              isRevealed={hasVoted}
+              isBot={currentItem?.is_bot}
+              wasCorrect={wasCorrect}
+              onError={handleContentError}
+            />
+          ) : (
+            <VideoCard
+              videoUrl={currentItem?.url}
+              isLoading={isLoading || !currentItem}
+              isRevealed={hasVoted}
+              isBot={currentItem?.is_bot}
+              wasCorrect={wasCorrect}
+              onError={handleContentError}
+            />
+          )}
+        </div>
+        
+        {/* Voting/Rating Section */}
+        <div className="w-full max-w-2xl">
+          <AnimatePresence mode="wait">
+            {!hasVoted ? (
+              <motion.div
+                key="voting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <VotingButtons
+                  onVote={handleVote}
+                  disabled={isLoading || !currentItem}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="rating"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-3"
+              >
+                <RatingSlider
+                  rating={rating}
+                  onRatingChange={setRating}
+                  onSubmit={handleSubmitRating}
+                />
+                <div className="flex justify-center">
+                  <ShareButton
+                    contentUrl={currentItem?.url}
+                    contentType={contentType}
+                    isBot={currentItem?.is_bot}
+                    wasCorrect={wasCorrect}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        {/* Compact bottom controls */}
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
+          <div className="flex gap-2">
             <Button
               onClick={() => setContentType('image')}
+              size="sm"
               variant={contentType === 'image' ? 'default' : 'outline'}
               className={contentType === 'image' 
                 ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                 : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
             >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Images
+              <ImageIcon className="w-4 h-4" />
             </Button>
             <Button
               onClick={() => setContentType('video')}
+              size="sm"
               variant={contentType === 'video' ? 'default' : 'outline'}
               className={contentType === 'video' 
                 ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                 : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
             >
-              <VideoIcon className="w-4 h-4 mr-2" />
-              Videos
+              <VideoIcon className="w-4 h-4" />
             </Button>
           </div>
-        </motion.div>
+          
+          <InviteFriends />
+        </div>
         
-        {/* Stats */}
-        <StatsBar 
-          totalVotes={stats.total}
-          correctVotes={stats.correct}
-          streak={stats.streak}
-        />
-        
-        {/* Content Display */}
-        {contentType === 'image' ? (
-          <ImageCard
-            imageUrl={currentItem?.url}
-            isLoading={isLoading || !currentItem}
-            isRevealed={hasVoted}
-            isBot={currentItem?.is_bot}
-            wasCorrect={wasCorrect}
-            onError={handleContentError}
+        {/* Stats bar at bottom */}
+        <div className="absolute bottom-32 left-4 right-4">
+          <StatsBar 
+            totalVotes={stats.total}
+            correctVotes={stats.correct}
+            streak={stats.streak}
           />
-        ) : (
-          <VideoCard
-            videoUrl={currentItem?.url}
-            isLoading={isLoading || !currentItem}
-            isRevealed={hasVoted}
-            isBot={currentItem?.is_bot}
-            wasCorrect={wasCorrect}
-            onError={handleContentError}
-          />
-        )}
-        
-        {/* Voting/Rating Section */}
-        <AnimatePresence mode="wait">
-          {!hasVoted ? (
-            <motion.div
-              key="voting"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <VotingButtons
-                onVote={handleVote}
-                disabled={isLoading || !currentItem}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="rating"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-3"
-            >
-              <RatingSlider
-                rating={rating}
-                onRatingChange={setRating}
-                onSubmit={handleSubmitRating}
-              />
-              <div className="flex justify-center">
-                <ShareButton
-                  contentUrl={currentItem?.url}
-                  contentType={contentType}
-                  isBot={currentItem?.is_bot}
-                  wasCorrect={wasCorrect}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Progress indicator */}
-        {items.length > 0 && (
-          <div className="text-center text-zinc-600 text-sm">
-            {contentType === 'image' ? 'Image' : 'Video'} {currentIndex + 1} of {items.length}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
