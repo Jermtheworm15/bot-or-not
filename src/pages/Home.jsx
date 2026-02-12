@@ -10,6 +10,7 @@ import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import ChallengesSidebar from '@/components/gamification/ChallengesSidebar';
+import { createPageUrl } from '@/utils';
 import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -26,9 +27,23 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState(null);
   
   useEffect(() => {
+    checkUsernameAndLoad();
+  }, [contentType]);
+  
+  const checkUsernameAndLoad = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (!user.username) {
+        window.location.href = createPageUrl('UsernameSetup');
+        return;
+      }
+    } catch (err) {
+      console.log('Auth check error:', err);
+    }
+    
     loadContent();
     loadUserProfile();
-  }, [contentType]);
+  };
   
   const loadUserProfile = async () => {
     try {

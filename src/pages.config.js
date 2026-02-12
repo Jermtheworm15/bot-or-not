@@ -52,6 +52,7 @@ import Leaderboard from './pages/Leaderboard';
 import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import Profile from './pages/Profile';
+import UsernameSetup from './pages/UsernameSetup';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "StreakLeaderboard": StreakLeaderboard,
     "Upload": Upload,
     "Profile": Profile,
+    "UsernameSetup": UsernameSetup,
 }
 
 export const pagesConfig = {

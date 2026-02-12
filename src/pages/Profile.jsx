@@ -83,7 +83,9 @@ export default function Profile() {
           animate={{ y: 0, opacity: 1 }}
           className="text-center"
         >
-          <h1 className="text-4xl font-black mb-2">Your Profile</h1>
+          <h1 className="text-4xl font-black mb-2">
+            {user?.username ? `@${user.username}` : 'Your Profile'}
+          </h1>
           <p className="text-zinc-400">{user?.email}</p>
         </motion.div>
         

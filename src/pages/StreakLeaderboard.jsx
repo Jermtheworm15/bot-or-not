@@ -20,13 +20,17 @@ export default function StreakLeaderboard() {
     
     // Calculate streaks per user
     const userStreaks = {};
-    
+    const users = await base44.entities.User.list();
+    const userMap = {};
+    users.forEach(u => { if (u.email) userMap[u.email] = u; });
+
     votes.forEach(vote => {
       if (!vote.user_email) return;
-      
+
       if (!userStreaks[vote.user_email]) {
         userStreaks[vote.user_email] = {
           email: vote.user_email,
+          username: userMap[vote.user_email]?.username,
           currentStreak: 0,
           bestStreak: 0,
           totalVotes: 0,
@@ -59,7 +63,7 @@ export default function StreakLeaderboard() {
   };
 
   const LeaderboardCard = ({ user, rank }) => {
-    const displayName = user.email.split('@')[0];
+    const displayName = user.username || user.email.split('@')[0];
     const accuracy = Math.round((user.correctVotes / user.totalVotes) * 100);
     
     return (
