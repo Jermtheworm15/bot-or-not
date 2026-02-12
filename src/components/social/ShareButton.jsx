@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Share2, X } from 'lucide-react';
+import { Share2, X, Download, Instagram, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import html2canvas from 'html2canvas';
 
 export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect }) {
   const [showShare, setShowShare] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const canvasRef = useRef(null);
   
   const appUrl = window.location.origin;
   const shareText = wasCorrect 
@@ -39,6 +42,92 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
     alert('Link copied to clipboard!');
+  };
+
+  const generateBrandedImage = async (platform) => {
+    setIsGenerating(true);
+    try {
+      // Create temporary canvas element
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
+
+      // Platform-specific dimensions
+      const dimensions = {
+        instagram: { width: 1080, height: 1080 },
+        tiktok: { width: 1080, height: 1920 },
+        twitter: { width: 1200, height: 675 }
+      };
+
+      const { width, height } = dimensions[platform];
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+
+      // Create branded content
+      container.innerHTML = `
+        <div style="width: ${width}px; height: ${height}px; background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4e 50%, #1a3a2e 100%); position: relative; font-family: system-ui, -apple-system, sans-serif; overflow: hidden;">
+          <!-- Cyberpunk grid background -->
+          <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(147, 51, 234, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(34, 197, 94, 0.1) 2px, transparent 2px); background-size: 40px 40px;"></div>
+          
+          <!-- Content Image/Video -->
+          <div style="position: absolute; top: ${platform === 'tiktok' ? '15%' : '50%'}; left: 50%; transform: translate(-50%, -50%); width: ${platform === 'tiktok' ? '80%' : '70%'}; aspect-ratio: ${contentType === 'video' ? '9/16' : '1/1'}; border-radius: 24px; overflow: hidden; border: 4px solid rgba(147, 51, 234, 0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <img src="${contentUrl}" style="width: 100%; height: 100%; object-fit: cover;" crossorigin="anonymous" />
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
+            <div style="position: absolute; top: 20px; right: 20px; background: ${isBot ? '#9333ea' : '#22c55e'}; color: white; padding: 12px 24px; border-radius: 999px; font-weight: 900; font-size: ${platform === 'tiktok' ? '28px' : '24px'}; text-transform: uppercase;">
+              ${isBot ? '🤖 BOT' : '👤 HUMAN'}
+            </div>
+          </div>
+          
+          <!-- Result Badge -->
+          <div style="position: absolute; ${platform === 'tiktok' ? 'top: 55%' : 'bottom: 25%'}; left: 50%; transform: translateX(-50%); background: ${wasCorrect ? 'rgba(34, 197, 94, 0.95)' : 'rgba(239, 68, 68, 0.95)'}; color: white; padding: 20px 40px; border-radius: 20px; font-weight: 900; font-size: ${platform === 'tiktok' ? '48px' : '36px'}; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            ${wasCorrect ? '✓ CORRECT!' : '✗ WRONG!'}
+          </div>
+          
+          <!-- Call to Action -->
+          <div style="position: absolute; bottom: ${platform === 'tiktok' ? '12%' : '10%'}; left: 50%; transform: translateX(-50%); text-align: center; width: 90%;">
+            <div style="color: white; font-size: ${platform === 'tiktok' ? '36px' : '28px'}; font-weight: 700; text-shadow: 0 2px 20px rgba(0,0,0,0.8); margin-bottom: 16px;">
+              Can you spot the AI?
+            </div>
+            <div style="color: #22c55e; font-size: ${platform === 'tiktok' ? '32px' : '24px'}; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(34, 197, 94, 0.8);">
+              BOT OR NOT
+            </div>
+          </div>
+          
+          <!-- Decorative elements -->
+          <div style="position: absolute; top: 20px; left: 20px; width: 60px; height: 60px; border: 3px solid #9333ea; border-radius: 12px; transform: rotate(12deg);"></div>
+          <div style="position: absolute; bottom: 20px; right: 20px; width: 60px; height: 60px; border: 3px solid #22c55e; border-radius: 12px; transform: rotate(-12deg);"></div>
+        </div>
+      `;
+
+      // Wait for image to load
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Generate canvas
+      const canvas = await html2canvas(container, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      });
+
+      document.body.removeChild(container);
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bot-or-not-${platform}-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setIsGenerating(false);
+      });
+    } catch (err) {
+      console.error('Error generating image:', err);
+      alert('Failed to generate image. Please try again.');
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -77,7 +166,47 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
 
               <p className="text-zinc-400 text-sm mb-6">{shareText}</p>
 
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              {/* One-tap branded downloads */}
+              <div className="mb-6">
+                <h4 className="text-white font-semibold mb-3 text-sm">Download Branded Content</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => generateBrandedImage('instagram')}
+                    disabled={isGenerating}
+                    className="flex flex-col items-center gap-2 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white py-3 px-3 rounded-lg font-medium transition-all"
+                  >
+                    <Instagram className="w-5 h-5" />
+                    <span className="text-xs">Instagram</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => generateBrandedImage('tiktok')}
+                    disabled={isGenerating}
+                    className="flex flex-col items-center gap-2 bg-black hover:bg-zinc-900 disabled:opacity-50 text-white py-3 px-3 rounded-lg font-medium transition-all border border-white/20"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </svg>
+                    <span className="text-xs">TikTok</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => generateBrandedImage('twitter')}
+                    disabled={isGenerating}
+                    className="flex flex-col items-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white py-3 px-3 rounded-lg font-medium transition-all"
+                  >
+                    <Twitter className="w-5 h-5" />
+                    <span className="text-xs">X/Twitter</span>
+                  </button>
+                </div>
+                {isGenerating && (
+                  <p className="text-center text-purple-400 text-xs mt-2">Generating image...</p>
+                )}
+              </div>
+
+              <div className="border-t border-zinc-800 pt-4 mb-4">
+                <h4 className="text-white font-semibold mb-3 text-sm">Share Link</h4>
+                <div className="grid grid-cols-2 gap-3">
                 <a
                   href={shareLinks.twitter}
                   target="_blank"
@@ -125,6 +254,7 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
                   </svg>
                   Reddit
                 </a>
+                </div>
               </div>
 
               <button
