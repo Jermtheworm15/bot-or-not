@@ -6,6 +6,8 @@ import VideoCard from '@/components/voting/VideoCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 import RatingSlider from '@/components/voting/RatingSlider';
 import StatsBar from '@/components/voting/StatsBar';
+import ShareButton from '@/components/social/ShareButton';
+import InviteFriends from '@/components/social/InviteFriends';
 import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -126,9 +128,12 @@ export default function Home() {
               Bot or Not
             </h1>
           </div>
-          <p className="text-zinc-400">
-            {contentType === 'image' ? 'Can you spot the AI-generated faces?' : 'Can you spot the AI-generated characters?'}
-          </p>
+          <div className="flex items-center justify-center gap-3">
+            <p className="text-zinc-400">
+              {contentType === 'image' ? 'Can you spot the AI-generated faces?' : 'Can you spot the AI-generated characters?'}
+            </p>
+            <InviteFriends />
+          </div>
           
           {/* Content Type Selector */}
           <div className="flex gap-3 justify-center">
@@ -201,12 +206,21 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              className="space-y-3"
             >
               <RatingSlider
                 rating={rating}
                 onRatingChange={setRating}
                 onSubmit={handleSubmitRating}
               />
+              <div className="flex justify-center">
+                <ShareButton
+                  contentUrl={currentItem?.url}
+                  contentType={contentType}
+                  isBot={currentItem?.is_bot}
+                  wasCorrect={wasCorrect}
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
