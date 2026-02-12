@@ -313,9 +313,21 @@ export default function Home() {
     } else {
       // Generate fresh content if at end
       setIsLoading(true);
-      base44.functions.invoke('generateFreshContent', { count: 6 }).catch(console.error);
+      base44.functions.invoke('generateFreshContent', { count: 50 }).catch(console.error);
       loadContent();
     }
+  };
+
+  const refreshContent = async () => {
+    setIsRefreshing(true);
+    try {
+      await base44.functions.invoke('generateFreshContent', { count: 50 });
+      await loadContent();
+      setCurrentIndex(0);
+    } catch (error) {
+      console.error('Error refreshing content:', error);
+    }
+    setIsRefreshing(false);
   };
   
   const handleSubmitRating = async () => {
