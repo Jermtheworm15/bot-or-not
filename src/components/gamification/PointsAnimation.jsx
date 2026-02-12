@@ -10,7 +10,7 @@ export default function PointsAnimation({ points, combo, x, y, isCorrect }) {
       initial={{ opacity: 1, x: x || 0, y: y || 0 }}
       animate={{ opacity: 0, y: (y || 0) - 100 }}
       transition={{ duration: 1.5, ease: 'easeOut' }}
-      className="fixed pointer-events-none font-black text-2xl"
+      className="fixed pointer-events-none font-black text-xl sm:text-2xl"
     >
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
@@ -19,7 +19,7 @@ export default function PointsAnimation({ points, combo, x, y, isCorrect }) {
       >
         +{totalPoints}
         {multiplier > 1 && (
-          <div className={`text-sm font-bold ${multiplier > 1.5 ? 'text-yellow-300' : 'text-green-300'}`}>
+          <div className={`text-xs sm:text-sm font-bold ${multiplier > 1.5 ? 'text-yellow-300' : 'text-green-300'}`}>
             x{multiplier.toFixed(1)}
           </div>
         )}
