@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload as UploadIcon, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { Upload as UploadIcon, CheckCircle, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Upload() {
+  const [uploadType, setUploadType] = useState('image'); // 'image' or 'video'
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [uploaderName, setUploaderName] = useState('');
@@ -22,11 +23,15 @@ export default function Upload() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(selectedFile);
+      if (uploadType === 'image') {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview(reader.result);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        setPreview(URL.createObjectURL(selectedFile));
+      }
     }
   };
 
@@ -34,7 +39,7 @@ export default function Upload() {
     e.preventDefault();
     
     if (!file) {
-      toast.error('Please select an image');
+      toast.error(`Please select ${uploadType === 'image' ? 'an image' : 'a video'}`);
       return;
     }
     
@@ -56,9 +61,11 @@ export default function Upload() {
       formData.append('file', file);
       formData.append('uploaderName', uploaderName);
       formData.append('isBot', isBot);
+      formData.append('uploadType', uploadType);
 
       // Call backend function to handle upload and moderation securely
-      const { data } = await base44.functions.invoke('uploadImageWithModeration', formData);
+      const functionName = uploadType === 'image' ? 'uploadImageWithModeration' : 'uploadVideoWithModeration';
+      const { data } = await base44.functions.invoke(functionName, formData);
 
       if (!data.success) {
         toast.error(data.error || 'Upload failed');
@@ -67,7 +74,7 @@ export default function Upload() {
       }
 
       setUploadSuccess(true);
-      toast.success('Image uploaded successfully!');
+      toast.success(`${uploadType === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
       
       // Reset form after 2 seconds
       setTimeout(() => {
@@ -98,9 +105,43 @@ export default function Upload() {
         >
           <div className="flex items-center justify-center gap-3 mb-2">
             <UploadIcon className="w-10 h-10 text-violet-500" />
-            <h1 className="text-4xl font-black">Upload Image</h1>
+            <h1 className="text-4xl font-black">Upload Content</h1>
           </div>
           <p className="text-zinc-400">Contribute to our bot detection database</p>
+          
+          {/* Upload Type Selector */}
+          <div className="flex gap-3 justify-center mt-4">
+            <button
+              onClick={() => {
+                setUploadType('image');
+                setFile(null);
+                setPreview(null);
+              }}
+              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                uploadType === 'image'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              }`}
+            >
+              <ImageIcon className="w-4 h-4" />
+              Image
+            </button>
+            <button
+              onClick={() => {
+                setUploadType('video');
+                setFile(null);
+                setPreview(null);
+              }}
+              className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+                uploadType === 'video'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              }`}
+            >
+              <VideoIcon className="w-4 h-4" />
+              Video
+            </button>
+          </div>
         </motion.div>
 
         <motion.div
@@ -110,37 +151,57 @@ export default function Upload() {
         >
           <Card className="bg-zinc-900 border-zinc-800">
             <CardHeader>
-              <CardTitle className="text-white">Upload a Selfie</CardTitle>
+              <CardTitle className="text-white">
+                Upload {uploadType === 'image' ? 'an Image' : 'a Short Video'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* File Upload */}
                 <div className="space-y-2">
-                  <Label htmlFor="file" className="text-zinc-300">Select Image</Label>
+                  <Label htmlFor="file" className="text-zinc-300">
+                    Select {uploadType === 'image' ? 'Image' : 'Video'}
+                  </Label>
                   <div className="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center hover:border-violet-500 transition-colors cursor-pointer">
                     <input
                       id="file"
                       type="file"
-                      accept="image/*"
+                      accept={uploadType === 'image' ? 'image/*' : 'video/*'}
                       onChange={handleFileChange}
                       className="hidden"
                     />
                     <label htmlFor="file" className="cursor-pointer">
                       {preview ? (
                         <div className="space-y-3">
-                          <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-48 h-48 object-cover rounded-lg mx-auto"
-                          />
-                          <p className="text-sm text-zinc-400">Click to change image</p>
+                          {uploadType === 'image' ? (
+                            <img
+                              src={preview}
+                              alt="Preview"
+                              className="w-48 h-48 object-cover rounded-lg mx-auto"
+                            />
+                          ) : (
+                            <video
+                              src={preview}
+                              className="w-48 h-64 object-cover rounded-lg mx-auto"
+                              controls
+                            />
+                          )}
+                          <p className="text-sm text-zinc-400">
+                            Click to change {uploadType}
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          <ImageIcon className="w-16 h-16 text-zinc-600 mx-auto" />
+                          {uploadType === 'image' ? (
+                            <ImageIcon className="w-16 h-16 text-zinc-600 mx-auto" />
+                          ) : (
+                            <VideoIcon className="w-16 h-16 text-zinc-600 mx-auto" />
+                          )}
                           <div>
                             <p className="text-white font-medium">Click to upload</p>
-                            <p className="text-sm text-zinc-500">PNG, JPG up to 10MB</p>
+                            <p className="text-sm text-zinc-500">
+                              {uploadType === 'image' ? 'PNG, JPG up to 10MB' : 'MP4, MOV up to 50MB'}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -162,7 +223,9 @@ export default function Upload() {
 
                 {/* Bot or Human */}
                 <div className="space-y-2">
-                  <Label className="text-zinc-300">Image Type</Label>
+                  <Label className="text-zinc-300">
+                    {uploadType === 'image' ? 'Image Type' : "Main Character's Type"}
+                  </Label>
                   <div className="flex gap-4">
                     <button
                       type="button"
@@ -192,9 +255,9 @@ export default function Upload() {
                 {/* Terms Agreement */}
                 <div className="bg-zinc-800 rounded-lg p-4 space-y-3">
                   <p className="text-sm text-zinc-300 leading-relaxed">
-                    By uploading this image, you confirm that you own the rights to this image and 
+                    By uploading this {uploadType}, you confirm that you own the rights to this {uploadType} and 
                     agree to transfer all rights to Bot or Not for use in the application and for 
-                    training purposes. The image will be publicly visible and rated by other users.
+                    training purposes. The {uploadType} will be publicly visible and rated by other users.
                   </p>
                   <div className="flex items-start gap-3">
                     <Checkbox
@@ -204,7 +267,7 @@ export default function Upload() {
                       className="mt-1"
                     />
                     <Label htmlFor="terms" className="text-sm text-zinc-300 cursor-pointer">
-                      I agree to transfer all rights to this image and confirm I am the rightful owner
+                      I agree to transfer all rights to this {uploadType} and confirm I am the rightful owner
                     </Label>
                   </div>
                 </div>
@@ -225,7 +288,7 @@ export default function Upload() {
                   ) : (
                     <>
                       <UploadIcon className="w-5 h-5 mr-2" />
-                      Upload Image
+                      Upload {uploadType === 'image' ? 'Image' : 'Video'}
                     </>
                   )}
                 </Button>

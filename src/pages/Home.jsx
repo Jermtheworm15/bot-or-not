@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCard from '@/components/voting/ImageCard';
+import VideoCard from '@/components/voting/VideoCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 import RatingSlider from '@/components/voting/RatingSlider';
 import StatsBar from '@/components/voting/StatsBar';
-import { Bot } from 'lucide-react';
+import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const [images, setImages] = useState([]);
+  const [contentType, setContentType] = useState('image'); // 'image' or 'video'
+  const [items, setItems] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [hasVoted, setHasVoted] = useState(false);
@@ -17,24 +20,30 @@ export default function Home() {
   const [stats, setStats] = useState({ total: 0, correct: 0, streak: 0 });
   
   useEffect(() => {
-    loadImages();
-  }, []);
+    loadContent();
+  }, [contentType]);
   
-  const loadImages = async () => {
+  const loadContent = async () => {
     setIsLoading(true);
-    const data = await base44.entities.Image.list();
-    // Shuffle images
+    setCurrentIndex(0);
+    setHasVoted(false);
+    
+    const data = contentType === 'image' 
+      ? await base44.entities.Image.list()
+      : await base44.entities.Video.list();
+    
+    // Shuffle content
     const shuffled = [...data].sort(() => Math.random() - 0.5);
-    setImages(shuffled);
+    setItems(shuffled);
     setIsLoading(false);
   };
   
-  const currentImage = images[currentIndex];
+  const currentItem = items[currentIndex];
   
   const handleVote = async (guessedBot) => {
-    if (!currentImage) return;
+    if (!currentItem) return;
     
-    const correct = guessedBot === currentImage.is_bot;
+    const correct = guessedBot === currentItem.is_bot;
     setWasCorrect(correct);
     setHasVoted(true);
     
@@ -49,30 +58,46 @@ export default function Home() {
     const user = await base44.auth.me();
     
     // Save vote (without rating yet)
-    await base44.entities.Vote.create({
-      image_id: currentImage.id,
-      guessed_bot: guessedBot,
-      was_correct: correct,
-      user_email: user.email
-    });
+    if (contentType === 'image') {
+      await base44.entities.Vote.create({
+        image_id: currentItem.id,
+        guessed_bot: guessedBot,
+        was_correct: correct,
+        user_email: user.email
+      });
+    } else {
+      await base44.entities.VideoVote.create({
+        video_id: currentItem.id,
+        guessed_bot: guessedBot,
+        was_correct: correct,
+        user_email: user.email
+      });
+    }
   };
   
   const handleSubmitRating = async () => {
     // Update the vote with rating
-    const votes = await base44.entities.Vote.filter({ image_id: currentImage.id }, '-created_date', 1);
-    if (votes.length > 0) {
-      await base44.entities.Vote.update(votes[0].id, { rating });
+    if (contentType === 'image') {
+      const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
+      if (votes.length > 0) {
+        await base44.entities.Vote.update(votes[0].id, { rating });
+      }
+    } else {
+      const votes = await base44.entities.VideoVote.filter({ video_id: currentItem.id }, '-created_date', 1);
+      if (votes.length > 0) {
+        await base44.entities.VideoVote.update(votes[0].id, { rating });
+      }
     }
     
-    // Move to next image
+    // Move to next item
     setRating(5);
     setHasVoted(false);
     
-    if (currentIndex < images.length - 1) {
+    if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Reload and shuffle images
-      await loadImages();
+      // Reload and shuffle content
+      await loadContent();
       setCurrentIndex(0);
     }
   };
@@ -87,7 +112,7 @@ export default function Home() {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center space-y-2"
+          className="text-center space-y-4"
         >
           <div className="flex items-center justify-center gap-3">
             <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 shadow-lg shadow-violet-500/30">
@@ -97,7 +122,33 @@ export default function Home() {
               Bot or Not
             </h1>
           </div>
-          <p className="text-zinc-400">Can you spot the AI-generated faces?</p>
+          <p className="text-zinc-400">
+            {contentType === 'image' ? 'Can you spot the AI-generated faces?' : 'Can you spot the AI-generated characters?'}
+          </p>
+          
+          {/* Content Type Selector */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={() => setContentType('image')}
+              variant={contentType === 'image' ? 'default' : 'outline'}
+              className={contentType === 'image' 
+                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
+            >
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Images
+            </Button>
+            <Button
+              onClick={() => setContentType('video')}
+              variant={contentType === 'video' ? 'default' : 'outline'}
+              className={contentType === 'video' 
+                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
+            >
+              <VideoIcon className="w-4 h-4 mr-2" />
+              Videos
+            </Button>
+          </div>
         </motion.div>
         
         {/* Stats */}
@@ -107,14 +158,24 @@ export default function Home() {
           streak={stats.streak}
         />
         
-        {/* Image Card */}
-        <ImageCard
-          imageUrl={currentImage?.url}
-          isLoading={isLoading || !currentImage}
-          isRevealed={hasVoted}
-          isBot={currentImage?.is_bot}
-          wasCorrect={wasCorrect}
-        />
+        {/* Content Display */}
+        {contentType === 'image' ? (
+          <ImageCard
+            imageUrl={currentItem?.url}
+            isLoading={isLoading || !currentItem}
+            isRevealed={hasVoted}
+            isBot={currentItem?.is_bot}
+            wasCorrect={wasCorrect}
+          />
+        ) : (
+          <VideoCard
+            videoUrl={currentItem?.url}
+            isLoading={isLoading || !currentItem}
+            isRevealed={hasVoted}
+            isBot={currentItem?.is_bot}
+            wasCorrect={wasCorrect}
+          />
+        )}
         
         {/* Voting/Rating Section */}
         <AnimatePresence mode="wait">
@@ -127,7 +188,7 @@ export default function Home() {
             >
               <VotingButtons
                 onVote={handleVote}
-                disabled={isLoading || !currentImage}
+                disabled={isLoading || !currentItem}
               />
             </motion.div>
           ) : (
@@ -147,9 +208,9 @@ export default function Home() {
         </AnimatePresence>
         
         {/* Progress indicator */}
-        {images.length > 0 && (
+        {items.length > 0 && (
           <div className="text-center text-zinc-600 text-sm">
-            Image {currentIndex + 1} of {images.length}
+            {contentType === 'image' ? 'Image' : 'Video'} {currentIndex + 1} of {items.length}
           </div>
         )}
       </div>
