@@ -4,8 +4,9 @@ import { Share2, X, Download, Instagram, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
 
-export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect }) {
+export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect, userStats = null }) {
   const [showShare, setShowShare] = useState(false);
+  const [shareMode, setShareMode] = useState('result'); // 'result' or 'stats'
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef(null);
   
@@ -13,6 +14,10 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
   const shareText = wasCorrect 
     ? `I correctly guessed this ${isBot ? 'AI bot' : 'human'} on Bot or Not! Can you?` 
     : `This ${isBot ? 'AI bot' : 'human'} tricked me on Bot or Not! Think you can spot it?`;
+  
+  const statsText = userStats 
+    ? `🏆 Check out my Bot or Not stats: ${userStats.totalVotes} votes, ${userStats.accuracy?.toFixed(0)}% accuracy, ${userStats.streak} streak! Can you beat my score?`
+    : `🏆 Join me on Bot or Not! Test your AI detection skills!`;
   
   const challengeText = `🎯 I CHALLENGE YOU! Can you spot if this is a bot or human? Test your skills on Bot or Not!`;
   
