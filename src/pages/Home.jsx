@@ -9,7 +9,6 @@ import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import { createPageUrl } from '@/utils';
-import { SkipForward, RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -26,6 +25,17 @@ export default function Home() {
   useEffect(() => {
     checkUsernameAndLoad();
   }, []);
+  
+  // Preload next image for smooth transitions
+  useEffect(() => {
+    if (items.length > 0 && currentIndex < items.length - 1) {
+      const nextImage = items[currentIndex + 1];
+      if (nextImage?.url) {
+        const img = new Image();
+        img.src = nextImage.url;
+      }
+    }
+  }, [currentIndex, items]);
   
   const checkUsernameAndLoad = async () => {
     try {
@@ -111,7 +121,7 @@ export default function Home() {
     try {
       const user = await base44.auth.me();
       
-      // Load images and user's votes
+      // Load images and user's votes in parallel
       const [data, userVotes] = await Promise.all([
         base44.entities.Image.list(),
         base44.entities.Vote.filter({ user_email: user.email })
@@ -131,18 +141,24 @@ export default function Home() {
       const validData = unseenData.length > 0 ? unseenData : data.filter(item => item.url && item.url.trim() !== '');
       
       if (validData.length === 0) {
-        console.error('No valid content found');
         setItems([]);
         setIsLoading(false);
         return;
       }
       
-      // Shuffle content with Fisher-Yates algorithm
+      // Shuffle images efficiently
       const shuffled = [...validData];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
+      
+      // Preload first 3 images for smooth transitions
+      shuffled.slice(0, 3).forEach(item => {
+        const img = new Image();
+        img.src = item.url;
+      });
+      
       setItems(shuffled);
     } catch (err) {
       console.error('Error loading content:', err);
@@ -252,11 +268,9 @@ export default function Home() {
       };
   
   const handleContentError = () => {
-    // Skip to next content if current one fails to load
+    // Skip to next image if current one fails to load
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
-    } else {
-      loadContent();
     }
   };
   
@@ -276,26 +290,7 @@ export default function Home() {
     } else {
       // Reload and shuffle content
       await loadContent();
-      setCurrentIndex(0);
     }
-  };
-  
-  const handleSkip = () => {
-    setHasVoted(false);
-    setRating(5);
-    
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setCurrentIndex(0);
-    }
-  };
-  
-  const handleReload = async () => {
-    setHasVoted(false);
-    setRating(5);
-    await loadContent();
-    setCurrentIndex(0);
   };
   
   return (
@@ -328,32 +323,11 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="space-y-3"
               >
                 <VotingButtons
                   onVote={handleVote}
                   disabled={isLoading || !currentItem}
                 />
-                <div className="flex gap-3 justify-center">
-                  <Button
-                    onClick={handleSkip}
-                    disabled={isLoading || !currentItem}
-                    variant="outline"
-                    className="border-purple-500/50 text-green-400 hover:bg-purple-900/30 flex-1 max-w-xs"
-                  >
-                    <SkipForward className="w-4 h-4 mr-2" />
-                    Skip
-                  </Button>
-                  <Button
-                    onClick={handleReload}
-                    disabled={isLoading || !currentItem}
-                    variant="outline"
-                    className="border-purple-500/50 text-green-400 hover:bg-purple-900/30 flex-1 max-w-xs"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Reload
-                  </Button>
-                </div>
               </motion.div>
             ) : (
               <motion.div
