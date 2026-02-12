@@ -43,16 +43,11 @@ export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
       </div>
       
       <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        initial={{ opacity: 0.5 }}
+        animate={{ opacity: 1 }}
+        className="text-center text-xs text-zinc-500 mt-4"
       >
-        <Button
-          onClick={onSubmit}
-          className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold text-lg gap-2 shadow-lg shadow-amber-500/30"
-        >
-          Next Image
-          <ArrowRight className="w-5 h-5" />
-        </Button>
+        Moving to next image...
       </motion.div>
     </motion.div>
   );
