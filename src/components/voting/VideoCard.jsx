@@ -53,6 +53,7 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
               muted
               playsInline
               preload="auto"
+              crossOrigin="anonymous"
               onError={(e) => {
                 console.log('Video error:', e);
                 onError();
