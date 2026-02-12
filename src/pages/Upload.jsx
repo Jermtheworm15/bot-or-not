@@ -255,6 +255,35 @@ export default function Upload() {
                   </div>
                 </div>
 
+                {/* AI Enhancement Panel */}
+                {uploaderName && (
+                  <AnimatePresence>
+                    {!showAIPanel ? (
+                      <motion.button
+                        type="button"
+                        onClick={() => setShowAIPanel(true)}
+                        className="w-full py-3 px-4 rounded-lg border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 font-medium transition-all flex items-center justify-center gap-2"
+                      >
+                        <Sparkles className="w-5 h-5" />
+                        Enhance with AI
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="bg-zinc-800 rounded-lg p-4 border border-purple-500/30"
+                      >
+                        <ContentEnhancementPanel
+                          topic={uploaderName}
+                          onClose={() => setShowAIPanel(false)}
+                          onApply={(enhancements) => setAiEnhancements(enhancements)}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+
                 {/* Terms Agreement */}
                 <div className="bg-zinc-800 rounded-lg p-4 space-y-3">
                   <p className="text-sm text-zinc-300 leading-relaxed">
