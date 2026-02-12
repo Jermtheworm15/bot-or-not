@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Bot, Trophy, Upload, Flame } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 
 export default function Layout({ children, currentPageName }) {
@@ -39,7 +39,9 @@ export default function Layout({ children, currentPageName }) {
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-end">
           <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
-            <Bot className="w-8 h-8 text-purple-400" />
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600 to-purple-600 flex items-center justify-center shadow-lg shadow-red-500/50">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
             <span className="tracking-wider uppercase">Bot or Not</span>
           </Link>
         </div>
@@ -60,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
                   : 'text-green-400 hover:text-white hover:bg-purple-900/30'
               }`}
             >
-              <Bot className="w-5 h-5" />
+              <Eye className="w-5 h-5" />
               <span className="text-xs uppercase tracking-wide">Vote</span>
             </Link>
             <Link
