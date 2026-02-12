@@ -59,6 +59,27 @@ export default function Referrals() {
     { name: 'Advanced Stats', unlocked: isPremium }
   ];
 
+  const referralRewards = [
+    { 
+      title: '1st Referral', 
+      reward: '100 Bonus Points', 
+      icon: Star,
+      completed: completedReferrals >= 1 
+    },
+    { 
+      title: '2nd Referral', 
+      reward: '250 Bonus Points', 
+      icon: Star,
+      completed: completedReferrals >= 2 
+    },
+    { 
+      title: '3rd Referral', 
+      reward: 'Premium Unlock + 500 Points', 
+      icon: Zap,
+      completed: completedReferrals >= 3 
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
