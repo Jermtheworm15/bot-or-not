@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
-import { UserPlus, X } from 'lucide-react';
+import { UserPlus, X, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InviteFriends() {
   const [showInvite, setShowInvite] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [copied, setCopied] = useState(false);
   
+  useEffect(() => {
+    generateReferralCode();
+  }, []);
+
+  const generateReferralCode = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (user && user.email) {
+        setReferralCode(user.email);
+      }
+    } catch (err) {
+      console.log('Error generating referral code:', err);
+    }
+  };
+
   const appUrl = window.location.origin;
-  const inviteText = `Join me on Bot or Not - Can you tell AI from human? Test your skills!`;
+  const inviteLink = `${appUrl}?ref=${encodeURIComponent(referralCode)}`;
+  const inviteText = `Join me on Bot or Not - Can you tell AI from human? Test your skills! 🤖`;
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -15,7 +34,7 @@ export default function InviteFriends() {
         await navigator.share({
           title: 'Join Bot or Not',
           text: inviteText,
-          url: appUrl
+          url: inviteLink
         });
       } catch (err) {
         console.log('Share cancelled');
@@ -26,15 +45,20 @@ export default function InviteFriends() {
   };
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(inviteText)}&url=${encodeURIComponent(appUrl)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}&quote=${encodeURIComponent(inviteText)}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(inviteText + ' ' + appUrl)}`,
-    telegram: `https://t.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent(inviteText)}`
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(inviteText)}&url=${encodeURIComponent(inviteLink)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(inviteLink)}&quote=${encodeURIComponent(inviteText)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(inviteText + '\n\n' + inviteLink)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(inviteText)}`
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(appUrl);
-    alert('Invite link copied to clipboard!');
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
   };
 
   return (
@@ -70,7 +94,11 @@ export default function InviteFriends() {
                 </button>
               </div>
 
-              <p className="text-zinc-400 text-sm mb-6">{inviteText}</p>
+              <p className="text-zinc-400 text-sm mb-4">{inviteText}</p>
+
+              <div className="bg-zinc-800 rounded-lg p-3 mb-4 flex items-center gap-2 break-all">
+                <code className="text-xs text-purple-400 flex-1">{inviteLink}</code>
+              </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <a
@@ -124,9 +152,20 @@ export default function InviteFriends() {
 
               <button
                 onClick={copyToClipboard}
-                className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  copied
+                    ? 'bg-green-600 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
               >
-                Copy Invite Link
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Copied!
+                  </>
+                ) : (
+                  'Copy Invite Link'
+                )}
               </button>
             </motion.div>
           </motion.div>
