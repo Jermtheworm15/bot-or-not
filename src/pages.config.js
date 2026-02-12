@@ -66,6 +66,7 @@ import Home from './pages/Home';
 import Community from './pages/Community';
 import Board from './pages/Board';
 import BlitzGame from './pages/BlitzGame';
+import AIChallenge from './pages/AIChallenge';
 import __Layout from './Layout.jsx';
 
 
@@ -89,6 +90,7 @@ export const PAGES = {
     "Community": Community,
     "Board": Board,
     "BlitzGame": BlitzGame,
+    "AIChallenge": AIChallenge,
 }
 
 export const pagesConfig = {

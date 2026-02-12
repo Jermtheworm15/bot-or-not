@@ -175,15 +175,15 @@ export default function Layout({ children, currentPageName }) {
               <span className="text-xs uppercase tracking-wide">Achieve</span>
             </Link>
             <Link
-              to={createPageUrl('SideGames')}
+              to={createPageUrl('AIChallenge')}
               className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
-                currentPageName === 'SideGames'
+                currentPageName === 'AIChallenge'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
                   : 'text-green-400 hover:text-white hover:bg-purple-900/30'
               }`}
             >
               <Gamepad2 className="w-5 h-5" />
-              <span className="text-xs uppercase tracking-wide">Games</span>
+              <span className="text-xs uppercase tracking-wide">AI Battle</span>
             </Link>
             <Link
               to={createPageUrl('Community')}
