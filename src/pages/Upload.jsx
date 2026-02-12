@@ -51,41 +51,20 @@ export default function Upload() {
     setIsUploading(true);
 
     try {
-      // Upload the file
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      
-      // AI Moderation check
-      const moderation = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this image for content moderation. Check if it contains:
-- Inappropriate content (nudity, violence, hate symbols)
-- A clear human or AI-generated face/selfie
-- Spam or irrelevant content
+      // Create form data for backend function
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('uploaderName', uploaderName);
+      formData.append('isBot', isBot);
 
-Respond with: is_appropriate (boolean), reason (string explaining why it passed or failed)`,
-        file_urls: [file_url],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            is_appropriate: { type: "boolean" },
-            reason: { type: "string" }
-          }
-        }
-      });
+      // Call backend function to handle upload and moderation securely
+      const { data } = await base44.functions.invoke('uploadImageWithModeration', formData);
 
-      if (!moderation.is_appropriate) {
-        toast.error(`Image rejected: ${moderation.reason}`);
+      if (!data.success) {
+        toast.error(data.error || 'Upload failed');
         setIsUploading(false);
         return;
       }
-      
-      // Create the image record
-      await base44.entities.Image.create({
-        url: file_url,
-        is_bot: isBot,
-        source: 'user-upload',
-        user_uploaded: true,
-        uploader_name: uploaderName
-      });
 
       setUploadSuccess(true);
       toast.success('Image uploaded successfully!');
