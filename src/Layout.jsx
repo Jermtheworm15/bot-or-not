@@ -97,6 +97,9 @@ export default function Layout({ children, currentPageName }) {
       
       {/* Matrix Rain Effect */}
       <MatrixRain />
+
+      {/* Hieroglyphic Rain Effect */}
+      <HieroglyphicRain />
       
       {/* Cyberpunk animated grid background */}
       <div className="fixed inset-0 cyberpunk-grid opacity-30 pointer-events-none" style={{ zIndex: 2 }} />
