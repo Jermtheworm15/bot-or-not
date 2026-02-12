@@ -1,14 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Share2, X, Download, Instagram, Twitter } from 'lucide-react';
+import { Share2, X, Instagram, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
 
 export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect, userStats = null }) {
   const [showShare, setShowShare] = useState(false);
-  const [shareMode, setShareMode] = useState('result'); // 'result' or 'stats'
+  const [shareMode, setShareMode] = useState('result');
   const [isGenerating, setIsGenerating] = useState(false);
-  const canvasRef = useRef(null);
   
   const appUrl = window.location.origin;
   const shareText = wasCorrect 
@@ -61,8 +60,7 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareUrl);
-    alert('Link copied to clipboard!');
+   navigator.clipboard.writeText(shareUrl);
   };
 
   const generateBrandedImage = async (platform) => {
