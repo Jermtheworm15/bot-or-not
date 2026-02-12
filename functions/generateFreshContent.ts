@@ -119,8 +119,8 @@ Deno.serve(async (req) => {
     const newImages = [];
     let skipped = 0;
 
-    // Get existing hashes for deduplication
-    const existingImages = await base44.asServiceRole.entities.Image.list('-created_date', 5000);
+    // Get existing hashes for deduplication (sample last 1000 for speed)
+    const existingImages = await base44.asServiceRole.entities.Image.list('-created_date', 1000);
     const existingHashes = existingImages
       .map(img => img.data?.perceptual_hash || img.perceptual_hash)
       .filter(h => h);
