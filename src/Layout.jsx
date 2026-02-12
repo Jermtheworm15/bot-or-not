@@ -11,6 +11,7 @@ import ChatbotWindow from './components/chatbot/ChatbotWindow';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
 
   React.useEffect(() => {
     const loadUser = async () => {
@@ -22,6 +23,12 @@ export default function Layout({ children, currentPageName }) {
       }
     };
     loadUser();
+  }, []);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   React.useEffect(() => {
