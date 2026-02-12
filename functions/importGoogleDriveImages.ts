@@ -19,22 +19,42 @@ Deno.serve(async (req) => {
 
     // List files in the folder
     const listResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=trashed=false and '${folderId}' in parents&spaces=drive&fields=files(id,name,mimeType,webContentLink)&pageSize=100`,
+      `https://www.googleapis.com/drive/v3/files?q=trashed=false and '${folderId}' in parents&spaces=drive&fields=files(id,name,mimeType,webContentLink,parents)&pageSize=1000`,
       {
         headers: { Authorization: `Bearer ${accessToken}` }
       }
     );
 
     const listData = await listResponse.json();
+    if (listData.error) {
+      return Response.json({ error: `Drive API error: ${listData.error.message}` }, { status: 400 });
+    }
+
     const files = listData.files || [];
 
-    // Filter image files
+    // Filter image files and folders for recursive search
     const imageFiles = files.filter(f => 
       f.mimeType && f.mimeType.startsWith('image/')
     );
 
-    if (imageFiles.length === 0) {
-      return Response.json({ message: 'No image files found in folder' }, { status: 200 });
+    // Also get images from subfolders
+    const folders = files.filter(f => f.mimeType === 'application/vnd.google-apps.folder');
+    let allImages = [...imageFiles];
+
+    for (const folder of folders) {
+      const subResponse = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=trashed=false and '${folder.id}' in parents&spaces=drive&fields=files(id,name,mimeType)&pageSize=1000`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      const subData = await subResponse.json();
+      const subImages = (subData.files || []).filter(f => 
+        f.mimeType && f.mimeType.startsWith('image/')
+      );
+      allImages = allImages.concat(subImages.map(img => ({ ...img, parentId: folder.id })));
+    }
+
+    if (allImages.length === 0) {
+      return Response.json({ message: 'No image files found in folder or subfolders', filesFound: files.length }, { status: 200 });
     }
 
     // Import images to database
