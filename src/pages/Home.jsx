@@ -121,9 +121,6 @@ export default function Home() {
           className="text-center space-y-4"
         >
           <div className="flex items-center justify-center gap-3">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-700 shadow-lg shadow-violet-500/30">
-              <Bot className="w-8 h-8 text-white" />
-            </div>
             <h1 className="text-4xl font-black tracking-tight">
               Bot or Not
             </h1>
