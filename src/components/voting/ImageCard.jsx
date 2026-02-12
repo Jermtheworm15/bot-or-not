@@ -19,7 +19,11 @@ export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasC
               src={imageUrl}
               alt="Mystery face"
               className="w-full h-full object-cover"
-              onError={onError}
+              onError={(e) => {
+                console.error('Image failed to load:', imageUrl);
+                if (onError) onError();
+              }}
+              loading="eager"
             />
             
             {/* Gradient overlay */}
