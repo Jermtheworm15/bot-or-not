@@ -60,6 +60,7 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UsernameSetup from './pages/UsernameSetup';
 import SideGames from './pages/SideGames';
+import UserLeaderboard from './pages/UserLeaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "Upload": Upload,
     "UsernameSetup": UsernameSetup,
     "SideGames": SideGames,
+    "UserLeaderboard": UserLeaderboard,
 }
 
 export const pagesConfig = {

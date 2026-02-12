@@ -99,15 +99,15 @@ export default function Layout({ children, currentPageName }) {
               <span className="text-xs uppercase tracking-wide">Vote</span>
             </Link>
             <Link
-              to={createPageUrl('Leaderboard')}
+              to={createPageUrl('UserLeaderboard')}
               className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
-                currentPageName === 'Leaderboard'
+                currentPageName === 'UserLeaderboard'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
                   : 'text-green-400 hover:text-white hover:bg-purple-900/30'
               }`}
             >
               <Trophy className="w-5 h-5" />
-              <span className="text-xs uppercase tracking-wide">Top 10</span>
+              <span className="text-xs uppercase tracking-wide">Players</span>
             </Link>
             <Link
               to={createPageUrl('StreakLeaderboard')}

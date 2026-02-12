@@ -42,20 +42,26 @@ export default function Profile() {
     
     setProfile(userProfile);
     
-    // Calculate stats
-    const [imageVotes, videoVotes] = await Promise.all([
+    // Calculate stats and rank
+    const [imageVotes, videoVotes, allProfiles] = await Promise.all([
       base44.entities.Vote.filter({ user_email: currentUser.email }),
-      base44.entities.VideoVote.filter({ user_email: currentUser.email })
+      base44.entities.VideoVote.filter({ user_email: currentUser.email }),
+      base44.entities.UserProfile.list()
     ]);
     
     const allVotes = [...imageVotes, ...videoVotes];
     const correct = allVotes.filter(v => v.was_correct).length;
     const accuracy = allVotes.length > 0 ? (correct / allVotes.length) * 100 : 0;
     
+    // Calculate rank
+    const sortedByPoints = [...allProfiles].sort((a, b) => (b.points || 0) - (a.points || 0));
+    const rank = sortedByPoints.findIndex(p => p.user_email === currentUser.email) + 1;
+    
     setStats({
       total: allVotes.length,
       correct,
-      accuracy
+      accuracy,
+      rank: rank || null
     });
     
     setIsLoading(false);
@@ -89,6 +95,34 @@ export default function Profile() {
           <p className="text-zinc-400">{user?.email}</p>
         </motion.div>
         
+        {/* Rank Card */}
+        {stats.rank && (
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <Card className="bg-gradient-to-r from-purple-900/30 to-green-900/30 border-purple-500/50">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center">
+                      <Trophy className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-3xl font-black text-white">#{stats.rank}</p>
+                      <p className="text-zinc-400">Global Rank</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-zinc-400 text-sm mb-1">Top {((stats.rank / (stats.rank + 100)) * 100).toFixed(0)}%</p>
+                    <a href="/UserLeaderboard" className="text-purple-400 text-sm hover:underline">View Leaderboard →</a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Level & Points */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
