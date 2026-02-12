@@ -224,10 +224,11 @@ export default function Discover() {
 
 
       </div>
-    </motion.div>
-  );
+      </motion.div>
+      );
+      };
 
-  return (
+      return (
     <div className="min-h-screen bg-zinc-950 text-white pb-24">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
