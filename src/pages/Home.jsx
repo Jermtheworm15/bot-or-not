@@ -8,6 +8,9 @@ import StatsBar from '@/components/voting/StatsBar';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
+import ComboCounter from '@/components/gamification/ComboCounter';
+import PointsAnimation from '@/components/gamification/PointsAnimation';
+import MilestonePopup from '@/components/gamification/MilestonePopup';
 import { createPageUrl } from '@/utils';
 
 
@@ -22,6 +25,10 @@ export default function Home() {
   const [showExplosion, setShowExplosion] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [imageLoadTimeout, setImageLoadTimeout] = useState(null);
+  const [combo, setCombo] = useState(0);
+  const [pointsAnimations, setPointsAnimations] = useState([]);
+  const [milestone, setMilestone] = useState(null);
+  const [showMilestone, setShowMilestone] = useState(false);
   const currentItem = items[currentIndex];
 
   useEffect(() => {
@@ -205,11 +212,15 @@ export default function Home() {
   
   const handleVote = async (guessedBot) => {
     if (!currentItem) return;
-    
+
     const correct = guessedBot === currentItem.is_bot;
     setWasCorrect(correct);
     setHasVoted(true);
-    
+
+    // Update combo and show animations
+    const newCombo = correct ? combo + 1 : 0;
+    setCombo(newCombo);
+
     // Show explosion effect for correct answers
     if (correct) {
       setShowExplosion(true);
@@ -231,6 +242,18 @@ export default function Home() {
     // Update user profile with points and challenges  
     if (userProfile) {
       const pointsEarned = correct ? 10 : 5;
+      const multiplier = Math.floor(1 + newCombo * 0.1);
+      const totalPoints = pointsEarned * multiplier;
+
+      // Add points animation
+      setPointsAnimations(prev => [...prev, {
+        id: Date.now(),
+        points: pointsEarned,
+        combo: newCombo,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        isCorrect: correct
+      }]);
       const newBadges = [...(userProfile.badges || [])];
 
       // Award badges
@@ -245,7 +268,7 @@ export default function Home() {
       }
 
       const updatedProfile = await base44.entities.UserProfile.update(userProfile.id, {
-        points: (userProfile.points || 0) + pointsEarned,
+        points: (userProfile.points || 0) + totalPoints,
         daily_votes: (userProfile.daily_votes || 0) + 1,
         weekly_votes: (userProfile.weekly_votes || 0) + 1,
         perfect_streak: Math.max(userProfile.perfect_streak || 0, newStreak),
