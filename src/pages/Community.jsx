@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Plus, Grid3x3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import UserSearch from '@/components/community/UserSearch';
 
 export default function Community() {
   const [boards, setBoards] = useState([]);
@@ -56,6 +57,11 @@ export default function Community() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-32 pt-6">
       <div className="max-w-6xl mx-auto px-4">
+        {/* User Search Section */}
+        <div className="mb-12">
+          <UserSearch />
+        </div>
+
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
