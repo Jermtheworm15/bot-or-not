@@ -4,30 +4,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Flame, TrendingUp, Upload, Award, Zap } from 'lucide-react';
 
 export default function LiveActivityFeed() {
-  const [activities, setActivities] = useState([]);
-  const [isVisible, setIsVisible] = useState(true);
+  const [currentActivity, setCurrentActivity] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    loadActivities();
-    
     // Subscribe to real-time activity updates
     const unsubscribe = base44.entities.Activity.subscribe((event) => {
       if (event.type === 'create') {
-        setActivities(prev => [event.data, ...prev.slice(0, 9)]);
+        setCurrentActivity(event.data);
+        setIsVisible(true);
+        
+        // Auto-hide after 4 seconds
+        const timer = setTimeout(() => {
+          setIsVisible(false);
+        }, 4000);
+        
+        return () => clearTimeout(timer);
       }
     });
 
     return unsubscribe;
   }, []);
-
-  const loadActivities = async () => {
-    try {
-      const data = await base44.entities.Activity.list('-created_date', 10);
-      setActivities(data);
-    } catch (err) {
-      console.log('Activity load error:', err);
-    }
-  };
 
   const getIcon = (type) => {
     switch (type) {
