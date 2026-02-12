@@ -12,6 +12,8 @@ import BioEditor from '@/components/profile/BioEditor';
 import PortfolioShowcase from '@/components/profile/PortfolioShowcase';
 import ProfileActivityFeed from '@/components/profile/ProfileActivityFeed';
 import ChallengeUser from '@/components/challenges/ChallengeUser';
+import FriendButton from '@/components/social/FriendButton';
+import FriendsList from '@/components/messaging/FriendsList';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -176,7 +178,7 @@ export default function Profile() {
           </motion.div>
         )}
 
-        {/* Follow Stats */}
+        {/* Friends & Follow Stats */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -201,6 +203,14 @@ export default function Profile() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Friend Actions */}
+        {user && user.email !== user?.email && (
+          <FriendButton 
+            targetUserEmail={user?.email}
+            currentUserEmail={user?.email}
+          />
+        )}
 
         {/* Level & Points */}
         <Card className="bg-zinc-900 border-purple-500/30">
@@ -255,6 +265,11 @@ export default function Profile() {
 
         {/* Activity Feed */}
         <ProfileActivityFeed userEmail={user?.email} />
+
+        {/* Friends List */}
+        {isOwnProfile && (
+          <FriendsList userEmail={user?.email} userName={user?.username || user?.email} />
+        )}
 
         {/* Demographics */}
         <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
