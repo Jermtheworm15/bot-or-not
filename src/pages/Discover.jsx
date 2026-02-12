@@ -414,6 +414,7 @@ export default function Discover() {
           )}
         </Tabs>
       </div>
-    </div>
-  );
-}
+      </div>
+      );
+      }
+      }
