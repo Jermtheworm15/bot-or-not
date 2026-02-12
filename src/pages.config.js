@@ -71,6 +71,7 @@ import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
 import AttributeGame from './pages/AttributeGame';
+import AttributeLeaderboard from './pages/AttributeLeaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -99,6 +100,7 @@ export const PAGES = {
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
     "AttributeGame": AttributeGame,
+    "AttributeLeaderboard": AttributeLeaderboard,
 }
 
 export const pagesConfig = {
