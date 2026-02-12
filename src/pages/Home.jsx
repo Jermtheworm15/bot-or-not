@@ -256,16 +256,16 @@ export default function Home() {
       }
       
       await loadUserProfile();
-      }
+    }
 
-      // Save vote (without rating yet)
-      await base44.entities.Vote.create({
+    // Save vote (without rating yet)
+    await base44.entities.Vote.create({
       image_id: currentItem.id,
       guessed_bot: guessedBot,
       was_correct: correct,
       user_email: user.email
-      });
-      };
+    });
+  };
   
   const handleContentError = () => {
     // Skip to next image if current one fails to load
