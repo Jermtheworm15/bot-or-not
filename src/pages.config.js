@@ -54,6 +54,9 @@ import AITools from './pages/AITools';
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
 import AdminImagePopulator from './pages/AdminImagePopulator';
+import Analytics from './pages/Analytics';
+import AttributeGame from './pages/AttributeGame';
+import AttributeLeaderboard from './pages/AttributeLeaderboard';
 import BlitzChallengeLeaderboard from './pages/BlitzChallengeLeaderboard';
 import BlitzGame from './pages/BlitzGame';
 import Board from './pages/Board';
@@ -70,9 +73,6 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import AttributeGame from './pages/AttributeGame';
-import AttributeLeaderboard from './pages/AttributeLeaderboard';
-import Analytics from './pages/Analytics';
 import __Layout from './Layout.jsx';
 
 
@@ -84,6 +84,9 @@ export const PAGES = {
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
     "AdminImagePopulator": AdminImagePopulator,
+    "Analytics": Analytics,
+    "AttributeGame": AttributeGame,
+    "AttributeLeaderboard": AttributeLeaderboard,
     "BlitzChallengeLeaderboard": BlitzChallengeLeaderboard,
     "BlitzGame": BlitzGame,
     "Board": Board,
@@ -100,9 +103,6 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "AttributeGame": AttributeGame,
-    "AttributeLeaderboard": AttributeLeaderboard,
-    "Analytics": Analytics,
 }
 
 export const pagesConfig = {

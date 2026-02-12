@@ -1,155 +1,158 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Image, Video, Download, AlertCircle } from 'lucide-react';
+import { Zap, AlertCircle, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AdminContentManager() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [count, setCount] = useState(10);
-  const [type, setType] = useState('images');
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [batchSize, setBatchSize] = useState(10);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [lastResult, setLastResult] = useState(null);
 
-  const handlePopulate = async () => {
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+  React.useEffect(() => {
+    checkAdmin();
+  }, []);
 
+  const checkAdmin = async () => {
     try {
-      const response = await base44.functions.invoke('populateAIContent', {
-        count: parseInt(count),
-        type
-      });
-
-      setResult(response.data);
+      const user = await base44.auth.me();
+      setIsAdmin(user?.role === 'admin');
     } catch (err) {
-      setError(err.message || 'Failed to populate content');
-    } finally {
-      setIsLoading(false);
+      setIsAdmin(false);
     }
   };
 
+  const generateBatch = async () => {
+    setIsGenerating(true);
+    try {
+      const { data } = await base44.functions.invoke('batchImageGeneration', { batchSize });
+      
+      if (data.success) {
+        setLastResult({
+          generated: data.generated,
+          errors: data.errors,
+          timestamp: new Date().toLocaleTimeString()
+        });
+        toast.success(`Generated ${data.generated} AI images!`);
+      } else {
+        toast.error(data.error || 'Generation failed');
+      }
+    } catch (error) {
+      toast.error('Error generating images');
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  if (isAdmin === null) {
+    return <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">Loading...</div>;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardContent className="pt-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-zinc-300">Admin access required</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white py-8">
+    <div className="min-h-screen bg-zinc-950 text-white py-12">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
       
       <div className="relative z-10 max-w-2xl mx-auto px-4">
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl font-black mb-2 flex items-center justify-center gap-3">
-            <Download className="w-10 h-10 text-purple-500" />
-            Content Manager
-          </h1>
-          <p className="text-zinc-400">Populate database with AI-generated content</p>
+        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-center mb-8">
+          <h1 className="text-4xl font-black mb-2">Content Manager</h1>
+          <p className="text-zinc-400">Admin panel for batch image generation</p>
         </motion.div>
 
-        <Card className="bg-zinc-900 border-zinc-800 p-6 mb-6">
-          <div className="space-y-6">
+        <Card className="bg-zinc-900 border-zinc-800 mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-400" />
+              Generate AI Images
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="type" className="text-white mb-2 block">Content Type</Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="images">Images Only</SelectItem>
-                  <SelectItem value="videos">Videos Only</SelectItem>
-                  <SelectItem value="both">Both Images & Videos</SelectItem>
-                  <SelectItem value="real">Real Images (for balance)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="count" className="text-white mb-2 block">Number of Items</Label>
+              <label className="text-sm text-zinc-300 block mb-2">Batch Size</label>
               <Input
-                id="count"
                 type="number"
                 min="1"
                 max="50"
-                value={count}
-                onChange={(e) => setCount(e.target.value)}
+                value={batchSize}
+                onChange={(e) => setBatchSize(parseInt(e.target.value) || 10)}
                 className="bg-zinc-800 border-zinc-700 text-white"
               />
-              <p className="text-xs text-zinc-500 mt-1">Recommended: 10-20 items per batch</p>
+              <p className="text-xs text-zinc-500 mt-1">Generate 1-50 AI images at once</p>
             </div>
 
             <Button
-              onClick={handlePopulate}
-              disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              size="lg"
+              onClick={generateBatch}
+              disabled={isGenerating}
+              className="w-full h-12 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Fetching Content...
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5 mr-2" />
-                  Populate Database
-                </>
-              )}
+              {isGenerating ? 'Generating...' : `Generate ${batchSize} Images`}
             </Button>
-          </div>
+          </CardContent>
         </Card>
 
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="bg-red-900/20 border-red-500/50 p-4">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400" />
-                <div>
-                  <p className="text-red-400 font-semibold">Error</p>
-                  <p className="text-red-300 text-sm">{error}</p>
+        {lastResult && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  Last Generation Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-sm text-zinc-400">Generated</p>
+                    <p className="text-2xl font-bold text-emerald-400">{lastResult.generated}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-zinc-400">Errors</p>
+                    <p className="text-2xl font-bold text-red-400">{lastResult.errors.length}</p>
+                  </div>
                 </div>
-              </div>
+                <p className="text-xs text-zinc-500">Generated at {lastResult.timestamp}</p>
+                
+                {lastResult.errors.length > 0 && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded p-3 mt-4">
+                    <p className="text-xs text-red-400 font-medium mb-2">Errors:</p>
+                    <div className="space-y-1">
+                      {lastResult.errors.slice(0, 3).map((err, i) => (
+                        <p key={i} className="text-xs text-red-300">{err}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </motion.div>
         )}
 
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="bg-green-900/20 border-green-500/50 p-6">
-              <h3 className="text-green-400 font-bold text-xl mb-4">✓ Success!</h3>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Image className="w-5 h-5 text-green-400" />
-                  <span className="text-white">{result.results?.images?.length || 0} images added</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Video className="w-5 h-5 text-green-400" />
-                  <span className="text-white">{result.results?.videos?.length || 0} videos added</span>
-                </div>
-              </div>
-              <p className="text-zinc-400 text-sm mt-4">{result.message}</p>
-            </Card>
-          </motion.div>
-        )}
-
-        <Card className="bg-zinc-900/50 border-zinc-800 p-4 mt-6">
-          <h4 className="text-white font-semibold mb-2 text-sm">Note:</h4>
-          <p className="text-zinc-400 text-xs">
-            This tool fetches AI-generated content from public sources like "This Person Does Not Exist" 
-            and other AI art generators. The LLM will search for valid, working URLs to populate your database.
-            Admin access required.
-          </p>
-        </Card>
+        <div className="mt-8 p-4 bg-zinc-800 rounded-lg border border-zinc-700">
+          <h3 className="font-bold mb-2 text-sm">💡 Tips for Best Results:</h3>
+          <ul className="text-xs text-zinc-400 space-y-1">
+            <li>• Generate 10-20 images per session for better variety</li>
+            <li>• Images are automatically marked as AI-generated (is_bot: true)</li>
+            <li>• Set up automated generation using scheduled automations</li>
+            <li>• Monitor image quality and adjust batch sizes as needed</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
