@@ -21,7 +21,7 @@ export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
         </div>
       </div>
       
-      <div className="px-4">
+      <div className="px-4 mb-4">
         <Slider
           value={[rating]}
           onValueChange={(value) => onRatingChange(value[0])}
@@ -30,7 +30,7 @@ export default function RatingSlider({ rating, onRatingChange, onSubmit }) {
           step={1}
           className="w-full"
         />
-        <div className="flex justify-between mt-2 text-xs text-zinc-500">
+        <div className="flex justify-between mt-3 text-xs text-zinc-500">
           <span>Poor</span>
           <span>Amazing</span>
         </div>
