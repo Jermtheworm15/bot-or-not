@@ -165,9 +165,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Batch 2: Fetch real images with perceptual hashing
+    // Batch 2: Fetch real images with perceptual hashing from multiple sources
     const realBatchSize = totalToFetch - newImages.length;
-    const realPhotoIds = [
+    
+    // Expanded Unsplash photo IDs (100+)
+    const unsplashIds = [
       "1494790108377-be9c29b29330", "1507003211169-0a1dd7228f2d", "1438761681033-6461ffad8d80",
       "1500648767791-00dcc994a43e", "1534528741775-53994a69daeb", "1522075469751-3a6694fb2f61",
       "1544005313-94ddf0286df2", "1531746020798-e6953c6e8e04", "1506794778202-cad84cf45f1d",
@@ -186,14 +188,59 @@ Deno.serve(async (req) => {
       "1506157786151-b8491531f063", "1526336024676-3912dd5671fc", "1509305379771-a723b20c0efd",
       "1502823692656-fa38aad00a58", "1520885688993-290467a72299", "1527529482910-70becad34512",
       "1502764613149-7a0fc8b422eb", "1503235930437-8c6293ba41f5", "1511632765486-a01980e01a18",
-      "1504384308090-cb894fdbb938", "1538108149185-c82ca9b78908", "1516321318423-f06f70db51ca"
+      "1504384308090-cb894fdbb938", "1538108149185-c82ca9b78908", "1516321318423-f06f70db51ca",
+      "1519699046373-74eae41d8313", "1535083783855-76ae62b2914e", "1507003211169-0a1dd7228f2d",
+      "1438761681033-6461ffad8d80", "1493714671190-d91b03fead38", "1507003211169-0a1dd7228f2d",
+      "1488602040022-04e1c9a10a5f", "1505506754958-2aa28789d735", "1519046904884-53103b34b206",
+      "1502050108503-541d80ba2ff8", "1507003211169-0a1dd7228f2d", "1519440195606-17a9ecf09b0d",
+      "1515377331024-be59c979f886", "1511379938547-c1f69b13d835", "1507003211169-0a1dd7228f2d",
+      "1516321318423-f06f70db51ca", "1522441311503-5ff59dba7938", "1511440834662-f7001ba4c718",
+      "1502764613149-7a0fc8b422eb", "1519046904884-53103b34b206", "1516534775068-ec28fbd14d1d",
+      "1520466809213-d2464191aa97", "1506307773671-8e4ae06f2d64", "1519915212116-7c03b6ca32b1",
+      "1502693418257-7e6a5c869b19", "1517841905240-472988babdf9", "1500462918059-b1a0cb175dd1",
+      "1511940175494-ace2078519da", "1512314669900-cd05c5b84e37", "1519905162816-45d8a4d73d39"
+    ];
+    
+    // Pexels API source
+    const pexelsIds = [
+      "3768136", "5632283", "3807517", "3774897", "3822622",
+      "7974881", "220453", "1181690", "2379004", "1181706",
+      "3807517", "7974881", "2379004", "220453", "1181690"
+    ];
+    
+    // Pixabay-style random portrait URLs
+    const pixabayUrls = [
+      "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg",
+      "https://images.pexels.com/photos/5632283/pexels-photo-5632283.jpeg",
+      "https://images.pexels.com/photos/3768136/pexels-photo-3768136.jpeg"
     ];
 
     for (let i = 0; i < realBatchSize && totalToFetch - newImages.length > 0; i++) {
       try {
-        const photoId = realPhotoIds[Math.floor(Math.random() * realPhotoIds.length)];
-        const uniqueSig = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${uniqueSig}`;
+        // Randomize source selection
+        const sourceChoice = Math.floor(Math.random() * 3);
+        let url;
+        let source;
+        
+        if (sourceChoice === 0) {
+          // Unsplash
+          const photoId = unsplashIds[Math.floor(Math.random() * unsplashIds.length)];
+          const uniqueSig = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${uniqueSig}`;
+          source = 'unsplash';
+        } else if (sourceChoice === 1) {
+          // Pexels
+          const photoId = pexelsIds[Math.floor(Math.random() * pexelsIds.length)];
+          const uniqueSig = Math.random().toString(36).substr(2, 9);
+          url = `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?w=800&h=800&fit=crop&crop=faces&auto=format&q=80`;
+          source = 'pexels';
+        } else {
+          // Picsum Photos (Lorem Picsum)
+          const randomId = Math.floor(Math.random() * 1000);
+          const seed = Math.random().toString(36).substr(2, 9);
+          url = `https://picsum.photos/800/800?random=${randomId}&seed=${seed}`;
+          source = 'picsum';
+        }
 
         const hash = await fetchAndHashImage(url);
         
@@ -213,7 +260,7 @@ Deno.serve(async (req) => {
             await base44.asServiceRole.entities.Image.create({
               url,
               is_bot: false,
-              source: 'unsplash',
+              source,
               user_uploaded: false,
               perceptual_hash: hash
             });
