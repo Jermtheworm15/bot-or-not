@@ -53,25 +53,25 @@ export default function MilestonePopup({ milestone, isVisible }) {
             className="absolute inset-0 rounded-full"
           />
 
-          <div className={`relative bg-gradient-to-br ${config.color} rounded-2xl p-8 shadow-2xl border-2 border-white/30 backdrop-blur-sm`}>
+          <div className={`relative bg-gradient-to-br ${config.color} rounded-xl p-4 shadow-xl border-2 border-white/30 backdrop-blur-sm`}>
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              className="absolute -top-6 -right-6"
+              className="absolute -top-4 -right-4"
             >
-              <Sparkles className="w-12 h-12 text-yellow-300" />
+              <Sparkles className="w-8 h-8 text-yellow-300" />
             </motion.div>
 
-            <div className="flex flex-col items-center gap-4 text-white">
+            <div className="flex flex-col items-center gap-2 text-white">
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 0.6, repeat: Infinity }}
               >
-                <Icon className="w-16 h-16" />
+                <Icon className="w-10 h-10" />
               </motion.div>
               
-              <h3 className="text-3xl font-black text-center leading-tight">{config.title}</h3>
-              <p className={`text-lg font-bold ${config.textColor}`}>{config.message}</p>
+              <h3 className="text-xl font-black text-center leading-tight">{config.title}</h3>
+              <p className={`text-sm font-bold ${config.textColor}`}>{config.message}</p>
             </div>
 
             {/* Particle effects */}
