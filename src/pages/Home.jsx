@@ -22,11 +22,12 @@ export default function Home() {
   const [showExplosion, setShowExplosion] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [imageLoadTimeout, setImageLoadTimeout] = useState(null);
+  const currentItem = items[currentIndex];
 
   useEffect(() => {
     checkUsernameAndLoad();
   }, []);
-  
+
   // Preload next image and set auto-skip timeout
   useEffect(() => {
     if (items.length > 0 && currentIndex < items.length - 1) {
@@ -38,7 +39,7 @@ export default function Home() {
     }
 
     // Set 10-second timeout to skip to next image if current doesn't load
-    if (!hasVoted && currentItem?.url) {
+    if (!hasVoted && items[currentIndex]?.url) {
       const timeout = setTimeout(() => {
         handleContentError();
       }, 10000);
@@ -46,7 +47,7 @@ export default function Home() {
 
       return () => clearTimeout(timeout);
     }
-  }, [currentIndex, items, hasVoted, currentItem]);
+  }, [currentIndex, items, hasVoted]);
   
   const checkUsernameAndLoad = async () => {
     try {
@@ -192,8 +193,7 @@ export default function Home() {
     }
     setIsLoading(false);
   };
-  
-  const currentItem = items[currentIndex];
+
   
   const handleVote = async (guessedBot) => {
     if (!currentItem) return;
