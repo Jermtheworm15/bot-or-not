@@ -63,6 +63,7 @@ import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
 import AITools from './pages/AITools';
 import Home from './pages/Home';
+import AIImageLibraries from './pages/AIImageLibraries';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +84,7 @@ export const PAGES = {
     "UsernameSetup": UsernameSetup,
     "AITools": AITools,
     "Home": Home,
+    "AIImageLibraries": AIImageLibraries,
 }
 
 export const pagesConfig = {
