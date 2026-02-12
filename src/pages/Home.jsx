@@ -481,17 +481,15 @@ export default function Home() {
                 </div>
               </motion.div>
             )}
-            </AnimatePresence>
-
             {!hasVoted && (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              onClick={handleSkip}
-              className="mt-4 px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
-            >
-              Skip →
-            </motion.button>
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                onClick={handleSkip}
+                className="mt-4 px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
+              >
+                Skip →
+              </motion.button>
             )}
           </AnimatePresence>
         </div>
