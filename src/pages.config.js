@@ -49,6 +49,7 @@
  */
 import Achievements from './pages/Achievements';
 import AdminContentManager from './pages/AdminContentManager';
+import AdminImagePopulator from './pages/AdminImagePopulator';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Discover from './pages/Discover';
 import Home from './pages/Home';
@@ -56,18 +57,18 @@ import Leaderboard from './pages/Leaderboard';
 import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
 import Referrals from './pages/Referrals';
+import SideGames from './pages/SideGames';
 import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
-import UsernameSetup from './pages/UsernameSetup';
-import SideGames from './pages/SideGames';
 import UserLeaderboard from './pages/UserLeaderboard';
-import AdminImagePopulator from './pages/AdminImagePopulator';
+import UsernameSetup from './pages/UsernameSetup';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Achievements": Achievements,
     "AdminContentManager": AdminContentManager,
+    "AdminImagePopulator": AdminImagePopulator,
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "Discover": Discover,
     "Home": Home,
@@ -75,12 +76,11 @@ export const PAGES = {
     "Onboarding": Onboarding,
     "Profile": Profile,
     "Referrals": Referrals,
+    "SideGames": SideGames,
     "StreakLeaderboard": StreakLeaderboard,
     "Upload": Upload,
-    "UsernameSetup": UsernameSetup,
-    "SideGames": SideGames,
     "UserLeaderboard": UserLeaderboard,
-    "AdminImagePopulator": AdminImagePopulator,
+    "UsernameSetup": UsernameSetup,
 }
 
 export const pagesConfig = {

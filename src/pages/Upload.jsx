@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload as UploadIcon, CheckCircle, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
+import { Upload as UploadIcon, CheckCircle, Image as ImageIcon, Video as VideoIcon, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import ContentEnhancementPanel from '@/components/ai/ContentEnhancementPanel';
 
 export default function Upload() {
   const [uploadType, setUploadType] = useState('image'); // 'image' or 'video'
