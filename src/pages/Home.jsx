@@ -9,7 +9,6 @@ import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import { createPageUrl } from '@/utils';
-import { Button } from "@/components/ui/button";
 
 
 export default function Home() {
@@ -87,30 +86,24 @@ export default function Home() {
   };
   
   const handleReferral = async (refCode, userEmail) => {
-    try {
-      // Check if referral already exists
-      const existing = await base44.entities.Referral.filter({ 
-        referral_code: refCode,
-        referred_email: userEmail 
-      });
-      
-      if (existing.length === 0) {
-        // Find referrer by code (decode from base64)
-        const allUsers = await base44.entities.UserProfile.list();
-        const referrer = allUsers.find(u => btoa(u.user_email).slice(0, 8).toUpperCase() === refCode);
-        
-        if (referrer) {
-          await base44.entities.Referral.create({
-            referrer_email: referrer.user_email,
-            referred_email: userEmail,
-            referral_code: refCode,
-            completed: false
-          });
-        }
-      }
-    } catch (err) {
-      console.log('Referral error:', err);
-    }
+   if (!refCode) return;
+   try {
+     const existing = await base44.entities.Referral.filter({ 
+       referral_code: refCode,
+       referred_email: userEmail 
+     });
+
+     if (existing.length === 0) {
+       await base44.entities.Referral.create({
+         referrer_email: refCode,
+         referred_email: userEmail,
+         referral_code: refCode,
+         completed: false
+       });
+     }
+   } catch (err) {
+     console.log('Referral error:', err);
+   }
   };
   
   const loadUserProfile = async () => {
@@ -270,32 +263,35 @@ export default function Home() {
       });
       
       // Check and complete referrals on first vote
-      if (stats.total === 0) {
-        const referrals = await base44.entities.Referral.filter({ 
-          referred_email: user.email,
-          completed: false 
-        });
-        
-        for (const ref of referrals) {
-          await base44.entities.Referral.update(ref.id, { 
-            completed: true,
-            completed_date: new Date().toISOString()
-          });
-          
-          // Update referrer's profile
-          const referrerProfiles = await base44.entities.UserProfile.filter({ 
-            user_email: ref.referrer_email 
-          });
-          if (referrerProfiles.length > 0) {
-            const refProfile = referrerProfiles[0];
-            const newRefCount = (refProfile.referral_count || 0) + 1;
-            await base44.entities.UserProfile.update(refProfile.id, {
-              referral_count: newRefCount,
-              is_premium: newRefCount >= 3
+        if (stats.total === 0) {
+          try {
+            const referrals = await base44.entities.Referral.filter({ 
+              referred_email: user.email,
+              completed: false 
             });
+
+            for (const ref of referrals) {
+              await base44.entities.Referral.update(ref.id, { 
+                completed: true,
+                completed_date: new Date().toISOString()
+              });
+
+              const referrerProfiles = await base44.entities.UserProfile.filter({ 
+                user_email: ref.referrer_email 
+              });
+              if (referrerProfiles.length > 0) {
+                const refProfile = referrerProfiles[0];
+                const newRefCount = (refProfile.referral_count || 0) + 1;
+                await base44.entities.UserProfile.update(refProfile.id, {
+                  referral_count: newRefCount,
+                  is_premium: newRefCount >= 3
+                });
+              }
+            }
+          } catch (err) {
+            console.log('Referral completion error:', err);
           }
         }
-      }
       
       await loadUserProfile();
     }
