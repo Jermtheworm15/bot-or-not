@@ -214,12 +214,7 @@ export default function Discover() {
           )}
         </div>
 
-        {/* Bot/Human badge */}
-        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold ${
-          item.is_bot ? 'bg-purple-600' : 'bg-green-600'
-        }`}>
-          {item.is_bot ? '🤖 Bot' : '👤 Human'}
-        </div>
+
       </div>
     </motion.div>
   );
