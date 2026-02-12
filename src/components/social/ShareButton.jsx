@@ -14,6 +14,8 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
     ? `I correctly guessed this ${isBot ? 'AI bot' : 'human'} on Bot or Not! Can you?` 
     : `This ${isBot ? 'AI bot' : 'human'} tricked me on Bot or Not! Think you can spot it?`;
   
+  const challengeText = `🎯 I CHALLENGE YOU! Can you spot if this is a bot or human? Test your skills on Bot or Not!`;
+  
   const shareUrl = `${appUrl}?challenge=${encodeURIComponent(contentUrl)}`;
 
   const handleNativeShare = async () => {
@@ -37,6 +39,13 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
     reddit: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareText)}`
+  };
+  
+  const challengeLinks = {
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(challengeText)}&url=${encodeURIComponent(appUrl)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl)}&quote=${encodeURIComponent(challengeText)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(appUrl)}`,
+    reddit: `https://reddit.com/submit?url=${encodeURIComponent(appUrl)}&title=${encodeURIComponent(challengeText)}`
   };
 
   const copyToClipboard = () => {
@@ -166,6 +175,38 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
 
               <p className="text-zinc-400 text-sm mb-6">{shareText}</p>
 
+              {/* Challenge Friends Section */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-purple-900/30 to-green-900/30 border border-purple-500/30 rounded-lg">
+                <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                  🎯 Challenge Your Friends
+                </h4>
+                <p className="text-zinc-400 text-xs mb-3">Dare them to beat your score!</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href={challengeLinks.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    Twitter
+                  </a>
+                  <a
+                    href={challengeLinks.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Facebook
+                  </a>
+                </div>
+              </div>
+
               {/* One-tap branded downloads */}
               <div className="mb-6">
                 <h4 className="text-white font-semibold mb-3 text-sm">Download Branded Content</h4>
@@ -205,7 +246,7 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
               </div>
 
               <div className="border-t border-zinc-800 pt-4 mb-4">
-                <h4 className="text-white font-semibold mb-3 text-sm">Share Link</h4>
+                <h4 className="text-white font-semibold mb-3 text-sm">Share Your Result</h4>
                 <div className="grid grid-cols-2 gap-3">
                 <a
                   href={shareLinks.twitter}
