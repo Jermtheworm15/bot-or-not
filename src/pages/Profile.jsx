@@ -5,6 +5,10 @@ import ShareButton from '@/components/social/ShareButton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
+import AvatarUpload from '@/components/profile/AvatarUpload';
+import FavoriteBotTypes from '@/components/profile/FavoriteBotTypes';
+import DetailedStats from '@/components/profile/DetailedStats';
+import AchievementsShowcase from '@/components/profile/AchievementsShowcase';
 import { Trophy, Star, Zap, Target, TrendingUp } from 'lucide-react';
 
 export default function Profile() {
@@ -12,6 +16,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState({ total: 0, correct: 0, accuracy: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [votesData, setVotesData] = useState({});
   
   useEffect(() => {
     loadProfile();
@@ -54,6 +59,19 @@ export default function Profile() {
     const correct = allVotes.filter(v => v.was_correct).length;
     const accuracy = allVotes.length > 0 ? (correct / allVotes.length) * 100 : 0;
     
+    // Analyze favorite bot types from votes
+    const imageIds = imageVotes.map(v => v.image_id);
+    const images = imageIds.length > 0 ? await base44.entities.Image.filter({}) : [];
+    
+    const votedImages = images.filter(img => imageIds.includes(img.id));
+    const sourceCount = {};
+    votedImages.forEach(img => {
+      const source = img.source || 'unknown';
+      sourceCount[source] = (sourceCount[source] || 0) + 1;
+    });
+    
+    setVotesData(sourceCount);
+    
     // Calculate rank
     const sortedByPoints = [...allProfiles].sort((a, b) => (b.points || 0) - (a.points || 0));
     const rank = sortedByPoints.findIndex(p => p.user_email === currentUser.email) + 1;
@@ -84,16 +102,23 @@ export default function Profile() {
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
       
       <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-6">
-        {/* Header */}
+        {/* Header with Avatar */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center"
+          className="text-center flex flex-col items-center gap-4"
         >
-          <h1 className="text-4xl font-black mb-2">
-            {user?.username ? `@${user.username}` : 'Your Profile'}
-          </h1>
-          <p className="text-zinc-400">{user?.email}</p>
+          <AvatarUpload 
+            currentAvatar={user?.avatar_url}
+            onAvatarChange={(url) => setUser({ ...user, avatar_url: url })}
+            userName={user?.username || user?.email}
+          />
+          <div>
+            <h1 className="text-4xl font-black mb-2">
+              {user?.username ? `@${user.username}` : 'Your Profile'}
+            </h1>
+            <p className="text-zinc-400">{user?.email}</p>
+          </div>
         </motion.div>
         
         {/* Rank Card */}
@@ -140,45 +165,42 @@ export default function Profile() {
               </div>
               <Progress value={levelProgress} className="h-3" />
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-zinc-800 rounded-lg p-3 text-center">
-                <Target className="w-6 h-6 text-purple-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.total}</p>
-                <p className="text-xs text-zinc-400">Total Votes</p>
-              </div>
-              
-              <div className="bg-zinc-800 rounded-lg p-3 text-center">
-                <TrendingUp className="w-6 h-6 text-green-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.accuracy.toFixed(0)}%</p>
-                <p className="text-xs text-zinc-400">Accuracy</p>
-              </div>
-              
-              <div className="bg-zinc-800 rounded-lg p-3 text-center">
-                <Zap className="w-6 h-6 text-orange-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{profile?.perfect_streak}</p>
-                <p className="text-xs text-zinc-400">Best Streak</p>
-              </div>
-              
-              <div className="bg-zinc-800 rounded-lg p-3 text-center">
-                <Trophy className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{profile?.badges?.length || 0}</p>
-                <p className="text-xs text-zinc-400">Badges</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
         
-        {/* Badges */}
+        {/* Detailed Voting Statistics */}
+        <Card className="bg-zinc-900 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-6 h-6 text-green-400" />
+              Voting Statistics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DetailedStats stats={stats} profile={profile} />
+          </CardContent>
+        </Card>
+        
+        {/* Favorite Bot Types */}
+        <Card className="bg-zinc-900 border-purple-500/30">
+          <CardHeader>
+            <CardTitle>Favorite Bot Types</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FavoriteBotTypes favorites={profile?.favorite_bot_types || []} />
+          </CardContent>
+        </Card>
+        
+        {/* Achievements Showcase */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="w-6 h-6 text-amber-400" />
-              Badges & Achievements
+              Achievements & Milestones
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <BadgeDisplay badges={profile?.badges || []} size="lg" />
+            <AchievementsShowcase earnedBadges={profile?.badges || []} />
           </CardContent>
         </Card>
 
