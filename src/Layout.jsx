@@ -7,6 +7,7 @@ import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
+import ChatbotWindow from './components/chatbot/ChatbotWindow';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
@@ -27,6 +28,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
       <div hidden>Creator: Jeromy Padgett</div>
     {currentUser && <PendingChallenges userEmail={currentUser.email} />}
+    <ChatbotWindow />
     <LiveActivityFeed />
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
