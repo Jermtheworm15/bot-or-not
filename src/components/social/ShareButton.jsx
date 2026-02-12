@@ -284,10 +284,10 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
               </div>
 
               <div className="border-t border-zinc-800 pt-4 mb-4">
-                <h4 className="text-white font-semibold mb-3 text-sm">Share Your Result</h4>
-                <div className="grid grid-cols-2 gap-3">
-                <a
-                  href={shareLinks.twitter}
+               <h4 className="text-white font-semibold mb-3 text-sm">Share Your {shareMode === 'result' ? 'Result' : 'Stats'}</h4>
+               <div className="grid grid-cols-2 gap-3">
+               <a
+                 href={shareMode === 'result' ? shareLinks.twitter : statsLinks.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors"
