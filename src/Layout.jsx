@@ -219,7 +219,7 @@ export default function Layout({ children, currentPageName }) {
             </Link>
             <Link
               to={createPageUrl('Profile')}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
+              className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${
                 currentPageName === 'Profile'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
                   : 'text-green-400 hover:text-white hover:bg-purple-900/30'
