@@ -261,6 +261,9 @@ export default function Profile() {
         {/* Bio */}
         <BioEditor bio={profile?.bio} onSave={handleBioSave} />
 
+        {/* Social Media Links */}
+        <SocialMediaLinks userProfile={profile} onUpdate={loadProfile} />
+
         {/* Portfolio */}
         <PortfolioShowcase userEmail={user?.email} isOwnProfile={true} />
 
