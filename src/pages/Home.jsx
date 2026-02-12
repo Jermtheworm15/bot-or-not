@@ -23,7 +23,6 @@ export default function Home() {
   const [showExplosion, setShowExplosion] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [imageLoadTimeout, setImageLoadTimeout] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const currentItem = items[currentIndex];
 
   useEffect(() => {
