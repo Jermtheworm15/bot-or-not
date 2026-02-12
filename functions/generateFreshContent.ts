@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { count = 6 } = await req.json();
+    const { count = 50 } = await req.json();
     const targetPerType = Math.floor(count / 2);
 
     // Diverse bot prompts
