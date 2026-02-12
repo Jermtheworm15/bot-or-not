@@ -9,7 +9,6 @@ import StatsBar from '@/components/voting/StatsBar';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
-import ChallengesSidebar from '@/components/gamification/ChallengesSidebar';
 import { createPageUrl } from '@/utils';
 import { Bot, Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -292,9 +291,6 @@ export default function Home() {
       
       {/* Success Explosion */}
       <SuccessExplosion show={showExplosion} />
-      
-      {/* Challenges Sidebar */}
-      <ChallengesSidebar userProfile={userProfile} />
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
         {/* Content Display - Main Focal Point */}

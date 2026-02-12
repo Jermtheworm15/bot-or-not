@@ -5,13 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Award, Target, Clock, CheckCircle2, Sparkles, TrendingUp } from 'lucide-react';
+import { Trophy, Award, Target, Clock, CheckCircle2, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
+import { Progress } from "@/components/ui/progress";
 
 export default function Achievements() {
   const [userProfile, setUserProfile] = useState(null);
   const [completions, setCompletions] = useState([]);
   const [activeChallenges, setActiveChallenges] = useState([]);
+  const [allActiveChallenges, setAllActiveChallenges] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -40,6 +42,10 @@ export default function Achievements() {
         user_email: user.email 
       });
       setActiveChallenges(challenges);
+      
+      // Load all active challenges for display
+      const allChallenges = await base44.entities.Challenge.filter({ active: true });
+      setAllActiveChallenges(allChallenges);
     } catch (err) {
       console.log('Error loading data:', err);
     }
@@ -69,6 +75,27 @@ export default function Achievements() {
 
   const getTierIcon = (tier) => {
     return <Trophy className={`w-5 h-5 ${tier === 'platinum' ? 'text-cyan-400' : tier === 'gold' ? 'text-yellow-400' : tier === 'silver' ? 'text-slate-400' : 'text-amber-600'}`} />;
+  };
+  
+  const getProgress = (challenge) => {
+    if (!userProfile) return 0;
+    switch (challenge.metric) {
+      case 'votes':
+        return challenge.type === 'daily' ? userProfile.daily_votes : userProfile.weekly_votes;
+      case 'streak':
+        return userProfile.perfect_streak;
+      default:
+        return 0;
+    }
+  };
+  
+  const getChallengeIcon = (metric) => {
+    switch (metric) {
+      case 'votes': return Target;
+      case 'accuracy': return TrendingUp;
+      case 'streak': return Zap;
+      default: return Trophy;
+    }
   };
 
   if (isLoading) {
@@ -113,9 +140,10 @@ export default function Achievements() {
         )}
 
         <Tabs defaultValue="badges" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-zinc-900">
+          <TabsList className="grid w-full grid-cols-4 bg-zinc-900">
             <TabsTrigger value="badges">Badges</TabsTrigger>
-            <TabsTrigger value="challenges">Active Challenges</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="challenges">Personalized</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
@@ -134,7 +162,63 @@ export default function Achievements() {
             </Card>
           </TabsContent>
 
-          {/* Active Challenges Tab */}
+          {/* All Active Challenges Tab */}
+          <TabsContent value="active" className="space-y-6">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-500" />
+              Active Challenges
+            </h3>
+
+            <div className="grid gap-3">
+              {allActiveChallenges.length > 0 ? (
+                allActiveChallenges.map((challenge) => {
+                  const Icon = getChallengeIcon(challenge.metric);
+                  const progress = getProgress(challenge);
+                  const percentage = Math.min((progress / challenge.goal) * 100, 100);
+                  const isComplete = progress >= challenge.goal;
+                  
+                  return (
+                    <motion.div
+                      key={challenge.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card className={`p-4 ${
+                        isComplete 
+                          ? 'bg-green-900/30 border-green-500/50' 
+                          : 'bg-zinc-900 border-zinc-800'
+                      }`}>
+                        <div className="flex items-start gap-3 mb-3">
+                          <Icon className={`w-5 h-5 mt-0.5 ${isComplete ? 'text-green-400' : 'text-purple-400'}`} />
+                          <div className="flex-1">
+                            <h4 className="text-base font-semibold">{challenge.title}</h4>
+                            <p className="text-sm text-zinc-400">{challenge.description}</p>
+                          </div>
+                          <Badge variant="secondary" className="bg-yellow-600/20 text-yellow-400">
+                            +{challenge.reward_points} pts
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Progress value={percentage} className="h-2" />
+                          <div className="flex justify-between text-xs">
+                            <span className="text-zinc-400">{progress} / {challenge.goal}</span>
+                            <span className="text-zinc-500">{Math.round(percentage)}%</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <Card className="bg-zinc-900 border-zinc-800 p-8 text-center">
+                  <p className="text-zinc-500">No active challenges available.</p>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Personalized Challenges Tab */}
           <TabsContent value="challenges" className="space-y-6">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-bold flex items-center gap-2">
