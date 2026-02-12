@@ -15,6 +15,7 @@ export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const loadUser = async () => {
