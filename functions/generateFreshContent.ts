@@ -10,60 +10,75 @@ Deno.serve(async (req) => {
     }
 
     const { count = 6 } = await req.json();
-    const botCount = Math.ceil(count / 2);
-    const humanCount = Math.floor(count / 2);
+    const targetPerType = Math.floor(count / 2);
 
-    // Generate diverse bot images
+    // Diverse bot prompts
     const botPrompts = [
-      "Ultra realistic portrait of a young professional woman with perfect skin, studio lighting, 8k, photorealistic",
-      "Hyper realistic portrait of a handsome man in his 30s, perfect features, professional photo",
-      "Photorealistic close-up of a smiling person, flawless skin, natural lighting, high detail",
-      "Ultra detailed portrait photography of an attractive person, professional headshot, sharp focus",
-      "Realistic portrait of a business professional, studio quality, perfect composition",
-      "Hyper realistic facial portrait, magazine quality, professional photography"
+      "photorealistic portrait of a young woman with curly hair",
+      "professional headshot of a man with beard",
+      "portrait of a person with glasses, smiling warmly",
+      "realistic close-up of a teenager, casual style",
+      "mature adult portrait, confident expression",
+      "candid portrait of someone laughing",
+      "portrait of a person in business attire",
+      "realistic selfie-style portrait, natural lighting",
+      "portrait of an elderly person, kind expression",
+      "young professional with short hair, clean background"
     ];
 
-    const humanImageUrls = [
-      `https://images.unsplash.com/photo-${Date.now() % 1000000000}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80`,
-      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=800&h=800&fit=crop&crop=faces",
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=800&fit=crop&crop=faces",
-      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&h=800&fit=crop&crop=faces",
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&h=800&fit=crop&crop=faces",
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&h=800&fit=crop&crop=faces"
+    // Expanded human image IDs
+    const humanIds = [
+      "1494790108377-be9c29b29330", "1507003211169-0a1dd7228f2d", "1438761681033-6461ffad8d80",
+      "1500648767791-00dcc994a43e", "1534528741775-53994a69daeb", "1522075469751-3a6694fb2f61",
+      "1544005313-94ddf0286df2", "1531746020798-e6953c6e8e04", "1506794778202-cad84cf45f1d",
+      "1524504388940-b1c1722653e1", "1488426862026-3ee34a7d66df", "1519085360753-af0119f7cbe7",
+      "1517841905240-472988babdf9", "1529626455594-4ff0802cfb7e", "1539571696357-5a69c17a67c6"
     ];
 
-    const newImages = [];
+    const botImages = [];
+    const humanImages = [];
 
-    // Generate bot images
-    for (let i = 0; i < botCount; i++) {
-      const prompt = botPrompts[Math.floor(Math.random() * botPrompts.length)];
-      const result = await base44.asServiceRole.integrations.Core.GenerateImage({ prompt });
-      
-      const imageRecord = await base44.asServiceRole.entities.Image.create({
-        url: result.url,
-        is_bot: true,
-        source: 'ai_generated'
-      });
-      
-      newImages.push(imageRecord);
+    // Generate bot images - ensure exact count
+    for (let i = 0; i < targetPerType; i++) {
+      try {
+        const prompt = botPrompts[Math.floor(Math.random() * botPrompts.length)];
+        const result = await base44.asServiceRole.integrations.Core.GenerateImage({ prompt });
+        
+        const imageRecord = await base44.asServiceRole.entities.Image.create({
+          url: result.url,
+          is_bot: true,
+          source: 'ai_generated'
+        });
+        botImages.push(imageRecord);
+      } catch (error) {
+        console.error('Bot generation error:', error);
+      }
     }
 
-    // Add human images
-    for (let i = 0; i < humanCount; i++) {
-      const url = humanImageUrls[Math.floor(Math.random() * humanImageUrls.length)];
-      
-      const imageRecord = await base44.asServiceRole.entities.Image.create({
-        url,
-        is_bot: false,
-        source: 'unsplash'
-      });
-      
-      newImages.push(imageRecord);
+    // Add human images - ensure exact count
+    for (let i = 0; i < targetPerType; i++) {
+      try {
+        const photoId = humanIds[i % humanIds.length];
+        const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${Date.now()}-${i}`;
+        
+        const imageRecord = await base44.asServiceRole.entities.Image.create({
+          url,
+          is_bot: false,
+          source: 'unsplash'
+        });
+        humanImages.push(imageRecord);
+      } catch (error) {
+        console.error('Human image error:', error);
+      }
     }
+
+    const newImages = [...botImages, ...humanImages];
 
     return Response.json({ 
       success: true, 
       count: newImages.length,
+      bots: botImages.length,
+      humans: humanImages.length,
       images: newImages 
     });
 
