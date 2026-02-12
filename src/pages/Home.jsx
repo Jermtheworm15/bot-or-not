@@ -173,19 +173,22 @@ export default function Home() {
         return;
       }
       
+      // Sort by newest first, then shuffle within groups
+      const sorted = validData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
       // Shuffle images efficiently
-      const shuffled = [...validData];
+      const shuffled = [...sorted];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
-      
+
       // Preload first 3 images for smooth transitions
       shuffled.slice(0, 3).forEach(item => {
         const img = new Image();
         img.src = item.url;
       });
-      
+
       setItems(shuffled);
     } catch (err) {
       console.error('Error loading content:', err);
