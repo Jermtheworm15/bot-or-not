@@ -205,6 +205,7 @@ export default function Home() {
       // Preload first 3 images for smooth transitions
       shuffled.slice(0, 3).forEach(item => {
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.src = item.url;
       });
 
