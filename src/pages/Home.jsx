@@ -228,8 +228,8 @@ export default function Home() {
     const newCombo = correct ? combo + 1 : 0;
     setCombo(newCombo);
 
-    // Show explosion effect for correct answers
-    if (correct) {
+    // Show explosion effect for correct answers (desktop only)
+    if (correct && !isMobile) {
       setShowExplosion(true);
       setTimeout(() => setShowExplosion(false), 2500);
     }
