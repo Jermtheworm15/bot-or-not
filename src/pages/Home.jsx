@@ -52,14 +52,21 @@ export default function Home() {
   const checkUsernameAndLoad = async () => {
     try {
       const user = await base44.auth.me();
-      
+
       // Check if user needs onboarding
       const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
       if (profiles.length === 0 || !user.username) {
         window.location.href = createPageUrl('Onboarding');
         return;
       }
-      
+
+      // Check if user has uploaded at least one image
+      const userUploads = await base44.entities.Image.filter({ created_by: user.email });
+      if (userUploads.length === 0) {
+        window.location.href = createPageUrl('Upload');
+        return;
+      }
+
       // Check for referral code in URL
       const urlParams = new URLSearchParams(window.location.search);
       const refCode = urlParams.get('ref');
@@ -69,7 +76,7 @@ export default function Home() {
     } catch (err) {
       console.log('Auth check error:', err);
     }
-    
+
     loadContent();
     loadUserProfile();
   };
