@@ -122,10 +122,20 @@ export default function Home() {
       const user = await base44.auth.me();
       
       // Load images and user's votes in parallel
-      const [data, userVotes] = await Promise.all([
+      const [rawData, userVotes] = await Promise.all([
         base44.entities.Image.list(),
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
+      
+      // Flatten data structure if needed
+      const data = rawData.map(item => ({
+        id: item.id,
+        url: item.data?.url || item.url,
+        is_bot: item.data?.is_bot ?? item.is_bot,
+        source: item.data?.source || item.source,
+        user_uploaded: item.data?.user_uploaded || item.user_uploaded,
+        uploader_name: item.data?.uploader_name || item.uploader_name
+      }));
       
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
