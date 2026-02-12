@@ -24,6 +24,7 @@ export default function Discover() {
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(24);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [brokenImages, setBrokenImages] = useState(new Set());
 
   useEffect(() => {
     loadContent();
@@ -180,7 +181,14 @@ export default function Discover() {
   const displayVideos = filterAndSortContent(videos);
   const allContent = [...displayImages, ...displayVideos].sort((a, b) => b.engagementScore - a.engagementScore);
 
-  const ContentCard = ({ item, type }) => (
+  const handleImageError = (itemId) => {
+    setBrokenImages(prev => new Set([...prev, itemId]));
+  };
+
+  const ContentCard = ({ item, type }) => {
+    if (brokenImages.has(item.id)) return null;
+
+    return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -189,9 +197,9 @@ export default function Discover() {
     >
       <div className="aspect-square relative">
         {type === 'image' ? (
-          <img src={item.url} alt="" className="w-full h-full object-cover" />
+          <img src={item.url} alt="" className="w-full h-full object-cover" onError={() => handleImageError(item.id)} />
         ) : (
-          <video src={item.url} className="w-full h-full object-cover" muted loop playsInline />
+          <video src={item.url} className="w-full h-full object-cover" muted loop playsInline onError={() => handleImageError(item.id)} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
