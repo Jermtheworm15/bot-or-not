@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageCard from '@/components/voting/ImageCard';
-import VideoCard from '@/components/voting/VideoCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 import RatingSlider from '@/components/voting/RatingSlider';
 import StatsBar from '@/components/voting/StatsBar';
@@ -10,11 +9,10 @@ import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import { createPageUrl } from '@/utils';
-import { Bot, Image as ImageIcon, Video as VideoIcon, SkipForward, RefreshCw } from 'lucide-react';
+import { SkipForward, RefreshCw } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const [contentType, setContentType] = useState('image'); // 'image' or 'video'
   const [items, setItems] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +25,7 @@ export default function Home() {
   
   useEffect(() => {
     checkUsernameAndLoad();
-  }, [contentType]);
+  }, []);
   
   const checkUsernameAndLoad = async () => {
     try {
@@ -113,18 +111,14 @@ export default function Home() {
     try {
       const user = await base44.auth.me();
       
-      // Load content and user's votes
+      // Load images and user's votes
       const [data, userVotes] = await Promise.all([
-        contentType === 'image' 
-          ? base44.entities.Image.list()
-          : base44.entities.Video.list(),
-        contentType === 'image'
-          ? base44.entities.Vote.filter({ user_email: user.email })
-          : base44.entities.VideoVote.filter({ user_email: user.email })
+        base44.entities.Image.list(),
+        base44.entities.Vote.filter({ user_email: user.email })
       ]);
       
-      // Get IDs of items user has already voted on
-      const votedIds = new Set(userVotes.map(v => contentType === 'image' ? v.image_id : v.video_id));
+      // Get IDs of images user has already voted on
+      const votedIds = new Set(userVotes.map(v => v.image_id));
       
       // Filter out invalid URLs and already-voted items
       const unseenData = data.filter(item => 
@@ -249,22 +243,13 @@ export default function Home() {
       }
 
       // Save vote (without rating yet)
-    if (contentType === 'image') {
       await base44.entities.Vote.create({
-        image_id: currentItem.id,
-        guessed_bot: guessedBot,
-        was_correct: correct,
-        user_email: user.email
+      image_id: currentItem.id,
+      guessed_bot: guessedBot,
+      was_correct: correct,
+      user_email: user.email
       });
-    } else {
-      await base44.entities.VideoVote.create({
-        video_id: currentItem.id,
-        guessed_bot: guessedBot,
-        was_correct: correct,
-        user_email: user.email
-      });
-    }
-  };
+      };
   
   const handleContentError = () => {
     // Skip to next content if current one fails to load
@@ -277,16 +262,9 @@ export default function Home() {
   
   const handleSubmitRating = async () => {
     // Update the vote with rating
-    if (contentType === 'image') {
-      const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
-      if (votes.length > 0) {
-        await base44.entities.Vote.update(votes[0].id, { rating });
-      }
-    } else {
-      const votes = await base44.entities.VideoVote.filter({ video_id: currentItem.id }, '-created_date', 1);
-      if (votes.length > 0) {
-        await base44.entities.VideoVote.update(votes[0].id, { rating });
-      }
+    const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
+    if (votes.length > 0) {
+      await base44.entities.Vote.update(votes[0].id, { rating });
     }
     
     // Move to next item
@@ -331,25 +309,14 @@ export default function Home() {
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
         {/* Content Display - Main Focal Point */}
         <div className="w-full max-w-3xl mb-6">
-          {contentType === 'image' ? (
-            <ImageCard
-              imageUrl={currentItem?.url}
-              isLoading={isLoading || !currentItem}
-              isRevealed={hasVoted}
-              isBot={currentItem?.is_bot}
-              wasCorrect={wasCorrect}
-              onError={handleContentError}
-            />
-          ) : (
-            <VideoCard
-              videoUrl={currentItem?.url}
-              isLoading={isLoading || !currentItem}
-              isRevealed={hasVoted}
-              isBot={currentItem?.is_bot}
-              wasCorrect={wasCorrect}
-              onError={handleContentError}
-            />
-          )}
+          <ImageCard
+            imageUrl={currentItem?.url}
+            isLoading={isLoading || !currentItem}
+            isRevealed={hasVoted}
+            isBot={currentItem?.is_bot}
+            wasCorrect={wasCorrect}
+            onError={handleContentError}
+          />
         </div>
         
         {/* Voting/Rating Section */}
@@ -404,7 +371,7 @@ export default function Home() {
                 <div className="flex justify-center">
                   <ShareButton
                     contentUrl={currentItem?.url}
-                    contentType={contentType}
+                    contentType="image"
                     isBot={currentItem?.is_bot}
                     wasCorrect={wasCorrect}
                   />
@@ -415,30 +382,7 @@ export default function Home() {
         </div>
         
         {/* Compact bottom controls */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setContentType('image')}
-              size="sm"
-              variant={contentType === 'image' ? 'default' : 'outline'}
-              className={contentType === 'image' 
-                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
-            >
-              <ImageIcon className="w-4 h-4" />
-            </Button>
-            <Button
-              onClick={() => setContentType('video')}
-              size="sm"
-              variant={contentType === 'video' ? 'default' : 'outline'}
-              className={contentType === 'video' 
-                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                : 'border-purple-500/50 text-green-400 hover:bg-purple-900/30'}
-            >
-              <VideoIcon className="w-4 h-4" />
-            </Button>
-          </div>
-          
+        <div className="absolute top-4 right-4 z-20">
           <InviteFriends />
         </div>
         
