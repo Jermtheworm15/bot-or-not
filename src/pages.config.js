@@ -72,6 +72,7 @@ import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
 import AttributeGame from './pages/AttributeGame';
 import AttributeLeaderboard from './pages/AttributeLeaderboard';
+import Analytics from './pages/Analytics';
 import __Layout from './Layout.jsx';
 
 
@@ -101,6 +102,7 @@ export const PAGES = {
     "UsernameSetup": UsernameSetup,
     "AttributeGame": AttributeGame,
     "AttributeLeaderboard": AttributeLeaderboard,
+    "Analytics": Analytics,
 }
 
 export const pagesConfig = {
