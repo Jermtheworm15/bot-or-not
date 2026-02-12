@@ -11,20 +11,20 @@ export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasC
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        {isLoading || !imageUrl ? (
-           <Skeleton className="w-full h-full bg-zinc-800" />
-         ) : (
-           <div className="relative w-full h-full">
-             <img
-               src={imageUrl}
-               alt="Mystery face"
-               className="w-full h-full object-cover"
-               onError={(e) => {
-                 console.error('Image failed to load:', imageUrl);
-                 if (onError) onError();
-               }}
-               loading="eager"
-             />
+        {isLoading ? (
+          <Skeleton className="w-full h-full bg-zinc-800" />
+        ) : (
+          <div className="relative w-full h-full">
+            <img
+              src={imageUrl}
+              alt="Mystery face"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Image failed to load:', imageUrl);
+                if (onError) onError();
+              }}
+              loading="eager"
+            />
             
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

@@ -45,12 +45,12 @@ export default function Home() {
       }
     }
 
-    // Set 5-second timeout to skip to next image if current doesn't load
-        if (!hasVoted && items[currentIndex]?.url) {
-          const timeout = setTimeout(() => {
-            handleContentError();
-          }, 5000);
-          setImageLoadTimeout(timeout);
+    // Set 10-second timeout to skip to next image if current doesn't load
+    if (!hasVoted && items[currentIndex]?.url) {
+      const timeout = setTimeout(() => {
+        handleContentError();
+      }, 10000);
+      setImageLoadTimeout(timeout);
 
       return () => clearTimeout(timeout);
     }
@@ -141,72 +141,72 @@ export default function Home() {
     setIsLoading(true);
     setCurrentIndex(0);
     setHasVoted(false);
-
+    
     try {
       const user = await base44.auth.me();
-
+      
       // Load images and user's votes in parallel
       const [rawData, userVotes] = await Promise.all([
-        base44.entities.Image.list('-created_date', 500),
+        base44.entities.Image.list(),
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
-
-      if (!rawData || rawData.length === 0) {
-        console.log('No images available, generating fresh content...');
-        await base44.functions.invoke('generateFreshContent', { count: 50 });
-        setTimeout(() => loadContent(), 2000);
-        setIsLoading(false);
-        return;
-      }
-
+      
+      // Flatten data structure and validate URLs
+      const data = rawData.map(item => ({
+        id: item.id,
+        url: item.data?.url || item.url,
+        is_bot: item.data?.is_bot ?? item.is_bot,
+        source: item.data?.source || item.source,
+        user_uploaded: item.data?.user_uploaded || item.user_uploaded,
+        uploader_name: item.data?.uploader_name || item.uploader_name
+      })).filter(item => {
+        // Filter out invalid URLs
+        if (!item.url || item.url.trim() === '') return false;
+        try {
+          new URL(item.url);
+          return true;
+        } catch {
+          return false;
+        }
+      });
+      
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
-
-      // Filter: valid URLs and unseen images only
-      const data = rawData
-        .filter(item => {
-          if (!item.url || typeof item.url !== 'string' || item.url.trim() === '') return false;
-          if (votedIds.has(item.id)) return false;
-          try {
-            new URL(item.url);
-            return true;
-          } catch {
-            return false;
-          }
-        })
-        .map(item => ({
-          id: item.id,
-          url: item.url,
-          is_bot: item.is_bot,
-          source: item.source,
-          user_uploaded: item.user_uploaded,
-          uploader_name: item.uploader_name,
-          created_date: item.created_date
-        }));
-
-      // If no unseen images, generate fresh content
-      if (data.length === 0) {
-        console.log('No unseen images, generating fresh content...');
-        await base44.functions.invoke('generateFreshContent', { count: 50 });
-        setTimeout(() => loadContent(), 2000);
+      
+      // Filter out already-voted items
+      const unseenData = data.filter(item => !votedIds.has(item.id));
+      
+      // If user has seen everything, show all items again
+      const validData = unseenData.length > 0 ? unseenData : data;
+      
+      if (validData.length === 0) {
+        setItems([]);
         setIsLoading(false);
         return;
       }
+      
+      // Sort by newest first, then shuffle within groups
+      const sorted = validData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
-      // Shuffle images
-      const shuffled = [...data];
+      // Shuffle images efficiently
+      const shuffled = [...sorted];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
 
+      // Preload first 3 images for smooth transitions
+      shuffled.slice(0, 3).forEach(item => {
+        const img = new Image();
+        img.src = item.url;
+      });
+
       setItems(shuffled);
-      setIsLoading(false);
     } catch (err) {
       console.error('Error loading content:', err);
       setItems([]);
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   
@@ -328,22 +328,9 @@ export default function Home() {
     });
   };
   
-  const deleteBrokenImage = async (imageId) => {
-    try {
-      await base44.entities.Image.delete(imageId);
-    } catch (err) {
-      console.log('Error deleting broken image:', err);
-    }
-  };
-
-  const handleContentError = async () => {
-    // Clear timeout and remove broken image
+  const handleContentError = () => {
+    // Clear timeout and skip to next image
     if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
-
-    if (currentItem?.id) {
-      await deleteBrokenImage(currentItem.id);
-    }
-
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
@@ -356,32 +343,32 @@ export default function Home() {
 
 
   
-  const handleSkip = () => {
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      // Generate fresh content if at end
-      setIsLoading(true);
-      base44.functions.invoke('generateFreshContent', { count: 50 }).catch(console.error);
-      loadContent();
-    }
-  };
-
   const handleSubmitRating = async () => {
     // Update the vote with rating
     const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
     if (votes.length > 0) {
       await base44.entities.Vote.update(votes[0].id, { rating });
     }
-
+    
     // Move to next item
     setRating(5);
     setHasVoted(false);
 
     // Clean up points animations
     setPointsAnimations(prev => prev.slice(-5));
-
-    handleSkip();
+    
+    if (currentIndex < items.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      // Generate fresh content and reload
+      setIsLoading(true);
+      try {
+        await base44.functions.invoke('generateFreshContent', { count: 6 });
+      } catch (error) {
+        console.error('Error generating fresh content:', error);
+      }
+      await loadContent();
+    }
   };
   
   return (
@@ -431,56 +418,45 @@ export default function Home() {
         </div>
         
         {/* Voting/Rating Section */}
-         <div className="w-full max-w-2xl">
-           <AnimatePresence>
-             {!hasVoted ? (
-               <motion.div
-                 key="voting"
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 exit={{ opacity: 0 }}
-                 className="space-y-4"
-               >
-                 <VotingButtons
-                   onVote={handleVote}
-                   disabled={isLoading || !currentItem}
-                 />
-                 <div className="flex justify-center">
-                   <motion.button
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     onClick={handleSkip}
-                     className="px-6 py-2 text-zinc-400 hover:text-zinc-300 font-medium transition-colors"
-                   >
-                     Skip →
-                   </motion.button>
-                 </div>
-               </motion.div>
-             ) : (
-               <motion.div
-                 key="rating"
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 exit={{ opacity: 0 }}
-                 className="space-y-3"
-               >
-                 <RatingSlider
-                   rating={rating}
-                   onRatingChange={setRating}
-                   onSubmit={handleSubmitRating}
-                 />
-                 <div className="flex justify-center">
-                   <ShareButton
-                     contentUrl={currentItem?.url}
-                     contentType="image"
-                     isBot={currentItem?.is_bot}
-                     wasCorrect={wasCorrect}
-                   />
-                 </div>
-               </motion.div>
-             )}
-           </AnimatePresence>
-         </div>
+        <div className="w-full max-w-2xl">
+          <AnimatePresence mode="wait">
+            {!hasVoted ? (
+              <motion.div
+                key="voting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <VotingButtons
+                  onVote={handleVote}
+                  disabled={isLoading || !currentItem}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="rating"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-3"
+              >
+                <RatingSlider
+                  rating={rating}
+                  onRatingChange={setRating}
+                  onSubmit={handleSubmitRating}
+                />
+                <div className="flex justify-center">
+                  <ShareButton
+                    contentUrl={currentItem?.url}
+                    contentType="image"
+                    isBot={currentItem?.is_bot}
+                    wasCorrect={wasCorrect}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         
         {/* Compact bottom controls */}
         <div className="absolute top-4 right-4 z-20">

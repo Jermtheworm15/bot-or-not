@@ -111,7 +111,7 @@ export default function TopShowcase() {
         ))}
       </div>
       
-      <style>{`
+      <style jsx>{`
         @keyframes scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
