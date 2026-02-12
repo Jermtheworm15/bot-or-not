@@ -160,6 +160,15 @@ export default function Home() {
     }
   };
   
+  const handleContentError = () => {
+    // Skip to next content if current one fails to load
+    if (currentIndex < items.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      loadContent();
+    }
+  };
+  
   const handleSubmitRating = async () => {
     // Update the vote with rating
     if (contentType === 'image') {
@@ -257,6 +266,7 @@ export default function Home() {
             isRevealed={hasVoted}
             isBot={currentItem?.is_bot}
             wasCorrect={wasCorrect}
+            onError={handleContentError}
           />
         ) : (
           <VideoCard
@@ -265,6 +275,7 @@ export default function Home() {
             isRevealed={hasVoted}
             isBot={currentItem?.is_bot}
             wasCorrect={wasCorrect}
+            onError={handleContentError}
           />
         )}
         

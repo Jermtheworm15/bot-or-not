@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasCorrect }) {
+export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasCorrect, onError }) {
   return (
     <div className="relative w-full max-w-md mx-auto aspect-[9/16]">
       <motion.div
@@ -22,6 +22,7 @@ export default function VideoCard({ videoUrl, isLoading, isRevealed, isBot, wasC
               loop
               muted
               playsInline
+              onError={onError}
             />
             
             {/* Gradient overlay */}
