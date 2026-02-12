@@ -154,14 +154,15 @@ export default function Home() {
       // Flatten data structure and validate URLs
       const data = rawData.map(item => ({
         id: item.id,
-        url: item.data?.url || item.url,
-        is_bot: item.data?.is_bot ?? item.is_bot,
-        source: item.data?.source || item.source,
-        user_uploaded: item.data?.user_uploaded || item.user_uploaded,
-        uploader_name: item.data?.uploader_name || item.uploader_name
+        url: item.url,
+        is_bot: item.is_bot,
+        source: item.source,
+        user_uploaded: item.user_uploaded,
+        uploader_name: item.uploader_name,
+        created_date: item.created_date
       })).filter(item => {
         // Filter out invalid URLs
-        if (!item.url || item.url.trim() === '') return false;
+        if (!item.url || typeof item.url !== 'string' || item.url.trim() === '') return false;
         try {
           new URL(item.url);
           return true;
