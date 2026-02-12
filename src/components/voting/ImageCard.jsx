@@ -24,6 +24,8 @@ export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasC
                 if (onError) onError();
               }}
               loading="eager"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
             />
             
             {/* Gradient overlay */}
