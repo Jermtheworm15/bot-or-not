@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, Zap, Target, Crown, Star, Flame, Trophy } from 'lucide-react';
+import { Award, Zap, Target, Crown, Star, Flame, Trophy, Shield } from 'lucide-react';
 
 const BADGES = {
   'first_vote': { name: 'First Step', icon: Star, color: 'text-blue-400', description: 'Cast your first vote' },
@@ -9,7 +9,12 @@ const BADGES = {
   'voter_100': { name: 'Centurion', icon: Target, color: 'text-purple-400', description: '100 total votes' },
   'accuracy_90': { name: 'Sharp Eye', icon: Award, color: 'text-green-400', description: '90% accuracy' },
   'daily_champion': { name: 'Daily Champion', icon: Crown, color: 'text-amber-400', description: 'Complete daily challenge' },
-  'leaderboard_top10': { name: 'Elite', icon: Trophy, color: 'text-cyan-400', description: 'Reach top 10' }
+  'leaderboard_top10': { name: 'Elite', icon: Trophy, color: 'text-cyan-400', description: 'Reach top 10' },
+  'accuracy_master': { name: 'Accuracy Master', icon: Target, color: 'text-green-500', description: '90%+ accuracy' },
+  'vote_veteran': { name: 'Vote Veteran', icon: Award, color: 'text-yellow-500', description: '100+ votes cast' },
+  'challenge_champion': { name: 'Challenge Champion', icon: Trophy, color: 'text-purple-500', description: 'Completed 10 challenges' },
+  'speed_demon': { name: 'Speed Demon', icon: Zap, color: 'text-cyan-500', description: 'Lightning fast decisions' },
+  'daily_warrior': { name: 'Daily Warrior', icon: Shield, color: 'text-red-500', description: '7 day voting streak' }
 };
 
 export default function BadgeDisplay({ badges, size = 'md' }) {
