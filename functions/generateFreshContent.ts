@@ -136,56 +136,31 @@ Deno.serve(async (req) => {
 
     for (let i = 0; i < realBatchSize && totalToFetch - newImages.length > 0; i++) {
       try {
-        // Randomize source selection
         const sourceChoice = Math.floor(Math.random() * 3);
         let url;
         let source;
         
         if (sourceChoice === 0) {
-          // Unsplash
           const photoId = unsplashIds[Math.floor(Math.random() * unsplashIds.length)];
-          const uniqueSig = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${uniqueSig}`;
+          url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80`;
           source = 'unsplash';
         } else if (sourceChoice === 1) {
-          // Pexels
           const photoId = pexelsIds[Math.floor(Math.random() * pexelsIds.length)];
-          const uniqueSig = Math.random().toString(36).substr(2, 9);
-          url = `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?w=800&h=800&fit=crop&crop=faces&auto=format&q=80`;
+          url = `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?w=800&h=800&fit=crop`;
           source = 'pexels';
         } else {
-          // Picsum Photos (Lorem Picsum)
           const randomId = Math.floor(Math.random() * 1000);
-          const seed = Math.random().toString(36).substr(2, 9);
-          url = `https://picsum.photos/800/800?random=${randomId}&seed=${seed}`;
+          url = `https://picsum.photos/800/800?random=${randomId}`;
           source = 'picsum';
         }
 
-        const hash = await fetchAndHashImage(url);
-        
-        if (hash) {
-          // Check for similar images using Hamming distance
-          let isDuplicate = false;
-          for (const existingHash of existingHashes) {
-            if (hammingDistance(hash, existingHash) <= HASH_SIMILARITY_THRESHOLD) {
-              isDuplicate = true;
-              skipped++;
-              break;
-            }
-          }
-
-          if (!isDuplicate) {
-            existingHashes.push(hash);
-            await base44.asServiceRole.entities.Image.create({
-              url,
-              is_bot: false,
-              source,
-              user_uploaded: false,
-              perceptual_hash: hash
-            });
-            newImages.push({ url, is_bot: false, hash });
-          }
-        }
+        await base44.asServiceRole.entities.Image.create({
+          url,
+          is_bot: false,
+          source,
+          user_uploaded: false
+        });
+        newImages.push({ url, is_bot: false });
       } catch (error) {
         console.error('Real image fetch error:', error);
       }
