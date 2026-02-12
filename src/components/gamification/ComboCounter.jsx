@@ -30,13 +30,13 @@ export default function ComboCounter({ combo, onMilestone }) {
           repeat: Infinity,
           repeatDelay: 1
         }}
-        className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-xl ${
+        className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full font-black text-lg sm:text-xl mx-4 ${
           isMilestone
             ? 'bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/50'
             : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/50'
         }`}
       >
-        <Flame className={`w-6 h-6 ${isMilestone ? 'animate-pulse' : ''}`} />
+        <Flame className={`w-5 h-5 sm:w-6 sm:h-6 ${isMilestone ? 'animate-pulse' : ''}`} />
         <span>{combo}</span>
       </motion.div>
     </motion.div>
