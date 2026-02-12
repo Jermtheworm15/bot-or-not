@@ -33,9 +33,19 @@ export default function Home() {
   const checkUsernameAndLoad = async () => {
     try {
       const user = await base44.auth.me();
-      if (!user.username) {
-        window.location.href = createPageUrl('UsernameSetup');
+      
+      // Check if user needs onboarding
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      if (profiles.length === 0 || !user.username) {
+        window.location.href = createPageUrl('Onboarding');
         return;
+      }
+      
+      // Check for referral code in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref');
+      if (refCode) {
+        handleReferral(refCode, user.email);
       }
     } catch (err) {
       console.log('Auth check error:', err);
@@ -43,6 +53,33 @@ export default function Home() {
     
     loadContent();
     loadUserProfile();
+  };
+  
+  const handleReferral = async (refCode, userEmail) => {
+    try {
+      // Check if referral already exists
+      const existing = await base44.entities.Referral.filter({ 
+        referral_code: refCode,
+        referred_email: userEmail 
+      });
+      
+      if (existing.length === 0) {
+        // Find referrer by code (decode from base64)
+        const allUsers = await base44.entities.UserProfile.list();
+        const referrer = allUsers.find(u => btoa(u.user_email).slice(0, 8).toUpperCase() === refCode);
+        
+        if (referrer) {
+          await base44.entities.Referral.create({
+            referrer_email: referrer.user_email,
+            referred_email: userEmail,
+            referral_code: refCode,
+            completed: false
+          });
+        }
+      }
+    } catch (err) {
+      console.log('Referral error:', err);
+    }
   };
   
   const loadUserProfile = async () => {
@@ -142,7 +179,7 @@ export default function Home() {
         newBadges.push('streak_10');
       }
       
-      await base44.entities.UserProfile.update(userProfile.id, {
+      const updatedProfile = await base44.entities.UserProfile.update(userProfile.id, {
         points: (userProfile.points || 0) + pointsEarned,
         daily_votes: (userProfile.daily_votes || 0) + 1,
         weekly_votes: (userProfile.weekly_votes || 0) + 1,
@@ -150,6 +187,43 @@ export default function Home() {
         badges: newBadges,
         last_vote_date: new Date().toISOString()
       });
+      
+      // Create activity for real-time feed
+      await base44.entities.Activity.create({
+        user_email: user.email,
+        username: user.username || user.email,
+        action_type: newStreak >= 5 ? 'streak' : 'vote',
+        description: newStreak >= 5 ? `Hit a ${newStreak} vote streak!` : `Voted ${correct ? 'correctly' : 'incorrectly'}`,
+        metadata: { streak: newStreak, correct }
+      });
+      
+      // Check and complete referrals on first vote
+      if (stats.total === 0) {
+        const referrals = await base44.entities.Referral.filter({ 
+          referred_email: user.email,
+          completed: false 
+        });
+        
+        for (const ref of referrals) {
+          await base44.entities.Referral.update(ref.id, { 
+            completed: true,
+            completed_date: new Date().toISOString()
+          });
+          
+          // Update referrer's profile
+          const referrerProfiles = await base44.entities.UserProfile.filter({ 
+            user_email: ref.referrer_email 
+          });
+          if (referrerProfiles.length > 0) {
+            const refProfile = referrerProfiles[0];
+            const newRefCount = (refProfile.referral_count || 0) + 1;
+            await base44.entities.UserProfile.update(refProfile.id, {
+              referral_count: newRefCount,
+              is_premium: newRefCount >= 3
+            });
+          }
+        }
+      }
       
       await loadUserProfile();
     }

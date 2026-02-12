@@ -1,13 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Trophy, Upload, Flame, Eye, User, Compass } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Compass, Users } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
+import LaunchChallenge from './components/LaunchChallenge';
+import LiveActivityFeed from './components/LiveActivityFeed';
 
 export default function Layout({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden pb-20">
+      <LaunchChallenge />
+      <LiveActivityFeed />
       <style>{`
         @keyframes gridMove {
           0% { transform: translateY(0); }
@@ -127,6 +131,17 @@ export default function Layout({ children, currentPageName }) {
             >
               <Trophy className="w-5 h-5" />
               <span className="text-xs uppercase tracking-wide">Achieve</span>
+            </Link>
+            <Link
+              to={createPageUrl('Referrals')}
+              className={`flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all ${
+                currentPageName === 'Referrals'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'text-green-400 hover:text-white hover:bg-purple-900/30'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-wide">Refer</span>
             </Link>
             <Link
               to={createPageUrl('Profile')}
