@@ -19,7 +19,10 @@ export default function Discover() {
   const [videos, setVideos] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('trending');
+  const [sourceFilter, setSourceFilter] = useState('all'); // all, ai, real
+  const [dateFilter, setDateFilter] = useState('all'); // all, today, week, month
   const [isLoading, setIsLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(24);
 
   useEffect(() => {
     loadContent();
@@ -90,6 +93,33 @@ export default function Discover() {
         item.source?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.uploader_name?.toLowerCase().includes(searchQuery.toLowerCase())
       );
+    }
+
+    // Filter by source (AI vs Real)
+    if (sourceFilter !== 'all') {
+      filtered = filtered.filter(item => 
+        sourceFilter === 'ai' ? item.is_bot : !item.is_bot
+      );
+    }
+
+    // Filter by date
+    if (dateFilter !== 'all') {
+      const now = new Date();
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.created_date);
+        switch (dateFilter) {
+          case 'today':
+            return itemDate.toDateString() === now.toDateString();
+          case 'week':
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return itemDate >= weekAgo;
+          case 'month':
+            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            return itemDate >= monthAgo;
+          default:
+            return true;
+        }
+      });
     }
 
     // Sort
@@ -192,7 +222,7 @@ export default function Discover() {
           <div className="flex flex-wrap gap-3">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-40 bg-zinc-900 border-purple-500/30 text-white">
-                <SelectValue />
+                <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="trending">
@@ -221,6 +251,29 @@ export default function Discover() {
                 </SelectItem>
               </SelectContent>
             </Select>
+
+            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+              <SelectTrigger className="w-36 bg-zinc-900 border-purple-500/30 text-white">
+                <SelectValue placeholder="Source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                <SelectItem value="ai">🤖 AI Only</SelectItem>
+                <SelectItem value="real">👤 Real Only</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-36 bg-zinc-900 border-purple-500/30 text-white">
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -244,7 +297,7 @@ export default function Discover() {
             <>
               <TabsContent value="all">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {allContent.slice(0, 24).map((item) => (
+                  {allContent.slice(0, displayCount).map((item) => (
                     <ContentCard 
                       key={item.id} 
                       item={item} 
@@ -255,27 +308,57 @@ export default function Discover() {
                 {allContent.length === 0 && (
                   <div className="text-center py-12 text-zinc-500">No content found</div>
                 )}
+                {allContent.length > displayCount && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={() => setDisplayCount(prev => prev + 24)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg"
+                    >
+                      Load More
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="images">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {displayImages.map((item) => (
+                  {displayImages.slice(0, displayCount).map((item) => (
                     <ContentCard key={item.id} item={item} type="image" />
                   ))}
                 </div>
                 {displayImages.length === 0 && (
                   <div className="text-center py-12 text-zinc-500">No images found</div>
                 )}
+                {displayImages.length > displayCount && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={() => setDisplayCount(prev => prev + 24)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg"
+                    >
+                      Load More
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="videos">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {displayVideos.map((item) => (
+                  {displayVideos.slice(0, displayCount).map((item) => (
                     <ContentCard key={item.id} item={item} type="video" />
                   ))}
                 </div>
                 {displayVideos.length === 0 && (
                   <div className="text-center py-12 text-zinc-500">No videos found</div>
+                )}
+                {displayVideos.length > displayCount && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={() => setDisplayCount(prev => prev + 24)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg"
+                    >
+                      Load More
+                    </Button>
+                  </div>
                 )}
               </TabsContent>
             </>
