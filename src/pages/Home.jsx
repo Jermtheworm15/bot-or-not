@@ -21,12 +21,13 @@ export default function Home() {
   const [stats, setStats] = useState({ total: 0, correct: 0, streak: 0 });
   const [showExplosion, setShowExplosion] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  
+  const [imageLoadTimeout, setImageLoadTimeout] = useState(null);
+
   useEffect(() => {
     checkUsernameAndLoad();
   }, []);
   
-  // Preload next image for smooth transitions
+  // Preload next image and set auto-skip timeout
   useEffect(() => {
     if (items.length > 0 && currentIndex < items.length - 1) {
       const nextImage = items[currentIndex + 1];
@@ -35,7 +36,17 @@ export default function Home() {
         img.src = nextImage.url;
       }
     }
-  }, [currentIndex, items]);
+
+    // Set 10-second timeout to skip to next image if current doesn't load
+    if (!hasVoted && currentItem?.url) {
+      const timeout = setTimeout(() => {
+        handleContentError();
+      }, 10000);
+      setImageLoadTimeout(timeout);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, items, hasVoted, currentItem]);
   
   const checkUsernameAndLoad = async () => {
     try {
@@ -283,9 +294,15 @@ export default function Home() {
   };
   
   const handleContentError = () => {
-    // Skip to next image if current one fails to load
+    // Clear timeout and skip to next image
+    if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
+    } else {
+      // Generate fresh content if at end
+      setIsLoading(true);
+      base44.functions.invoke('generateFreshContent', { count: 6 }).catch(console.error);
+      loadContent();
     }
   };
   
