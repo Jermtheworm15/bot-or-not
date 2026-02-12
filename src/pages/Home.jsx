@@ -54,10 +54,14 @@ export default function Home() {
   const checkUsernameAndLoad = async () => {
     try {
       const user = await base44.auth.me();
+      if (!user) {
+        window.location.href = createPageUrl('Onboarding');
+        return;
+      }
 
       // Check if user needs onboarding
       const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-      if (profiles.length === 0 || !user.username) {
+      if (profiles.length === 0 || !user.full_name) {
         window.location.href = createPageUrl('Onboarding');
         return;
       }
