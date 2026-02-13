@@ -41,8 +41,13 @@ export default function Profile() {
   const loadProfile = async () => {
     setIsLoading(true);
     
-    const currentUser = await base44.auth.me();
-    setUser(currentUser);
+    try {
+      const currentUser = await base44.auth.me();
+      if (!currentUser) {
+        navigate('/Landing');
+        return;
+      }
+      setUser(currentUser);
     
     // Load or create profile
     const profiles = await base44.entities.UserProfile.filter({ user_email: currentUser.email });
@@ -105,6 +110,10 @@ export default function Profile() {
     });
     
     setIsLoading(false);
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      navigate('/Landing');
+    }
   };
   
   const getNextLevelPoints = (level) => level * 100;
