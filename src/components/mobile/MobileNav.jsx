@@ -8,8 +8,8 @@ export default function MobileNav({ currentPageName }) {
   const [open, setOpen] = useState(false);
 
   const navItems = [
-    { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
     { name: 'Home', icon: Eye, label: 'Vote' },
+    { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
     { name: 'UserLeaderboard', icon: Trophy, label: 'Players' },
     { name: 'StreakLeaderboard', icon: Flame, label: 'Streaks' },
     { name: 'Upload', icon: Upload, label: 'Upload' },
