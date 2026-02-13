@@ -127,7 +127,10 @@ export default function Layout({ children, currentPageName }) {
                     </div>
                     <span className="tracking-wider uppercase">Bot or Not</span>
                   </Link>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    <Link to={createPageUrl('Profile')} className="text-green-400 hover:text-white transition-colors">
+                      <Settings className="w-5 h-5" />
+                    </Link>
                     <Sheet>
                       <SheetTrigger asChild>
                         <button className="text-green-400 hover:text-white transition-colors">
