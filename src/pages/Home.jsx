@@ -322,13 +322,16 @@ export default function Home() {
   const handleContentError = () => {
     // Prevent rapid-fire error skips
     if (errorSkipInProgress) return;
-    
+
     setErrorSkipInProgress(true);
-    
+
     // Skip to next image after brief delay
     setTimeout(() => {
       if (currentIndex < items.length - 1) {
         setCurrentIndex(prev => prev + 1);
+      } else {
+        // Reload content if we're at the end
+        loadContent();
       }
       setErrorSkipInProgress(false);
     }, 500);
