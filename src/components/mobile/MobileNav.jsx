@@ -8,6 +8,7 @@ export default function MobileNav({ currentPageName }) {
   const [open, setOpen] = useState(false);
 
   const navItems = [
+    { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
     { name: 'Home', icon: Eye, label: 'Vote' },
     { name: 'UserLeaderboard', icon: Trophy, label: 'Players' },
     { name: 'StreakLeaderboard', icon: Flame, label: 'Streaks' },
@@ -19,7 +20,6 @@ export default function MobileNav({ currentPageName }) {
     { name: 'Referrals', icon: Users, label: 'Referrals' },
     { name: 'AttributeGame', icon: Sparkles, label: 'Attributes' },
     { name: 'AttributeLeaderboard', icon: Trophy, label: 'Attribute Rankings' },
-    { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
     { name: 'Messages', icon: MessageCircle, label: 'Messages' },
     { name: 'CreateChallenge', icon: Gamepad2, label: 'Create Challenge' },
     { name: 'Profile', icon: User, label: 'Profile' },
