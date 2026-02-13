@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Target, Trophy, ArrowRight } from 'lucide-react';
+import { Zap, Target, Trophy, ArrowRight, Upload, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createPageUrl } from '@/utils';
 import ImageCard from '@/components/voting/ImageCard';
@@ -11,10 +11,13 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [username, setUsername] = useState('');
   const [zipCode, setZipCode] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [demoImage, setDemoImage] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [wasCorrect, setWasCorrect] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     loadDemoImage();
@@ -31,12 +34,34 @@ export default function Onboarding() {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUsernameSubmit = async () => {
-    if (!username.trim() || !zipCode.trim()) return;
+    if (!username.trim() || !zipCode.trim() || !profileImage) return;
     
+    setIsUploading(true);
     try {
       const user = await base44.auth.me();
-      await base44.auth.updateMe({ full_name: username });
+      
+      // Upload profile image
+      const { data } = await base44.integrations.Core.UploadFile({ file: profileImage });
+      const imageUrl = data.file_url;
+      
+      // Update user with username and profile image
+      await base44.auth.updateMe({ 
+        full_name: username,
+        profile_image: imageUrl
+      });
       
       // Create user profile with zip code
       const profile = await base44.entities.UserProfile.create({
@@ -54,6 +79,8 @@ export default function Onboarding() {
       setStep(1);
     } catch (err) {
       console.log('Error setting username:', err);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -120,7 +147,6 @@ export default function Onboarding() {
                   placeholder="Choose your username..."
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && zipCode.trim() && handleUsernameSubmit()}
                   className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
                   autoFocus
                 />
@@ -130,17 +156,54 @@ export default function Onboarding() {
                   placeholder="Enter your zip code..."
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && username.trim() && handleUsernameSubmit()}
                   maxLength="5"
                   className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
                 />
                 
+                {/* Profile Image Upload */}
+                <div className="border-2 border-dashed border-purple-500/30 rounded-xl p-6 hover:border-purple-500 transition-colors">
+                  <input
+                    id="profile-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="profile-upload" className="cursor-pointer">
+                    {profileImagePreview ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <img
+                          src={profileImagePreview}
+                          alt="Profile"
+                          className="w-24 h-24 rounded-full object-cover border-2 border-purple-500"
+                        />
+                        <p className="text-sm text-purple-400">Click to change photo</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-24 h-24 rounded-full bg-zinc-800 flex items-center justify-center">
+                          <User className="w-12 h-12 text-zinc-600" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium flex items-center gap-2 justify-center">
+                            <Upload className="w-4 h-4" />
+                            Upload Profile Photo
+                          </p>
+                          <p className="text-sm text-zinc-500 mt-1">
+                            PNG, JPG up to 10MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </label>
+                </div>
+                
                 <Button
                   onClick={handleUsernameSubmit}
-                  disabled={!username.trim() || !zipCode.trim()}
+                  disabled={!username.trim() || !zipCode.trim() || !profileImage || isUploading}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-bold"
                 >
-                  Start Playing <ArrowRight className="ml-2 w-5 h-5" />
+                  {isUploading ? 'Uploading...' : 'Start Playing'} <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </div>
             </motion.div>

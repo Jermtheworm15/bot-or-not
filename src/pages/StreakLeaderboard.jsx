@@ -82,6 +82,7 @@ export default function StreakLeaderboard() {
         userStreaks[vote.user_email] = {
           email: vote.user_email,
           username: userMap[vote.user_email]?.username,
+          profileImage: userMap[vote.user_email]?.profile_image,
           currentStreak: 0,
           bestStreak: 0,
           totalVotes: 0,
@@ -147,14 +148,22 @@ export default function StreakLeaderboard() {
       >
         <Card className="bg-zinc-900 border-zinc-800 p-4 hover:border-amber-500/50 transition-colors">
           <div className="flex items-center gap-4">
-            <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-              rank === 0 ? 'bg-amber-500 text-white' :
-              rank === 1 ? 'bg-zinc-400 text-white' :
-              rank === 2 ? 'bg-amber-700 text-white' :
-              'bg-zinc-800 text-zinc-400'
-            }`}>
-              {rank === 0 ? <Trophy className="w-6 h-6" /> : `#${rank + 1}`}
-            </div>
+            {user.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt={displayName}
+                className="flex-shrink-0 w-12 h-12 rounded-full object-cover border-2 border-amber-500/50"
+              />
+            ) : (
+              <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                rank === 0 ? 'bg-amber-500 text-white' :
+                rank === 1 ? 'bg-zinc-400 text-white' :
+                rank === 2 ? 'bg-amber-700 text-white' :
+                'bg-zinc-800 text-zinc-400'
+              }`}>
+                {rank === 0 ? <Trophy className="w-6 h-6" /> : `#${rank + 1}`}
+              </div>
+            )}
             
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">

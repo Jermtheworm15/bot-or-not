@@ -102,11 +102,22 @@ export default function AttributeLeaderboard() {
         imageStats[vote.image_id].voters += 1;
       });
 
+      // Load images to get thumbnails
+      const imageIds = Object.keys(imageStats);
+      const images = await base44.entities.Image.list();
+      const imageMap = {};
+      images.forEach(img => { if (img.id) imageMap[img.id] = img; });
+
       // Calculate averages and sort
       const sorted = Object.entries(imageStats)
         .map(([imageId, data]) => {
           const avgRating = (data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length).toFixed(1);
-          return { imageId, avgRating: parseFloat(avgRating), voters: data.voters };
+          return { 
+            imageId, 
+            avgRating: parseFloat(avgRating), 
+            voters: data.voters,
+            imageUrl: imageMap[imageId]?.url
+          };
         })
         .sort((a, b) => b.avgRating - a.avgRating)
         .slice(0, 50);
@@ -212,11 +223,22 @@ export default function AttributeLeaderboard() {
                           transition={{ delay: idx * 0.05 }}
                           className="flex items-center gap-4 p-4 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors"
                         >
-                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-600 font-bold text-sm">
-                            {idx === 0 && <Trophy className="w-5 h-5" />}
-                            {idx === 1 && <Medal className="w-5 h-5 text-gray-400" />}
-                            {idx === 2 && <Medal className="w-5 h-5 text-yellow-600" />}
-                            {idx > 2 && <span>#{idx + 1}</span>}
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt="Ranked image"
+                              className="flex-shrink-0 w-12 h-12 rounded-lg object-cover border-2 border-purple-500/50"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-600 font-bold text-sm">
+                              {idx === 0 && <Trophy className="w-5 h-5" />}
+                              {idx === 1 && <Medal className="w-5 h-5 text-gray-400" />}
+                              {idx === 2 && <Medal className="w-5 h-5 text-yellow-600" />}
+                              {idx > 2 && <span>#{idx + 1}</span>}
+                            </div>
+                          )}
+                          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-purple-600/50 flex items-center justify-center font-bold text-xs">
+                            #{idx + 1}
                           </div>
                           <div className="flex-1">
                             <p className="text-sm text-zinc-300">Image ID: {item.imageId.slice(0, 8)}...</p>

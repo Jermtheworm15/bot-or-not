@@ -113,6 +113,7 @@ export default function UserLeaderboard() {
         return {
           email: profile.user_email,
           username: userMap[profile.user_email]?.username || profile.user_email.split('@')[0],
+          profileImage: userMap[profile.user_email]?.profile_image,
           points: profile.points || 0,
           level: profile.level || 1,
           totalVotes: stats.totalVotes,
@@ -207,6 +208,8 @@ export default function UserLeaderboard() {
 
   const LeaderboardCard = ({ user, rank }) => {
     const isCurrentUser = currentUser?.email === user.email;
+    const userInfo = leaderboard.find(u => u.email === user.email);
+    const profileImage = userInfo?.profileImage;
     
     return (
       <motion.div
@@ -218,14 +221,22 @@ export default function UserLeaderboard() {
           isCurrentUser ? 'border-purple-500 shadow-lg shadow-purple-500/20' : 'border-zinc-800'
         }`}>
           <div className="flex items-center gap-4">
-            <div className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg ${
-              rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg shadow-yellow-500/50' :
-              rank === 2 ? 'bg-gradient-to-br from-zinc-300 to-zinc-500 text-white shadow-lg shadow-zinc-400/50' :
-              rank === 3 ? 'bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-lg shadow-amber-600/50' :
-              'bg-zinc-800 text-zinc-400'
-            }`}>
-              {rank === 1 ? <Crown className="w-7 h-7" /> : `#${rank}`}
-            </div>
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt={user.username}
+                className="flex-shrink-0 w-14 h-14 rounded-full object-cover border-2 border-purple-500/50"
+              />
+            ) : (
+              <div className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg ${
+                rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg shadow-yellow-500/50' :
+                rank === 2 ? 'bg-gradient-to-br from-zinc-300 to-zinc-500 text-white shadow-lg shadow-zinc-400/50' :
+                rank === 3 ? 'bg-gradient-to-br from-amber-600 to-amber-800 text-white shadow-lg shadow-amber-600/50' :
+                'bg-zinc-800 text-zinc-400'
+              }`}>
+                {rank === 1 ? <Crown className="w-7 h-7" /> : `#${rank}`}
+              </div>
+            )}
             
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
