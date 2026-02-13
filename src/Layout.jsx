@@ -135,32 +135,34 @@ export default function Layout({ children, currentPageName }) {
                         </button>
                       </SheetTrigger>
                       <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-64">
-                        <div className="mt-8 space-y-2">
-                          <Link to={createPageUrl('Home')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Eye className="w-5 h-5" /> Vote
-                          </Link>
-                          <Link to={createPageUrl('UserLeaderboard')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Trophy className="w-5 h-5" /> Leaderboard
-                          </Link>
-                          <Link to={createPageUrl('Upload')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Upload className="w-5 h-5" /> Upload
-                          </Link>
-                          <Link to={createPageUrl('AIChallenge')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Gamepad2 className="w-5 h-5" /> AI Battle
-                          </Link>
-                          <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Trophy className="w-5 h-5" /> Achievements
-                          </Link>
-                          <Link to={createPageUrl('Community')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <Users className="w-5 h-5" /> Community
-                          </Link>
-                          <Link to={createPageUrl('Messages')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <MessageCircle className="w-5 h-5" /> Messages
-                          </Link>
-                          <Link to={createPageUrl('Profile')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                            <User className="w-5 h-5" /> Profile
-                          </Link>
-                        </div>
+                        <SheetClose asChild>
+                          <div className="mt-8 space-y-2">
+                            <Link to={createPageUrl('Home')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Eye className="w-5 h-5" /> Vote
+                            </Link>
+                            <Link to={createPageUrl('UserLeaderboard')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Trophy className="w-5 h-5" /> Leaderboard
+                            </Link>
+                            <Link to={createPageUrl('Upload')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Upload className="w-5 h-5" /> Upload
+                            </Link>
+                            <Link to={createPageUrl('AIChallenge')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Gamepad2 className="w-5 h-5" /> AI Battle
+                            </Link>
+                            <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Trophy className="w-5 h-5" /> Achievements
+                            </Link>
+                            <Link to={createPageUrl('Community')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Users className="w-5 h-5" /> Community
+                            </Link>
+                            <Link to={createPageUrl('Messages')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <MessageCircle className="w-5 h-5" /> Messages
+                            </Link>
+                            <Link to={createPageUrl('Profile')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <User className="w-5 h-5" /> Profile
+                            </Link>
+                          </div>
+                        </SheetClose>
                       </SheetContent>
                     </Sheet>
                             {currentUser && <NotificationBell />}

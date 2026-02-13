@@ -293,9 +293,6 @@ export default function Profile() {
         {/* Portfolio */}
         <PortfolioShowcase userEmail={user?.email} isOwnProfile={true} />
 
-        {/* Activity Feed */}
-        <ProfileActivityFeed userEmail={user?.email} />
-
         {/* Friends List */}
         {isOwnProfile && (
           <FriendsList userEmail={user?.email} userName={user?.username || user?.email} />

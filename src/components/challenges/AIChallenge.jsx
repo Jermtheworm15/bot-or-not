@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Clock, Brain } from 'lucide-react';
 import DifficultySelector from './DifficultySelector';
 import { createPageUrl } from '@/utils';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function AIChallenge() {
   const [gameState, setGameState] = useState('difficulty'); // difficulty, loading, playing, finished
@@ -64,6 +65,7 @@ export default function AIChallenge() {
   };
 
   const startGame = async (selectedDifficulty) => {
+    playSound.challengeStart();
     setGameState('loading');
     setDifficulty(selectedDifficulty);
     
@@ -89,6 +91,12 @@ export default function AIChallenge() {
     const image = images[currentIndex];
     if (!image?.id) return;
     const correct = guessedBot === image.is_bot;
+
+    if (correct) {
+      playSound.arcade();
+    } else {
+      playSound.incorrect();
+    }
 
     const playerAnswer = {
       imageId: image.id,
@@ -186,6 +194,7 @@ export default function AIChallenge() {
   };
 
   const finishGame = async () => {
+    playSound.challengeEnd();
     setIsGameOver(true);
     // Save result to profile
     if (currentUser) {

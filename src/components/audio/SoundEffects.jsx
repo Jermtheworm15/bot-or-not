@@ -138,5 +138,81 @@ export const playSound = {
     } catch (e) {
       console.log('Sound effect error:', e);
     }
+  },
+
+  // Arcade/Retro game sound - beep boop
+  arcade: () => {
+    try {
+      const now = audioContext.currentTime;
+      const osc1 = audioContext.createOscillator();
+      const osc2 = audioContext.createOscillator();
+      const gain1 = audioContext.createGain();
+      const gain2 = audioContext.createGain();
+      
+      osc1.connect(gain1);
+      osc2.connect(gain2);
+      gain1.connect(audioContext.destination);
+      gain2.connect(audioContext.destination);
+      
+      // First beep
+      osc1.frequency.setValueAtTime(400, now);
+      gain1.gain.setValueAtTime(0.2, now);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      osc1.start(now);
+      osc1.stop(now + 0.1);
+      
+      // Second beep
+      osc2.frequency.setValueAtTime(600, now + 0.15);
+      gain2.gain.setValueAtTime(0.2, now + 0.15);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+      osc2.start(now + 0.15);
+      osc2.stop(now + 0.25);
+    } catch (e) {
+      console.log('Sound effect error:', e);
+    }
+  },
+
+  // Challenge start - rising tone
+  challengeStart: () => {
+    try {
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.exponentialRampToValueAtTime(800, now + 0.3);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } catch (e) {
+      console.log('Sound effect error:', e);
+    }
+  },
+
+  // Challenge end - descending tone
+  challengeEnd: () => {
+    try {
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+      
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {
+      console.log('Sound effect error:', e);
+    }
   }
 };

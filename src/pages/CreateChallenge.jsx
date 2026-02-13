@@ -10,6 +10,7 @@ import { Gamepad2, Users, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function CreateChallenge() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -48,6 +49,7 @@ export default function CreateChallenge() {
     if (!selectedOpponent || !currentUser) return;
 
     setIsSubmitting(true);
+    playSound.challengeStart();
     try {
       const challenge = await base44.entities.UserChallenge.create({
         challenger_email: currentUser.email,
@@ -79,6 +81,7 @@ export default function CreateChallenge() {
         metadata: { challenge_id: challenge.id }
       });
 
+      playSound.arcade();
       toast.success('Challenge sent!');
       navigate('/challenges');
     } catch (err) {
