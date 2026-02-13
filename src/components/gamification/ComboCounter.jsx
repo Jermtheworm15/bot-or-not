@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function ComboCounter({ combo, onMilestone }) {
   const isMilestone = combo > 0 && combo % 5 === 0;
 
   React.useEffect(() => {
     if (isMilestone && onMilestone) {
+      playSound.combo();
       onMilestone(combo);
     }
   }, [combo, isMilestone, onMilestone]);
