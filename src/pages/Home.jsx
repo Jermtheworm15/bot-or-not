@@ -151,7 +151,7 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
-      // Extract data from entity structure and filter out broken Unsplash URLs
+      // Extract data from entity structure - NO FILTERING
       const data = rawData.map(item => ({
         id: item.id,
         url: item.data?.url,
@@ -163,21 +163,10 @@ export default function Home() {
         ai_tags: item.data?.ai_tags,
         nsfw_flag: item.data?.nsfw_flag,
         created_date: item.created_date
-      })).filter(item => {
-        if (!item.url || item.url.trim() === '') return false;
-        // Skip known problematic Unsplash URLs with crop=faces parameter
-        if (item.url.includes('unsplash.com') && item.url.includes('crop=faces')) return false;
-        return true;
-      });
+      }));
 
-      // Get IDs of images user has already voted on
-      const votedIds = new Set(userVotes.map(v => v.image_id));
-
-      // Filter out already-voted items
-      const unseenData = data.filter(item => !votedIds.has(item.id));
-
-      // If user has seen everything, show all items again
-      const validData = unseenData.length > 0 ? unseenData : data;
+      // Use all data without filtering
+      const validData = data;
 
       if (validData.length === 0) {
         setItems([]);
