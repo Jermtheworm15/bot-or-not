@@ -159,6 +159,7 @@ export default function Home() {
         url: item.url || item.data?.url,
         is_bot: item.is_bot ?? item.data?.is_bot,
         is_other: item.is_other ?? item.data?.is_other ?? false,
+        gender: item.gender || item.data?.gender || 'unknown',
         source: item.source || item.data?.source,
         user_uploaded: item.user_uploaded ?? item.data?.user_uploaded,
         uploader_name: item.uploader_name || item.data?.uploader_name,
@@ -183,14 +184,29 @@ export default function Home() {
         return;
       }
 
-      // Shuffle all valid data
-      const sorted = [...validData];
+      // Separate by gender for balanced distribution
+      const maleImages = validData.filter(item => item.gender === 'male');
+      const femaleImages = validData.filter(item => item.gender === 'female');
+      const otherImages = validData.filter(item => item.gender === 'other' || item.gender === 'unknown');
 
-      // Shuffle images efficiently
-      const shuffled = [...sorted];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      // Shuffle each group
+      const shuffleMale = [...maleImages].sort(() => Math.random() - 0.5);
+      const shuffleFemale = [...femaleImages].sort(() => Math.random() - 0.5);
+      const shuffleOther = [...otherImages].sort(() => Math.random() - 0.5);
+
+      // Interleave male and female images evenly
+      const shuffled = [];
+      const maxLength = Math.max(shuffleMale.length, shuffleFemale.length);
+      
+      for (let i = 0; i < maxLength; i++) {
+        if (shuffleMale[i]) shuffled.push(shuffleMale[i]);
+        if (shuffleFemale[i]) shuffled.push(shuffleFemale[i]);
+        if (shuffleOther[i]) shuffled.push(shuffleOther[i]);
+      }
+      
+      // Add any remaining other images
+      if (shuffleOther.length > maxLength) {
+        shuffled.push(...shuffleOther.slice(maxLength));
       }
 
       // Preload first 3 images for smooth transitions
