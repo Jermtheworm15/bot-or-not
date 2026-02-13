@@ -62,9 +62,11 @@ import BlitzGame from './pages/BlitzGame';
 import Board from './pages/Board';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import Community from './pages/Community';
+import CreateChallenge from './pages/CreateChallenge';
 import Discover from './pages/Discover';
 import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
+import Messages from './pages/Messages';
 import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
 import Referrals from './pages/Referrals';
@@ -73,8 +75,6 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import Messages from './pages/Messages';
-import CreateChallenge from './pages/CreateChallenge';
 import __Layout from './Layout.jsx';
 
 
@@ -94,9 +94,11 @@ export const PAGES = {
     "Board": Board,
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "Community": Community,
+    "CreateChallenge": CreateChallenge,
     "Discover": Discover,
     "Home": Home,
     "Leaderboard": Leaderboard,
+    "Messages": Messages,
     "Onboarding": Onboarding,
     "Profile": Profile,
     "Referrals": Referrals,
@@ -105,12 +107,10 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "Messages": Messages,
-    "CreateChallenge": CreateChallenge,
 }
 
 export const pagesConfig = {
-    mainPage: "Home",
+    mainPage: "AIBattleLeaderboard",
     Pages: PAGES,
     Layout: __Layout,
 };
