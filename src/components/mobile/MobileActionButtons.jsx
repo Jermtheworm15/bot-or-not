@@ -4,7 +4,7 @@ import { SkipForward, RefreshCw, Info } from 'lucide-react';
 
 export default function MobileActionButtons({ onSkip, onRefresh, onInfo, disabled }) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-2">
+    <div className="fixed bottom-24 left-0 right-0 z-50 px-4 pb-2">
       <div className="flex gap-2 justify-center">
         <Button
           onClick={onSkip}

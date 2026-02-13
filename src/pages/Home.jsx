@@ -156,23 +156,14 @@ export default function Home() {
 
       // Load images and user's votes in parallel
       const [rawData, userVotes] = await Promise.all([
-        base44.entities.Image.list(),
+        base44.entities.Image.list('-created_date', 100),
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
-      // Flatten data structure and add missing fields
-      const data = rawData.map(item => ({
-        id: item.id,
-        url: item.url,
-        is_bot: item.is_bot,
-        source: item.source,
-        user_uploaded: item.user_uploaded,
-        uploader_name: item.uploader_name,
-        ai_category: item.ai_category,
-        ai_tags: item.ai_tags,
-        nsfw_flag: item.nsfw_flag,
-        created_date: item.created_date
-      })).filter(item => item.url && item.url.trim() !== '');
+      console.log('Raw data sample:', rawData[0]);
+
+      // Flatten data structure - images come directly, not nested
+      const data = rawData.filter(item => item.url && item.url.trim() !== '');
 
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
@@ -189,8 +180,8 @@ export default function Home() {
         return;
       }
 
-      // Sort by newest first, then shuffle within groups
-      const sorted = validData.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      // Shuffle all valid data
+      const sorted = [...validData];
 
       // Shuffle images efficiently
       const shuffled = [...sorted];
