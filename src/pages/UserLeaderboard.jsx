@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight, Users, MapPin } from 'lucide-react';
+import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
 
 export default function UserLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -19,11 +20,12 @@ export default function UserLeaderboard() {
   const [regionRadius, setRegionRadius] = useState('50'); // miles
   const [friends, setFriends] = useState([]);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const itemsPerPage = 10;
 
   useEffect(() => {
     loadLeaderboard();
-  }, [sortBy, timeframe, viewMode, regionRadius]);
+  }, [sortBy, timeframe, viewMode, regionRadius, searchQuery]);
 
   useEffect(() => {
     loadFriends();
@@ -159,9 +161,19 @@ export default function UserLeaderboard() {
         sorted = leaderboardData.sort((a, b) => b.correctVotes - a.correctVotes);
       }
       
-      setLeaderboard(sorted);
+      // Filter by search query
+      let filtered = sorted;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filtered = sorted.filter(u => 
+          u.username.toLowerCase().includes(query) ||
+          u.email.toLowerCase().includes(query)
+        );
+      }
+
+      setLeaderboard(filtered);
       
-      // Find user's rank
+      // Find user's rank (in original sorted list)
       const rank = sorted.findIndex(u => u.email === user.email);
       setUserRank(rank >= 0 ? rank + 1 : null);
       
@@ -326,91 +338,38 @@ export default function UserLeaderboard() {
         )}
 
         {/* Filters */}
-        <div className="mb-6 space-y-4">
-          {/* View Mode Tabs */}
-          <Tabs value={viewMode} onValueChange={setViewMode}>
-            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
-              <TabsTrigger value="global" className="data-[state=active]:bg-purple-600">
-                <Trophy className="w-4 h-4 mr-2" />
-                Global
-              </TabsTrigger>
-              <TabsTrigger value="friends" className="data-[state=active]:bg-purple-600">
-                <Users className="w-4 h-4 mr-2" />
-                Friends
-              </TabsTrigger>
-              <TabsTrigger value="nearby" className="data-[state=active]:bg-purple-600">
-                <MapPin className="w-4 h-4 mr-2" />
-                Nearby
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <LeaderboardFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          timeframe={timeframe}
+          onTimeframeChange={setTimeframe}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          sortOptions={[
+            { value: 'points', label: 'Points', icon: Star },
+            { value: 'accuracy', label: 'Accuracy', icon: Target },
+            { value: 'streak', label: 'Streak', icon: Trophy },
+            { value: 'correct', label: 'Correct', icon: TrendingUp }
+          ]}
+        />
 
-          {/* Region Filter */}
-          {viewMode === 'nearby' && (
-            <Select value={regionRadius} onValueChange={setRegionRadius}>
-              <SelectTrigger className="bg-zinc-900 border-purple-500/30">
-                <SelectValue placeholder="Select radius" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">Within 10 miles</SelectItem>
-                <SelectItem value="25">Within 25 miles</SelectItem>
-                <SelectItem value="50">Within 50 miles</SelectItem>
-                <SelectItem value="100">Within 100 miles</SelectItem>
-                <SelectItem value="250">Within 250 miles</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-
-          {/* Time Range Tabs */}
-          <Tabs value={timeframe} onValueChange={setTimeframe}>
-            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
-              <TabsTrigger value="all-time" className="data-[state=active]:bg-purple-600 flex-1">
-                All-Time
-              </TabsTrigger>
-              <TabsTrigger value="weekly" className="data-[state=active]:bg-purple-600 flex-1">
-                This Week
-              </TabsTrigger>
-              <TabsTrigger value="daily" className="data-[state=active]:bg-purple-600 flex-1">
-                Today
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            <Button
-              variant={sortBy === 'points' ? 'default' : 'outline'}
-              onClick={() => setSortBy('points')}
-              className={sortBy === 'points' ? 'bg-purple-600' : 'border-purple-500/30'}
-            >
-              <Star className="w-4 h-4 mr-2" />
-              Points
-            </Button>
-            <Button
-              variant={sortBy === 'accuracy' ? 'default' : 'outline'}
-              onClick={() => setSortBy('accuracy')}
-              className={sortBy === 'accuracy' ? 'bg-purple-600' : 'border-purple-500/30'}
-            >
-              <Target className="w-4 h-4 mr-2" />
-              Accuracy
-            </Button>
-            <Button
-              variant={sortBy === 'streak' ? 'default' : 'outline'}
-              onClick={() => setSortBy('streak')}
-              className={sortBy === 'streak' ? 'bg-purple-600' : 'border-purple-500/30'}
-            >
-              <Trophy className="w-4 h-4 mr-2" />
-              Streak
-            </Button>
-            <Button
-              variant={sortBy === 'correct' ? 'default' : 'outline'}
-              onClick={() => setSortBy('correct')}
-              className={sortBy === 'correct' ? 'bg-purple-600' : 'border-purple-500/30'}
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Correct
-            </Button>
-          </div>
-        </div>
+        {/* Region Filter for Nearby */}
+        {viewMode === 'nearby' && (
+          <Select value={regionRadius} onValueChange={setRegionRadius}>
+            <SelectTrigger className="bg-zinc-900 border-purple-500/30">
+              <SelectValue placeholder="Select radius" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">Within 10 miles</SelectItem>
+              <SelectItem value="25">Within 25 miles</SelectItem>
+              <SelectItem value="50">Within 50 miles</SelectItem>
+              <SelectItem value="100">Within 100 miles</SelectItem>
+              <SelectItem value="250">Within 250 miles</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         {/* Leaderboard */}
         <div className="space-y-4">

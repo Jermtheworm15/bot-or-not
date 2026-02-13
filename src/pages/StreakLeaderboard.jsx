@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Zap, Trophy, Flame, Users, MapPin } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
 
 export default function StreakLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -14,10 +15,11 @@ export default function StreakLeaderboard() {
   const [regionRadius, setRegionRadius] = useState('50');
   const [friends, setFriends] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadStreakLeaderboard();
-  }, [viewMode, regionRadius]);
+  }, [viewMode, regionRadius, searchQuery]);
 
   useEffect(() => {
     loadFriends();
@@ -130,7 +132,18 @@ export default function StreakLeaderboard() {
       }
     }
 
-    sorted = sorted.sort((a, b) => b.bestStreak - a.bestStreak).slice(0, 10);
+    sorted = sorted.sort((a, b) => b.bestStreak - a.bestStreak);
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      sorted = sorted.filter(u =>
+        (u.username && u.username.toLowerCase().includes(query)) ||
+        u.email.toLowerCase().includes(query)
+      );
+    }
+
+    sorted = sorted.slice(0, 10);
     
     setLeaderboard(sorted);
     setIsLoading(false);
@@ -220,40 +233,31 @@ export default function StreakLeaderboard() {
           <p className="text-zinc-400">Top players with the longest winning streaks</p>
         </motion.div>
 
-        {/* View Mode Filters */}
-        <div className="mb-6 space-y-4">
-          <Tabs value={viewMode} onValueChange={setViewMode}>
-            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
-              <TabsTrigger value="global" className="data-[state=active]:bg-orange-600">
-                <Trophy className="w-4 h-4 mr-2" />
-                Global
-              </TabsTrigger>
-              <TabsTrigger value="friends" className="data-[state=active]:bg-orange-600">
-                <Users className="w-4 h-4 mr-2" />
-                Friends
-              </TabsTrigger>
-              <TabsTrigger value="nearby" className="data-[state=active]:bg-orange-600">
-                <MapPin className="w-4 h-4 mr-2" />
-                Nearby
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        {/* Filters */}
+        <LeaderboardFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          showTimeframe={false}
+          sortOptions={[]}
+        />
 
-          {viewMode === 'nearby' && (
-            <Select value={regionRadius} onValueChange={setRegionRadius}>
-              <SelectTrigger className="bg-zinc-900 border-orange-500/30">
-                <SelectValue placeholder="Select radius" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="10">Within 10 miles</SelectItem>
-                <SelectItem value="25">Within 25 miles</SelectItem>
-                <SelectItem value="50">Within 50 miles</SelectItem>
-                <SelectItem value="100">Within 100 miles</SelectItem>
-                <SelectItem value="250">Within 250 miles</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+        {/* Region Filter for Nearby */}
+        {viewMode === 'nearby' && (
+          <Select value={regionRadius} onValueChange={setRegionRadius}>
+            <SelectTrigger className="bg-zinc-900 border-purple-500/30">
+              <SelectValue placeholder="Select radius" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">Within 10 miles</SelectItem>
+              <SelectItem value="25">Within 25 miles</SelectItem>
+              <SelectItem value="50">Within 50 miles</SelectItem>
+              <SelectItem value="100">Within 100 miles</SelectItem>
+              <SelectItem value="250">Within 250 miles</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         <div className="space-y-4">
           {isLoading ? (

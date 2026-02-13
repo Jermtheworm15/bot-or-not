@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Gamepad2, Target, Users } from 'lucide-react';
+import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
 
 export default function AIBattleLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -10,10 +11,11 @@ export default function AIBattleLeaderboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [viewMode, setViewMode] = useState('global'); // 'global' or 'friends'
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadLeaderboards();
-  }, []);
+  }, [searchQuery]);
 
   const loadLeaderboards = async () => {
     setIsLoading(true);
@@ -59,7 +61,17 @@ export default function AIBattleLeaderboard() {
           return b.points - a.points;
         });
 
-      setLeaderboard(playerStats);
+      // Filter by search
+      let filtered = playerStats;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filtered = playerStats.filter(p =>
+          p.name.toLowerCase().includes(query) ||
+          p.email.toLowerCase().includes(query)
+        );
+      }
+
+      setLeaderboard(filtered);
 
       // Get user's friends for friend-based leaderboard
       if (user) {
@@ -68,7 +80,7 @@ export default function AIBattleLeaderboard() {
           status: 'accepted'
         });
         const friendEmails = friends.map(f => f.friend_email);
-        const friendStats = playerStats.filter(s => friendEmails.includes(s.email) || s.email === user.email);
+        const friendStats = filtered.filter(s => friendEmails.includes(s.email) || s.email === user.email);
         setFriendsLeaderboard(friendStats);
       }
     } catch (error) {
@@ -97,6 +109,14 @@ export default function AIBattleLeaderboard() {
           </div>
           <p className="text-zinc-400">Top players ranked by accuracy and points against AI opponents</p>
         </motion.div>
+
+        {/* Filters */}
+        <LeaderboardFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          showTimeframe={false}
+          sortOptions={[]}
+        />
 
         {/* View Toggle */}
         <motion.div
