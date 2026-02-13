@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden pb-20">
+    <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden pb-20">
       <div hidden>Creator: Jeromy Padgett</div>
     {!isMobile && currentUser && <PendingChallenges userEmail={currentUser.email} />}
     {!isMobile && <ChatbotWindow />}
