@@ -32,6 +32,7 @@ export default function Home() {
   const [milestone, setMilestone] = useState(null);
   const [showMilestone, setShowMilestone] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [errorSkipInProgress, setErrorSkipInProgress] = useState(false);
   const currentItem = items[currentIndex];
 
   React.useEffect(() => {
@@ -44,7 +45,7 @@ export default function Home() {
     checkUsernameAndLoad();
   }, []);
 
-  // Preload next image and set auto-skip timeout
+  // Preload next image
   useEffect(() => {
     if (items.length > 0 && currentIndex < items.length - 1) {
       const nextImage = items[currentIndex + 1];
@@ -53,20 +54,7 @@ export default function Home() {
         img.src = nextImage.url;
       }
     }
-
-    // Set 10-second timeout to skip to next image if current doesn't load
-    if (!hasVoted && items[currentIndex]?.url) {
-      const timeout = setTimeout(() => {
-        // Skip to next without triggering loadContent
-        if (currentIndex < items.length - 1) {
-          setCurrentIndex(prev => prev + 1);
-        }
-      }, 10000);
-      setImageLoadTimeout(timeout);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, items, hasVoted]);
+  }, [currentIndex, items]);
   
   const checkUsernameAndLoad = async () => {
     try {
@@ -163,7 +151,7 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
-      // Extract data from entity structure
+      // Extract data from entity structure and filter out broken Unsplash URLs
       const data = rawData.map(item => ({
         id: item.id,
         url: item.data?.url,
@@ -175,7 +163,12 @@ export default function Home() {
         ai_tags: item.data?.ai_tags,
         nsfw_flag: item.data?.nsfw_flag,
         created_date: item.created_date
-      })).filter(item => item.url && item.url.trim() !== '');
+      })).filter(item => {
+        if (!item.url || item.url.trim() === '') return false;
+        // Skip known problematic Unsplash URLs with crop=faces parameter
+        if (item.url.includes('unsplash.com') && item.url.includes('crop=faces')) return false;
+        return true;
+      });
 
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
@@ -338,13 +331,18 @@ export default function Home() {
   };
   
   const handleContentError = () => {
-    // Clear timeout and skip to next image
-    if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
+    // Prevent rapid-fire error skips
+    if (errorSkipInProgress) return;
     
-    // Just skip to next image, don't reload content
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    }
+    setErrorSkipInProgress(true);
+    
+    // Skip to next image after brief delay
+    setTimeout(() => {
+      if (currentIndex < items.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+      }
+      setErrorSkipInProgress(false);
+    }, 500);
   };
 
   const handleSkip = () => {
