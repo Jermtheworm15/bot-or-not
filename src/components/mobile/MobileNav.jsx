@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp } from 'lucide-react';
+import { Menu, Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp, MessageCircle } from 'lucide-react';
 
 export default function MobileNav({ currentPageName }) {
   const [open, setOpen] = useState(false);
@@ -20,6 +20,8 @@ export default function MobileNav({ currentPageName }) {
     { name: 'AttributeGame', icon: Sparkles, label: 'Attributes' },
     { name: 'AttributeLeaderboard', icon: Trophy, label: 'Attribute Rankings' },
     { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
+    { name: 'Messages', icon: MessageCircle, label: 'Messages' },
+    { name: 'CreateChallenge', icon: Gamepad2, label: 'Create Challenge' },
     { name: 'Profile', icon: User, label: 'Profile' },
   ];
 
