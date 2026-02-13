@@ -4,14 +4,13 @@ import { SkipForward, RefreshCw, Info } from 'lucide-react';
 
 export default function MobileActionButtons({ onSkip, onRefresh, onInfo, disabled }) {
   return (
-    <div className="fixed bottom-24 left-0 right-0 z-50 px-4 pb-2">
-      <div className="flex gap-2 justify-center">
+    <div className="w-full max-w-2xl mx-auto mt-4 mb-6">
+      <div className="flex gap-3 justify-center">
         <Button
           onClick={onSkip}
           disabled={disabled}
           variant="outline"
-          size="sm"
-          className="bg-zinc-900/80 backdrop-blur-md border-purple-500/30 text-white hover:bg-purple-900/50 flex items-center gap-2"
+          className="flex-1 bg-zinc-800/90 border-zinc-700 text-white hover:bg-zinc-700 flex items-center justify-center gap-2"
         >
           <SkipForward className="w-4 h-4" />
           Skip
@@ -20,8 +19,7 @@ export default function MobileActionButtons({ onSkip, onRefresh, onInfo, disable
           onClick={onRefresh}
           disabled={disabled}
           variant="outline"
-          size="sm"
-          className="bg-zinc-900/80 backdrop-blur-md border-purple-500/30 text-white hover:bg-purple-900/50 flex items-center gap-2"
+          className="flex-1 bg-zinc-800/90 border-zinc-700 text-white hover:bg-zinc-700 flex items-center justify-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -30,8 +28,7 @@ export default function MobileActionButtons({ onSkip, onRefresh, onInfo, disable
           onClick={onInfo}
           disabled={disabled}
           variant="outline"
-          size="sm"
-          className="bg-zinc-900/80 backdrop-blur-md border-purple-500/30 text-white hover:bg-purple-900/50 flex items-center gap-2"
+          className="flex-1 bg-zinc-800/90 border-zinc-700 text-white hover:bg-zinc-700 flex items-center justify-center gap-2"
         >
           <Info className="w-4 h-4" />
           Info

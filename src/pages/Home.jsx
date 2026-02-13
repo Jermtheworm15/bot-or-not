@@ -160,10 +160,19 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
-      console.log('Raw data sample:', rawData[0]);
-
-      // Flatten data structure - images come directly, not nested
-      const data = rawData.filter(item => item.url && item.url.trim() !== '');
+      // Extract data from entity structure
+      const data = rawData.map(item => ({
+        id: item.id,
+        url: item.data?.url,
+        is_bot: item.data?.is_bot,
+        source: item.data?.source,
+        user_uploaded: item.data?.user_uploaded,
+        uploader_name: item.data?.uploader_name,
+        ai_category: item.data?.ai_category,
+        ai_tags: item.data?.ai_tags,
+        nsfw_flag: item.data?.nsfw_flag,
+        created_date: item.created_date
+      })).filter(item => item.url && item.url.trim() !== '');
 
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
@@ -490,15 +499,17 @@ export default function Home() {
           />
         </div>
 
-        {/* Mobile Action Buttons */}
-        {isMobile && (
-          <MobileActionButtons
-            onSkip={handleSkip}
-            onRefresh={handleRefresh}
-            onInfo={handleShowInfo}
-            disabled={isLoading}
-          />
-        )}
+      </div>
+
+      {/* Mobile Action Buttons */}
+      {isMobile && (
+        <MobileActionButtons
+          onSkip={handleSkip}
+          onRefresh={handleRefresh}
+          onInfo={handleShowInfo}
+          disabled={isLoading}
+        />
+      )}
         </div>
         </div>
         );
