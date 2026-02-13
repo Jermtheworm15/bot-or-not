@@ -159,7 +159,7 @@ export default function Layout({ children, currentPageName }) {
         </nav>
       )}
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - Matches Desktop */}
       {isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow">
           <div className="w-full px-2 py-3">
