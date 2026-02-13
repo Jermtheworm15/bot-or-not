@@ -393,9 +393,17 @@ export default function Home() {
   
   const handleSubmitRating = async () => {
     // Update the vote with rating
-    const votes = await base44.entities.Vote.filter({ image_id: currentItem.id }, '-created_date', 1);
-    if (votes.length > 0) {
-      await base44.entities.Vote.update(votes[0].id, { rating });
+    try {
+      const user = await base44.auth.me();
+      const votes = await base44.entities.Vote.filter({ 
+        image_id: currentItem.id,
+        user_email: user.email 
+      }, '-created_date', 1);
+      if (votes.length > 0) {
+        await base44.entities.Vote.update(votes[0].id, { rating });
+      }
+    } catch (error) {
+      console.error('Error updating vote:', error);
     }
     
     // Move to next item
