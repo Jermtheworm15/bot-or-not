@@ -14,39 +14,19 @@ export default function LoginForm({ onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
       if (isSignUp) {
-        if (!email || !password || !username) {
-          setError('Please fill in all fields');
-          setIsLoading(false);
-          return;
-        }
-
-        await base44.auth.signUp({
-          email,
-          password,
-          full_name: username
-        });
+        // Redirect to platform's signup page
+        window.location.href = '/auth/signup';
       } else {
-        if (!email || !password) {
-          setError('Please enter your email and password');
-          setIsLoading(false);
-          return;
-        }
-
-        await base44.auth.signIn({
-          email,
-          password
-        });
+        // Redirect to platform's login page
+        window.location.href = '/auth/login';
       }
-
-      onSuccess();
     } catch (err) {
       console.error('Auth error:', err);
-      setError(err.message || (isSignUp ? 'Failed to create account' : 'Invalid credentials'));
+      setError('Redirecting to authentication...');
       setIsLoading(false);
     }
   };
