@@ -13,6 +13,7 @@ import ComboCounter from '@/components/gamification/ComboCounter';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import MilestonePopup from '@/components/gamification/MilestonePopup';
 import ImageAnalysis from '@/components/ImageAnalysis';
+import MobileNav from '@/components/mobile/MobileNav';
 
 import { createPageUrl } from '@/utils';
 
@@ -501,15 +502,18 @@ export default function Home() {
 
       </div>
 
-      {/* Mobile Skip Button - Top Right */}
+      {/* Mobile Navigation and Skip Button */}
       {isMobile && (
-        <button
-          onClick={handleSkip}
-          disabled={isLoading || hasVoted}
-          className="fixed top-20 right-4 z-50 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-purple-500/30 text-green-400 hover:bg-purple-900/30 hover:text-white flex items-center justify-center shadow-lg transition-all disabled:opacity-50"
-        >
-          <SkipForward className="w-5 h-5" />
-        </button>
+        <>
+          <MobileNav currentPageName="Home" />
+          <button
+            onClick={handleSkip}
+            disabled={isLoading || hasVoted}
+            className="fixed top-20 right-4 z-50 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-purple-500/30 text-green-400 hover:bg-purple-900/30 hover:text-white flex items-center justify-center shadow-lg transition-all disabled:opacity-50"
+          >
+            <SkipForward className="w-5 h-5" />
+          </button>
+        </>
       )}
     </div>
   );

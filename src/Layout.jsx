@@ -9,6 +9,7 @@ import HieroglyphicRain from './components/HieroglyphicRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
+import MobileNav from './components/mobile/MobileNav';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Layout({ children, currentPageName }) {
@@ -159,29 +160,11 @@ export default function Layout({ children, currentPageName }) {
         </nav>
       )}
 
-      {/* Mobile Bottom Navigation - Matches Desktop */}
-      {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow">
-          <div className="w-full px-2 py-3">
-            <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollBehavior: 'smooth' }}>
-              <Link to={createPageUrl('Home')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Home' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Eye className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Vote</span></Link>
-              <Link to={createPageUrl('UserLeaderboard')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'UserLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Players</span></Link>
-              <Link to={createPageUrl('StreakLeaderboard')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'StreakLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Flame className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Streaks</span></Link>
-              <Link to={createPageUrl('Upload')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Upload' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Upload className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Upload</span></Link>
-              <Link to={createPageUrl('AITools')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'AITools' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Wand2 className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">AI Tools</span></Link>
-              <Link to={createPageUrl('Achievements')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Achievements' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Achieve</span></Link>
-              <Link to={createPageUrl('AIChallenge')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'AIChallenge' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Gamepad2 className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">AI Battle</span></Link>
-              <Link to={createPageUrl('Community')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Community' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Users className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Board</span></Link>
-              <Link to={createPageUrl('Referrals')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Referrals' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Users className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Refer</span></Link>
-              <Link to={createPageUrl('AttributeGame')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'AttributeGame' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Sparkles className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Attrbt</span></Link>
-              <Link to={createPageUrl('AttributeLeaderboard')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'AttributeLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">AttrRank</span></Link>
-              <Link to={createPageUrl('Analytics')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Analytics' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><TrendingUp className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Analytics</span></Link>
-              <Link to={createPageUrl('Profile')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Profile' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><User className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Profile</span></Link>
-            </div>
-          </div>
-        </nav>
+      {/* Mobile Navigation Button */}
+      {isMobile && currentPageName !== 'Home' && (
+        <MobileNav currentPageName={currentPageName} />
       )}
-      <div className="relative z-10">
+      <div className="relative z-10 pb-0">
         {children}
       </div>
     </div>
