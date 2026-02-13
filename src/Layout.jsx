@@ -117,14 +117,6 @@ export default function Layout({ children, currentPageName }) {
       {/* Top Bar with Logo */}
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-          {isMobile && (
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1 text-green-400 hover:text-white transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-          )}
           <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
             <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
               <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
