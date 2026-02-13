@@ -26,7 +26,8 @@ export default function Landing() {
 
   const handleSignIn = async () => {
     try {
-      await base44.auth.redirectToLogin(createPageUrl('Home'));
+      // Force redirect to the platform's login page
+      window.location.href = '/auth/login?next=' + encodeURIComponent(createPageUrl('Home'));
     } catch (err) {
       console.error('Sign in error:', err);
     }
