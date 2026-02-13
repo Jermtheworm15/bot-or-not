@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
@@ -11,7 +11,7 @@ import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
 import BottomTabBar from './components/mobile/BottomTabBar';
 import NotificationBell from './components/notifications/NotificationBell';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
@@ -117,23 +117,58 @@ export default function Layout({ children, currentPageName }) {
       {/* Top Bar with Logo */}
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-          <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
-            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-lg shadow-purple-500/50">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/60edcef10_d5e77535-5a3b-4139-8a3f-6489d39444dc.jpg" 
-                alt="Bot or Not Logo" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <span className="tracking-wider uppercase">Bot or Not</span>
-          </Link>
-          <div className="flex items-center gap-2">
-                    {currentUser && <NotificationBell />}
-                    <Link to={createPageUrl('Messages')} className="hidden md:block">
-                      <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
-                    </Link>
-                  </div>
-        </div>
+                  <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-lg shadow-purple-500/50">
+                      <img 
+                        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/60edcef10_d5e77535-5a3b-4139-8a3f-6489d39444dc.jpg" 
+                        alt="Bot or Not Logo" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="tracking-wider uppercase">Bot or Not</span>
+                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <button className="text-green-400 hover:text-white transition-colors">
+                          <Menu className="w-6 h-6" />
+                        </button>
+                      </SheetTrigger>
+                      <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-64">
+                        <div className="mt-8 space-y-2">
+                          <Link to={createPageUrl('Home')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Eye className="w-5 h-5" /> Vote
+                          </Link>
+                          <Link to={createPageUrl('UserLeaderboard')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Trophy className="w-5 h-5" /> Leaderboard
+                          </Link>
+                          <Link to={createPageUrl('Upload')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Upload className="w-5 h-5" /> Upload
+                          </Link>
+                          <Link to={createPageUrl('AIChallenge')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Gamepad2 className="w-5 h-5" /> AI Battle
+                          </Link>
+                          <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Trophy className="w-5 h-5" /> Achievements
+                          </Link>
+                          <Link to={createPageUrl('Community')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Users className="w-5 h-5" /> Community
+                          </Link>
+                          <Link to={createPageUrl('Messages')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <MessageCircle className="w-5 h-5" /> Messages
+                          </Link>
+                          <Link to={createPageUrl('Profile')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <User className="w-5 h-5" /> Profile
+                          </Link>
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                            {currentUser && <NotificationBell />}
+                            <Link to={createPageUrl('Messages')} className="hidden md:block">
+                              <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
+                            </Link>
+                          </div>
+                </div>
       </div>
 
       {/* Top Showcase */}
