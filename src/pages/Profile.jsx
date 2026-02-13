@@ -23,6 +23,7 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
   
   useEffect(() => {
     loadProfile();
