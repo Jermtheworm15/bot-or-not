@@ -12,6 +12,7 @@ import ComboCounter from '@/components/gamification/ComboCounter';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import MilestonePopup from '@/components/gamification/MilestonePopup';
 import ImageAnalysis from '@/components/ImageAnalysis';
+import MobileActionButtons from '@/components/mobile/MobileActionButtons';
 import { createPageUrl } from '@/utils';
 
 
@@ -351,6 +352,23 @@ export default function Home() {
     }
   };
 
+  const handleSkip = () => {
+    if (!hasVoted) {
+      handleContentError();
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    await loadContent();
+  };
+
+  const handleShowInfo = () => {
+    if (currentItem) {
+      alert(`Image Info:\nSource: ${currentItem.source || 'Unknown'}\nUploader: ${currentItem.uploader_name || 'N/A'}\nCategory: ${currentItem.ai_category || 'N/A'}`);
+    }
+  };
+
 
   
   const handleSubmitRating = async () => {
@@ -485,7 +503,17 @@ export default function Home() {
             streak={stats.streak}
           />
         </div>
-      </div>
-    </div>
-  );
-}
+
+        {/* Mobile Action Buttons */}
+        {isMobile && (
+          <MobileActionButtons
+            onSkip={handleSkip}
+            onRefresh={handleRefresh}
+            onInfo={handleShowInfo}
+            disabled={isLoading}
+          />
+        )}
+        </div>
+        </div>
+        );
+        }
