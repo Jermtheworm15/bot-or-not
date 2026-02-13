@@ -200,7 +200,7 @@ export default function Messages() {
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <ScrollArea className="h-[450px]">
+              <div className="h-[450px] overflow-y-auto scrollbar-hide">
                 {filteredConversations.length === 0 ? (
                   <div className="p-8 text-center text-zinc-500">
                     <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-30" />
@@ -232,7 +232,7 @@ export default function Messages() {
                     ))}
                   </div>
                 )}
-              </ScrollArea>
+              </div>
             </CardContent>
           </Card>
 
@@ -256,7 +256,7 @@ export default function Messages() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0 flex flex-col h-[500px]">
-                  <ScrollArea className="flex-1 p-4">
+                  <div className="flex-1 p-4 overflow-y-auto scrollbar-hide">
                     <div className="space-y-3">
                       {messages.map(msg => (
                         <div
@@ -278,7 +278,7 @@ export default function Messages() {
                         </div>
                       ))}
                     </div>
-                  </ScrollArea>
+                  </div>
                   <form onSubmit={handleSendMessage} className="p-4 border-t border-zinc-800">
                     <div className="flex gap-2">
                       <Textarea

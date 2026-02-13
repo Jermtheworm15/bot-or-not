@@ -129,7 +129,7 @@ export default function CreateChallenge() {
                   placeholder="Search users..."
                   className="bg-zinc-800 border-zinc-700 text-white mb-2"
                 />
-                <div className="bg-zinc-800 rounded-lg max-h-64 overflow-y-auto border border-zinc-700">
+                <div className="bg-zinc-800 rounded-lg max-h-64 overflow-y-auto scrollbar-hide border border-zinc-700">
                   {filteredUsers.length === 0 ? (
                     <div className="p-8 text-center text-zinc-500">
                       <Users className="w-12 h-12 mx-auto mb-2 opacity-30" />

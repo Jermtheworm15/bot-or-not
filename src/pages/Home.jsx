@@ -442,9 +442,9 @@ export default function Home() {
       {/* Success Explosion - Desktop only */}
       {!isMobile && <SuccessExplosion show={showExplosion} />}
       
-      <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-start h-screen overflow-hidden pt-20 pb-28' : 'justify-center min-h-screen py-8'} px-4`}>
+      <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-center h-screen overflow-hidden pt-16 pb-24' : 'justify-center min-h-screen py-8'} px-4`}>
         {/* Content Display - Main Focal Point */}
-        <div className={`w-full ${isMobile ? 'max-w-sm mb-2' : 'max-w-3xl mb-6'} space-y-2`}>
+        <div className={`w-full ${isMobile ? 'max-w-xs mb-1' : 'max-w-3xl mb-6'} space-y-1`}>
           <ImageCard
             imageUrl={currentItem?.url}
             isLoading={isLoading || !currentItem}
@@ -463,7 +463,7 @@ export default function Home() {
         </div>
         
         {/* Voting Section */}
-        <div className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-2xl'}`}>
+        <div className={`w-full ${isMobile ? 'max-w-xs' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             {!hasVoted ? (
               <motion.div
@@ -506,7 +506,7 @@ export default function Home() {
         )}
 
         {/* Stats bar - positioned to not overlap on mobile */}
-        <div className={`${isMobile ? 'relative mt-2' : 'absolute bottom-32 left-4 right-4'}`}>
+        <div className={`${isMobile ? 'relative mt-1' : 'absolute bottom-32 left-4 right-4'}`}>
           <StatsBar 
             totalVotes={stats.total}
             correctVotes={stats.correct}
