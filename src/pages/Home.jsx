@@ -225,17 +225,18 @@ export default function Home() {
   };
 
   
-  const handleVote = async (guess) => {
+  const handleVote = async (guessedBot) => {
     if (!currentItem) return;
+
+    // Convert boolean to string format
+    const guess = guessedBot ? 'bot' : 'human';
 
     // Determine if the guess was correct
     let correct = false;
     if (currentItem.is_other) {
-      correct = guess === 'other';
-    } else if (guess === 'other') {
-      correct = false;
+      correct = false; // Neither bot nor human is correct for "other"
     } else {
-      correct = (guess === 'bot') === currentItem.is_bot;
+      correct = guessedBot === currentItem.is_bot;
     }
 
     setWasCorrect(correct);
