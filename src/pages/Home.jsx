@@ -71,17 +71,16 @@ export default function Home() {
         return;
       }
 
-      // Check if user needs onboarding
+      // Check if user has completed onboarding (username, password, profile)
       const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-      if (profiles.length === 0 || !user.full_name) {
+      if (profiles.length === 0) {
         window.location.href = createPageUrl('Onboarding');
         return;
       }
 
-      // Check if user has uploaded at least one image
-      const userUploads = await base44.entities.Image.filter({ created_by: user.email });
-      if (userUploads.length === 0) {
-        window.location.href = createPageUrl('Upload');
+      // Check if user has set username
+      if (!user.full_name) {
+        window.location.href = createPageUrl('Onboarding');
         return;
       }
 
