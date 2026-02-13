@@ -36,7 +36,7 @@ export default function Onboarding() {
     
     try {
       const user = await base44.auth.me();
-      await base44.auth.updateMe({ username });
+      await base44.auth.updateMe({ full_name: username });
       
       // Create user profile with zip code
       const profile = await base44.entities.UserProfile.create({
