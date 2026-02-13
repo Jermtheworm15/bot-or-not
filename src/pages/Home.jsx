@@ -11,6 +11,7 @@ import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import ComboCounter from '@/components/gamification/ComboCounter';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import MilestonePopup from '@/components/gamification/MilestonePopup';
+import ImageAnalysis from '@/components/ImageAnalysis';
 import { createPageUrl } from '@/utils';
 
 
@@ -414,7 +415,7 @@ export default function Home() {
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
         {/* Content Display - Main Focal Point */}
-        <div className="w-full max-w-3xl mb-6">
+        <div className="w-full max-w-3xl mb-6 space-y-4">
           <ImageCard
             imageUrl={currentItem?.url}
             isLoading={isLoading || !currentItem}
@@ -423,6 +424,9 @@ export default function Home() {
             wasCorrect={wasCorrect}
             onError={handleContentError}
           />
+          {hasVoted && currentItem && (
+            <ImageAnalysis image={currentItem} />
+          )}
         </div>
         
         {/* Voting/Rating Section */}
