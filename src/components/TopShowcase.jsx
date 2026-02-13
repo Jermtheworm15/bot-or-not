@@ -9,12 +9,16 @@ export default function TopShowcase() {
 
   useEffect(() => {
     loadData();
+    // Refresh every 2 minutes to avoid rate limits
+    const interval = setInterval(loadData, 120000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadData = async () => {
-    // Load top 10 streaks
-    const votes = await base44.entities.Vote.list('-created_date', 100);
-    const videoVotes = await base44.entities.VideoVote.list('-created_date', 100);
+    try {
+      // Load top 10 streaks
+      const votes = await base44.entities.Vote.list('-created_date', 100);
+      const videoVotes = await base44.entities.VideoVote.list('-created_date', 100);
     
     const allVotes = [...votes, ...videoVotes];
     const userStreaks = {};
@@ -58,6 +62,9 @@ export default function TopShowcase() {
       .slice(0, 10);
     
     setUploads(combined);
+    } catch (error) {
+      console.error('Failed to load showcase data:', error);
+    }
   };
 
   return (
