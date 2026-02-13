@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function ChallengeUser({ targetUserEmail, targetUserName, currentUserEmail, currentUserName }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function ChallengeUser({ targetUserEmail, targetUserName, current
         rounds: rounds,
         expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       });
+      playSound.victory();
       setSuccess(true);
       setTimeout(() => {
         setIsOpen(false);

@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -40,6 +41,7 @@ export default function NotificationBell() {
 
   const markAsRead = async (notification) => {
     try {
+      playSound.notification();
       if (!notification.is_read) {
         await base44.entities.Notification.update(notification.id, { is_read: true });
         setUnreadCount(prev => Math.max(0, prev - 1));

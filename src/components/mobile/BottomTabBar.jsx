@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Eye, Trophy, Upload, User } from 'lucide-react';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function BottomTabBar({ currentPageName }) {
   const tabItems = [
@@ -22,6 +23,7 @@ export default function BottomTabBar({ currentPageName }) {
             <Link
               key={item.name}
               to={createPageUrl(item.name)}
+              onClick={() => playSound.click()}
               className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
                 isActive
                   ? 'text-purple-400 bg-purple-900/30'
