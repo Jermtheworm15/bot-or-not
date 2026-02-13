@@ -57,7 +57,10 @@ export default function Home() {
     // Set 10-second timeout to skip to next image if current doesn't load
     if (!hasVoted && items[currentIndex]?.url) {
       const timeout = setTimeout(() => {
-        handleContentError();
+        // Skip to next without triggering loadContent
+        if (currentIndex < items.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+        }
       }, 10000);
       setImageLoadTimeout(timeout);
 
@@ -337,13 +340,10 @@ export default function Home() {
   const handleContentError = () => {
     // Clear timeout and skip to next image
     if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
+    
+    // Just skip to next image, don't reload content
     if (currentIndex < items.length - 1) {
       setCurrentIndex(prev => prev + 1);
-    } else {
-      // Generate fresh content if at end
-      setIsLoading(true);
-      base44.functions.invoke('generateFreshContent', { count: 50 }).catch(console.error);
-      loadContent();
     }
   };
 

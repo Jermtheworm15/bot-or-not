@@ -20,6 +20,7 @@ export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasC
               alt="Mystery face"
               className="w-full h-full object-cover"
               onError={(e) => {
+                e.target.onerror = null; // Prevent infinite loop
                 console.error('Image failed to load:', imageUrl);
                 if (onError) onError();
               }}
