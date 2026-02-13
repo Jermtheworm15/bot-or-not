@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Users, Target, Zap } from 'lucide-react';
+import { TrendingUp, Users, Target, Zap, Share2 } from 'lucide-react';
+import ShareButton from '@/components/social/ShareButton';
 
 export default function Analytics() {
   const [userStats, setUserStats] = useState(null);
@@ -96,7 +97,13 @@ export default function Analytics() {
           animate={{ y: 0, opacity: 1 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-black mb-2">Advanced Analytics</h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-4xl font-black">Advanced Analytics</h1>
+            <ShareButton 
+              userStats={userStats}
+              analyticsMode={true}
+            />
+          </div>
           <p className="text-zinc-400">Your detailed performance and player comparisons</p>
         </motion.div>
 

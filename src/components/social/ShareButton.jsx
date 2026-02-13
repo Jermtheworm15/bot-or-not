@@ -4,15 +4,19 @@ import { Share2, X, Instagram, Twitter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
 
-export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect, userStats = null }) {
+export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect, userStats = null, analyticsMode = false }) {
   const [showShare, setShowShare] = useState(false);
   const [shareMode, setShareMode] = useState('result');
   const [isGenerating, setIsGenerating] = useState(false);
   
   const appUrl = window.location.origin;
-  const shareText = wasCorrect 
-    ? `I correctly guessed this ${isBot ? 'AI bot' : 'human'} on Bot or Not! Can you?` 
-    : `This ${isBot ? 'AI bot' : 'human'} tricked me on Bot or Not! Think you can spot it?`;
+  const shareText = analyticsMode 
+    ? (userStats 
+        ? `📊 My Bot or Not Analytics: ${userStats.totalVotes} votes, ${userStats.accuracy}% accuracy, ${userStats.streak} streak! Think you can beat me?`
+        : `📊 Check out my Bot or Not analytics!`)
+    : (wasCorrect 
+        ? `I correctly guessed this ${isBot ? 'AI bot' : 'human'} on Bot or Not! Can you?` 
+        : `This ${isBot ? 'AI bot' : 'human'} tricked me on Bot or Not! Think you can spot it?`);
   
   const statsText = userStats 
     ? `🏆 Check out my Bot or Not stats: ${userStats.totalVotes} votes, ${userStats.accuracy?.toFixed(0)}% accuracy, ${userStats.streak} streak! Can you beat my score?`
@@ -20,7 +24,7 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
   
   const challengeText = `🎯 I CHALLENGE YOU! Can you spot if this is a bot or human? Test your skills on Bot or Not!`;
   
-  const shareUrl = `${appUrl}?challenge=${encodeURIComponent(contentUrl)}`;
+  const shareUrl = analyticsMode ? appUrl : `${appUrl}?challenge=${encodeURIComponent(contentUrl)}`;
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -157,7 +161,7 @@ export default function ShareButton({ contentUrl, contentType, isBot, wasCorrect
         className="border-purple-500/50 text-purple-400 hover:bg-purple-900/30 hover:text-white"
       >
         <Share2 className="w-4 h-4 mr-2" />
-        Share Result
+        {analyticsMode ? 'Share Analytics' : 'Share Result'}
       </Button>
 
       <AnimatePresence>

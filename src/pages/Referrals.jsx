@@ -62,7 +62,7 @@ export default function Referrals() {
   const referralRewards = [
     { 
       title: '1st Referral', 
-      reward: '100 Bonus Points', 
+      reward: '100 Bonus Points + "Referrer" Badge', 
       icon: Star,
       completed: completedReferrals >= 1 
     },
@@ -74,7 +74,7 @@ export default function Referrals() {
     },
     { 
       title: '3rd Referral', 
-      reward: 'Premium Unlock + 500 Points', 
+      reward: 'Premium Unlock + 500 Points + "Super Referrer" Badge', 
       icon: Zap,
       completed: completedReferrals >= 3 
     }
@@ -92,7 +92,8 @@ export default function Referrals() {
           <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-purple-400 to-green-400 bg-clip-text text-transparent">
             Refer Friends
           </h1>
-          <p className="text-zinc-400">Unlock premium features by inviting 3 friends!</p>
+          <p className="text-zinc-400">Unlock premium features and earn points by inviting friends!</p>
+          <p className="text-sm text-purple-400 mt-2">Each referral who completes their first vote earns you rewards!</p>
         </motion.div>
 
         {/* Progress Card */}
