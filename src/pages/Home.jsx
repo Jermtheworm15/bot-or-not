@@ -160,24 +160,19 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
-      // Flatten data structure and validate URLs
+      // Flatten data structure and add missing fields
       const data = rawData.map(item => ({
         id: item.id,
-        url: item.data?.url || item.url,
-        is_bot: item.data?.is_bot ?? item.is_bot,
-        source: item.data?.source || item.source,
-        user_uploaded: item.data?.user_uploaded || item.user_uploaded,
-        uploader_name: item.data?.uploader_name || item.uploader_name
-      })).filter(item => {
-        // Filter out invalid URLs
-        if (!item.url || item.url.trim() === '') return false;
-        try {
-          new URL(item.url);
-          return true;
-        } catch {
-          return false;
-        }
-      });
+        url: item.url,
+        is_bot: item.is_bot,
+        source: item.source,
+        user_uploaded: item.user_uploaded,
+        uploader_name: item.uploader_name,
+        ai_category: item.ai_category,
+        ai_tags: item.ai_tags,
+        nsfw_flag: item.nsfw_flag,
+        created_date: item.created_date
+      })).filter(item => item.url && item.url.trim() !== '');
 
       // Get IDs of images user has already voted on
       const votedIds = new Set(userVotes.map(v => v.image_id));
