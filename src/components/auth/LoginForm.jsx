@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
+import { createPageUrl } from '@/utils';
 
 export default function LoginForm({ onSuccess }) {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -17,13 +18,7 @@ export default function LoginForm({ onSuccess }) {
     setIsLoading(true);
 
     try {
-      if (isSignUp) {
-        // Redirect to platform's signup page with next URL
-        window.location.href = '/auth/signup?next=%2FHome';
-      } else {
-        // Redirect to platform's login page with next URL
-        window.location.href = '/auth/login?next=%2FHome';
-      }
+      base44.auth.redirectToLogin(createPageUrl('Home'));
     } catch (err) {
       console.error('Auth error:', err);
       setError('Redirecting to authentication...');
