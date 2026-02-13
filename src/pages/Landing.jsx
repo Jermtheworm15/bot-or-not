@@ -24,13 +24,8 @@ export default function Landing() {
     checkAuth();
   }, [navigate]);
 
-  const handleSignIn = async () => {
-    try {
-      // Force redirect to the platform's login page
-      window.location.href = '/auth/login?next=' + encodeURIComponent(createPageUrl('Home'));
-    } catch (err) {
-      console.error('Sign in error:', err);
-    }
+  const handleSignIn = () => {
+    navigate(createPageUrl('Login'));
   };
 
   return (
