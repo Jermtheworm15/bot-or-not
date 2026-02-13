@@ -204,27 +204,13 @@ export default function Home() {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
 
-      // Validate that images actually load
-      const loadableImages = [];
-      for (const item of shuffled) {
-        try {
-          await new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve();
-            img.onerror = () => reject();
-            img.src = item.url;
-            // Timeout after 5 seconds
-            setTimeout(() => reject(), 5000);
-          });
-          loadableImages.push(item);
-          if (loadableImages.length >= 20) break; // Only validate first 20
-        } catch {
-          // Image failed to load, skip it
-          console.log('Skipping broken image:', item.url);
-        }
-      }
+      // Preload first 3 images for smooth transitions
+      shuffled.slice(0, 3).forEach(item => {
+        const img = new Image();
+        img.src = item.url;
+      });
 
-      setItems(loadableImages.length > 0 ? loadableImages : shuffled.slice(0, 10));
+      setItems(shuffled);
     } catch (err) {
       console.error('Error loading content:', err);
       setItems([]);
