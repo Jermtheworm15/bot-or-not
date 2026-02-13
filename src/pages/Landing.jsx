@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Zap, Eye, Trophy, Users, Gamepad2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function Landing() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,12 +25,10 @@ export default function Landing() {
   }, [navigate]);
 
   const handleSignIn = async () => {
-    setIsLoading(true);
     try {
-      await base44.auth.redirectToLogin('/Home');
+      await base44.auth.redirectToLogin(createPageUrl('Home'));
     } catch (err) {
       console.error('Sign in error:', err);
-      setIsLoading(false);
     }
   };
 
