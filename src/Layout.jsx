@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
@@ -11,24 +11,31 @@ import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
 import BottomTabBar from './components/mobile/BottomTabBar';
 import NotificationBell from './components/notifications/NotificationBell';
+import LoginForm from './components/auth/LoginForm';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(null);
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const loadUser = async () => {
+    const checkAuth = async () => {
       try {
-        const user = await base44.auth.me();
-        setCurrentUser(user);
+        const isAuth = await base44.auth.isAuthenticated();
+        setIsAuthenticated(isAuth);
+        if (isAuth) {
+          const user = await base44.auth.me();
+          setCurrentUser(user);
+        }
       } catch (err) {
         console.log('Auth error:', err);
+        setIsAuthenticated(false);
       }
     };
-    loadUser();
+    checkAuth();
   }, []);
 
   React.useEffect(() => {
@@ -46,6 +53,33 @@ export default function Layout({ children, currentPageName }) {
     };
     document.head.appendChild(script);
   }, []);
+
+  // If not authenticated, show login form
+  if (isAuthenticated === false) {
+    return (
+      <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden flex flex-col items-center justify-center px-4">
+        <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-black to-green-950/20 pointer-events-none" />
+        <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-green-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="relative z-10">
+          <LoginForm onSuccess={async () => {
+            const user = await base44.auth.me();
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+          }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while checking auth
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-green-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden pb-20">
@@ -186,9 +220,20 @@ export default function Layout({ children, currentPageName }) {
                             <Link to={createPageUrl('Messages')} className="hidden md:block">
                               <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
                             </Link>
-                          </div>
-                </div>
-      </div>
+                            <button
+                              onClick={() => {
+                                base44.auth.logout();
+                                setIsAuthenticated(false);
+                                setCurrentUser(null);
+                              }}
+                              className="text-green-400 hover:text-white transition-colors"
+                              title="Logout"
+                            >
+                              <LogOut className="w-5 h-5" />
+                            </button>
+                            </div>
+                            </div>
+                            </div>
 
       {/* Top Showcase */}
       <TopShowcase />
