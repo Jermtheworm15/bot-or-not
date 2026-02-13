@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SkipForward } from 'lucide-react';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
-import RatingSlider from '@/components/voting/RatingSlider';
+
 import StatsBar from '@/components/voting/StatsBar';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
@@ -25,7 +25,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasVoted, setHasVoted] = useState(false);
   const [wasCorrect, setWasCorrect] = useState(false);
-  const [rating, setRating] = useState(5);
+
   const [stats, setStats] = useState({ total: 0, correct: 0, streak: 0 });
   const [showExplosion, setShowExplosion] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
@@ -345,15 +345,18 @@ export default function Home() {
       await loadUserProfile();
     }
 
-    // Save vote (without rating yet)
-    await base44.entities.Vote.create({
-      image_id: currentItem.id,
-      guess: guess,
-      guessed_bot: guess === 'bot',
-      was_correct: correct,
-      user_email: user.email
-    });
-  };
+    // Save vote
+            await base44.entities.Vote.create({
+              image_id: currentItem.id,
+              guess: guess,
+              guessed_bot: guess === 'bot',
+              was_correct: correct,
+              user_email: user.email
+            });
+
+            // Auto-advance after 2 seconds
+            setTimeout(moveToNextImage, 2000);
+          };
   
   const handleContentError = () => {
     // Prevent rapid-fire error skips
@@ -392,26 +395,8 @@ export default function Home() {
 
 
   
-  const handleSubmitRating = async () => {
-    // Update the vote with rating
-    try {
-      const user = await base44.auth.me();
-      const votes = await base44.entities.Vote.filter({ 
-        image_id: currentItem.id,
-        user_email: user.email 
-      }, '-created_date', 1);
-      if (votes.length > 0) {
-        await base44.entities.Vote.update(votes[0].id, { rating });
-      }
-    } catch (error) {
-      console.error('Error updating vote:', error);
-    }
-    
-    // Move to next item
-    setRating(5);
+  const moveToNextImage = () => {
     setHasVoted(false);
-
-    // Clean up points animations
     setPointsAnimations(prev => prev.slice(-5));
     
     if (currentIndex < items.length - 1) {
@@ -419,12 +404,9 @@ export default function Home() {
     } else {
       // Generate fresh content and reload
       setIsLoading(true);
-      try {
-        await base44.functions.invoke('generateFreshContent', { count: 6 });
-      } catch (error) {
-        console.error('Error generating fresh content:', error);
-      }
-      await loadContent();
+      loadContent().catch(error => {
+        console.error('Error loading content:', error);
+      });
     }
   };
   
@@ -480,7 +462,7 @@ export default function Home() {
           )}
         </div>
         
-        {/* Voting/Rating Section */}
+        {/* Voting Section */}
         <div className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             {!hasVoted ? (
@@ -496,29 +478,22 @@ export default function Home() {
                 />
               </motion.div>
             ) : (
-              <motion.div
-                key="rating"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-2"
-              >
-                <RatingSlider
-                  rating={rating}
-                  onRatingChange={setRating}
-                  onSubmit={handleSubmitRating}
-                />
-                {!isMobile && (
-                  <div className="flex justify-center">
-                    <ShareButton
-                      contentUrl={currentItem?.url}
-                      contentType="image"
-                      isBot={currentItem?.is_bot}
-                      wasCorrect={wasCorrect}
-                    />
-                  </div>
-                )}
-              </motion.div>
+              !isMobile && (
+                <motion.div
+                  key="share"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex justify-center"
+                >
+                  <ShareButton
+                    contentUrl={currentItem?.url}
+                    contentType="image"
+                    isBot={currentItem?.is_bot}
+                    wasCorrect={wasCorrect}
+                  />
+                </motion.div>
+              )
             )}
           </AnimatePresence>
         </div>
