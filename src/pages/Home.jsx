@@ -423,9 +423,9 @@ export default function Home() {
       {/* Success Explosion - Desktop only */}
       {!isMobile && <SuccessExplosion show={showExplosion} />}
       
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
+      <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-start h-screen overflow-hidden pt-20 pb-28' : 'justify-center min-h-screen py-8'} px-4`}>
         {/* Content Display - Main Focal Point */}
-        <div className="w-full max-w-3xl mb-6 space-y-4">
+        <div className={`w-full ${isMobile ? 'max-w-sm mb-2' : 'max-w-3xl mb-6'} space-y-2`}>
           <ImageCard
             imageUrl={currentItem?.url}
             isLoading={isLoading || !currentItem}
@@ -433,14 +433,15 @@ export default function Home() {
             isBot={currentItem?.is_bot}
             wasCorrect={wasCorrect}
             onError={handleContentError}
+            isMobile={isMobile}
           />
-          {hasVoted && currentItem && (
+          {hasVoted && currentItem && !isMobile && (
             <ImageAnalysis image={currentItem} />
           )}
         </div>
         
         {/* Voting/Rating Section */}
-        <div className="w-full max-w-2xl">
+        <div className={`w-full ${isMobile ? 'max-w-sm' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             {!hasVoted ? (
               <motion.div
@@ -460,21 +461,23 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="space-y-3"
+                className="space-y-2"
               >
                 <RatingSlider
                   rating={rating}
                   onRatingChange={setRating}
                   onSubmit={handleSubmitRating}
                 />
-                <div className="flex justify-center">
-                  <ShareButton
-                    contentUrl={currentItem?.url}
-                    contentType="image"
-                    isBot={currentItem?.is_bot}
-                    wasCorrect={wasCorrect}
-                  />
-                </div>
+                {!isMobile && (
+                  <div className="flex justify-center">
+                    <ShareButton
+                      contentUrl={currentItem?.url}
+                      contentType="image"
+                      isBot={currentItem?.is_bot}
+                      wasCorrect={wasCorrect}
+                    />
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -488,7 +491,7 @@ export default function Home() {
         )}
 
         {/* Stats bar - positioned to not overlap on mobile */}
-        <div className={`${isMobile ? 'relative mt-4 mb-4' : 'absolute bottom-32 left-4 right-4'}`}>
+        <div className={`${isMobile ? 'relative mt-2' : 'absolute bottom-32 left-4 right-4'}`}>
           <StatsBar 
             totalVotes={stats.total}
             correctVotes={stats.correct}

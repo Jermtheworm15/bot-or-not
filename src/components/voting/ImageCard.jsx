@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasCorrect, onError }) {
+export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasCorrect, onError, isMobile }) {
   return (
-    <div className="relative w-full max-w-md mx-auto aspect-square">
+    <div className={`relative w-full ${isMobile ? 'max-w-xs aspect-[3/4]' : 'max-w-md aspect-square'} mx-auto`}>
       <motion.div
         className="w-full h-full rounded-3xl overflow-hidden shadow-2xl"
         initial={{ scale: 0.9, opacity: 0 }}
