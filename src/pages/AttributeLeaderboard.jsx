@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Trophy, Medal } from 'lucide-react';
+import { Trophy, Medal, Users, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ATTRIBUTES = [
   { id: 'best_hair', label: 'Best Hair', emoji: '💇' },
@@ -15,15 +16,81 @@ export default function AttributeLeaderboard() {
   const [selectedAttribute, setSelectedAttribute] = useState('best_hair');
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('global');
+  const [regionRadius, setRegionRadius] = useState('50');
+  const [friends, setFriends] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     loadLeaderboard();
-  }, [selectedAttribute]);
+  }, [selectedAttribute, viewMode, regionRadius]);
+
+  useEffect(() => {
+    loadFriends();
+  }, []);
+
+  const loadFriends = async () => {
+    try {
+      const user = await base44.auth.me();
+      setCurrentUser(user);
+      if (!user) return;
+
+      const [sentRequests, receivedRequests] = await Promise.all([
+        base44.entities.Friend.filter({ user_email: user.email, status: 'accepted' }),
+        base44.entities.Friend.filter({ friend_email: user.email, status: 'accepted' })
+      ]);
+
+      const friendEmails = new Set([
+        ...sentRequests.map(f => f.friend_email),
+        ...receivedRequests.map(f => f.user_email)
+      ]);
+
+      setFriends(Array.from(friendEmails));
+    } catch (err) {
+      console.error('Error loading friends:', err);
+    }
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
 
   const loadLeaderboard = async () => {
     setIsLoading(true);
     try {
-      const votes = await base44.entities.AttributeVote.filter({ attribute_type: selectedAttribute });
+      let votes = await base44.entities.AttributeVote.filter({ attribute_type: selectedAttribute });
+      const profiles = await base44.entities.UserProfile.list();
+      const profileMap = {};
+      profiles.forEach(p => { if (p.user_email) profileMap[p.user_email] = p; });
+
+      // Filter votes by view mode
+      if (viewMode === 'friends') {
+        votes = votes.filter(v => friends.includes(v.user_email));
+      } else if (viewMode === 'nearby' && currentUser) {
+        const userProfile = profileMap[currentUser.email];
+        if (userProfile?.latitude && userProfile?.longitude) {
+          const radiusMiles = parseInt(regionRadius);
+          votes = votes.filter(v => {
+            const voterProfile = profileMap[v.user_email];
+            if (!voterProfile?.latitude || !voterProfile?.longitude) return false;
+            const distance = calculateDistance(
+              userProfile.latitude,
+              userProfile.longitude,
+              voterProfile.latitude,
+              voterProfile.longitude
+            );
+            return distance <= radiusMiles;
+          });
+        }
+      }
       
       // Group by image and calculate average rating
       const imageStats = {};
@@ -66,6 +133,41 @@ export default function AttributeLeaderboard() {
           <p className="text-zinc-400">See which images rank highest for each feature</p>
         </motion.div>
 
+        {/* View Mode Filters */}
+        <div className="mb-6 space-y-4">
+          <Tabs value={viewMode} onValueChange={setViewMode}>
+            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
+              <TabsTrigger value="global" className="data-[state=active]:bg-purple-600">
+                <Trophy className="w-4 h-4 mr-2" />
+                Global
+              </TabsTrigger>
+              <TabsTrigger value="friends" className="data-[state=active]:bg-purple-600">
+                <Users className="w-4 h-4 mr-2" />
+                Friends
+              </TabsTrigger>
+              <TabsTrigger value="nearby" className="data-[state=active]:bg-purple-600">
+                <MapPin className="w-4 h-4 mr-2" />
+                Nearby
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {viewMode === 'nearby' && (
+            <Select value={regionRadius} onValueChange={setRegionRadius}>
+              <SelectTrigger className="bg-zinc-900 border-purple-500/30">
+                <SelectValue placeholder="Select radius" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">Within 10 miles</SelectItem>
+                <SelectItem value="25">Within 25 miles</SelectItem>
+                <SelectItem value="50">Within 50 miles</SelectItem>
+                <SelectItem value="100">Within 100 miles</SelectItem>
+                <SelectItem value="250">Within 250 miles</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
         <Tabs value={selectedAttribute} onValueChange={setSelectedAttribute} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-zinc-900 border border-zinc-800">
             {ATTRIBUTES.map(attr => (
@@ -93,7 +195,13 @@ export default function AttributeLeaderboard() {
                       ))}
                     </div>
                   ) : leaderboardData.length === 0 ? (
-                    <p className="text-zinc-400 text-center py-8">No votes yet for this attribute</p>
+                    <div className="text-center py-8">
+                      <p className="text-zinc-400 mb-2">
+                        {viewMode === 'friends' ? 'No friend votes for this attribute yet.' :
+                         viewMode === 'nearby' ? 'No nearby votes for this attribute.' :
+                         'No votes yet for this attribute'}
+                      </p>
+                    </div>
                   ) : (
                     <div className="space-y-3">
                       {leaderboardData.map((item, idx) => (

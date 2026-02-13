@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight, Users, MapPin } from 'lucide-react';
 
 export default function UserLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -14,12 +15,41 @@ export default function UserLeaderboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('points');
   const [timeframe, setTimeframe] = useState('all-time');
+  const [viewMode, setViewMode] = useState('global'); // 'global', 'friends', 'nearby'
+  const [regionRadius, setRegionRadius] = useState('50'); // miles
+  const [friends, setFriends] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
     loadLeaderboard();
-  }, [sortBy, timeframe]);
+  }, [sortBy, timeframe, viewMode, regionRadius]);
+
+  useEffect(() => {
+    loadFriends();
+  }, []);
+
+  const loadFriends = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (!user) return;
+
+      // Get friends where status is accepted
+      const [sentRequests, receivedRequests] = await Promise.all([
+        base44.entities.Friend.filter({ user_email: user.email, status: 'accepted' }),
+        base44.entities.Friend.filter({ friend_email: user.email, status: 'accepted' })
+      ]);
+
+      const friendEmails = new Set([
+        ...sentRequests.map(f => f.friend_email),
+        ...receivedRequests.map(f => f.user_email)
+      ]);
+
+      setFriends(Array.from(friendEmails));
+    } catch (err) {
+      console.error('Error loading friends:', err);
+    }
+  };
 
   const loadLeaderboard = async () => {
     setIsLoading(true);
@@ -76,7 +106,7 @@ export default function UserLeaderboard() {
       });
       
       // Combine profile data with vote stats
-      const leaderboardData = profiles.map(profile => {
+      let leaderboardData = profiles.map(profile => {
         const stats = userStats[profile.user_email] || { totalVotes: 0, correctVotes: 0, bestStreak: 0 };
         const accuracy = stats.totalVotes > 0 ? (stats.correctVotes / stats.totalVotes) * 100 : 0;
         
@@ -89,9 +119,32 @@ export default function UserLeaderboard() {
           correctVotes: stats.correctVotes,
           accuracy: accuracy,
           perfectStreak: profile.perfect_streak || 0,
-          tier: profile.tier || 'bronze'
+          tier: profile.tier || 'bronze',
+          latitude: profile.latitude,
+          longitude: profile.longitude,
+          zip_code: profile.zip_code
         };
       });
+
+      // Filter by view mode
+      if (viewMode === 'friends') {
+        leaderboardData = leaderboardData.filter(u => friends.includes(u.email));
+      } else if (viewMode === 'nearby' && user) {
+        const userProfile = profiles.find(p => p.user_email === user.email);
+        if (userProfile?.latitude && userProfile?.longitude) {
+          const radiusMiles = parseInt(regionRadius);
+          leaderboardData = leaderboardData.filter(u => {
+            if (!u.latitude || !u.longitude) return false;
+            const distance = calculateDistance(
+              userProfile.latitude,
+              userProfile.longitude,
+              u.latitude,
+              u.longitude
+            );
+            return distance <= radiusMiles;
+          });
+        }
+      }
       
       // Sort based on selected criteria
       let sorted;
@@ -134,6 +187,19 @@ export default function UserLeaderboard() {
       case 'silver': return 'bg-zinc-400/20';
       default: return 'bg-amber-600/20';
     }
+  };
+
+  // Calculate distance between two coordinates (Haversine formula)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959; // Earth radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
   };
 
   const paginatedData = leaderboard.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -250,8 +316,43 @@ export default function UserLeaderboard() {
 
         {/* Filters */}
         <div className="mb-6 space-y-4">
+          {/* View Mode Tabs */}
+          <Tabs value={viewMode} onValueChange={setViewMode}>
+            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
+              <TabsTrigger value="global" className="data-[state=active]:bg-purple-600">
+                <Trophy className="w-4 h-4 mr-2" />
+                Global
+              </TabsTrigger>
+              <TabsTrigger value="friends" className="data-[state=active]:bg-purple-600">
+                <Users className="w-4 h-4 mr-2" />
+                Friends
+              </TabsTrigger>
+              <TabsTrigger value="nearby" className="data-[state=active]:bg-purple-600">
+                <MapPin className="w-4 h-4 mr-2" />
+                Nearby
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Region Filter */}
+          {viewMode === 'nearby' && (
+            <Select value={regionRadius} onValueChange={setRegionRadius}>
+              <SelectTrigger className="bg-zinc-900 border-purple-500/30">
+                <SelectValue placeholder="Select radius" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">Within 10 miles</SelectItem>
+                <SelectItem value="25">Within 25 miles</SelectItem>
+                <SelectItem value="50">Within 50 miles</SelectItem>
+                <SelectItem value="100">Within 100 miles</SelectItem>
+                <SelectItem value="250">Within 250 miles</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Time Range Tabs */}
           <Tabs value={timeframe} onValueChange={setTimeframe}>
-            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full">
+            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
               <TabsTrigger value="all-time" className="data-[state=active]:bg-purple-600 flex-1">
                 All-Time
               </TabsTrigger>
@@ -313,7 +414,16 @@ export default function UserLeaderboard() {
               />
             ))
           ) : (
-            <p className="text-center text-zinc-500 py-12">No players found. Start voting to join the leaderboard!</p>
+            <div className="text-center py-12">
+              <p className="text-zinc-500 mb-2">
+                {viewMode === 'friends' ? 'No friends found on the leaderboard yet.' :
+                 viewMode === 'nearby' ? 'No players found nearby. Try increasing the radius.' :
+                 'No players found. Start voting to join the leaderboard!'}
+              </p>
+              {viewMode === 'friends' && (
+                <p className="text-zinc-600 text-sm">Add friends to see them here!</p>
+              )}
+            </div>
           )}
         </div>
 

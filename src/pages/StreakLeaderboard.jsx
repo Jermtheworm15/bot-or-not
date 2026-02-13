@@ -2,21 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
-import { Zap, Trophy, Flame } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Zap, Trophy, Flame, Users, MapPin } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function StreakLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('global');
+  const [regionRadius, setRegionRadius] = useState('50');
+  const [friends, setFriends] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     loadStreakLeaderboard();
+  }, [viewMode, regionRadius]);
+
+  useEffect(() => {
+    loadFriends();
   }, []);
+
+  const loadFriends = async () => {
+    try {
+      const user = await base44.auth.me();
+      setCurrentUser(user);
+      if (!user) return;
+
+      const [sentRequests, receivedRequests] = await Promise.all([
+        base44.entities.Friend.filter({ user_email: user.email, status: 'accepted' }),
+        base44.entities.Friend.filter({ friend_email: user.email, status: 'accepted' })
+      ]);
+
+      const friendEmails = new Set([
+        ...sentRequests.map(f => f.friend_email),
+        ...receivedRequests.map(f => f.user_email)
+      ]);
+
+      setFriends(Array.from(friendEmails));
+    } catch (err) {
+      console.error('Error loading friends:', err);
+    }
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
 
   const loadStreakLeaderboard = async () => {
     setIsLoading(true);
     
-    const votes = await base44.entities.Vote.list('-created_date');
+    const [votes, profiles] = await Promise.all([
+      base44.entities.Vote.list('-created_date'),
+      base44.entities.UserProfile.list()
+    ]);
+    
+    const profileMap = {};
+    profiles.forEach(p => { if (p.user_email) profileMap[p.user_email] = p; });
     
     // Calculate streaks per user
     const userStreaks = {};
@@ -28,13 +78,16 @@ export default function StreakLeaderboard() {
       if (!vote.user_email) return;
 
       if (!userStreaks[vote.user_email]) {
+        const profile = profileMap[vote.user_email];
         userStreaks[vote.user_email] = {
           email: vote.user_email,
           username: userMap[vote.user_email]?.username,
           currentStreak: 0,
           bestStreak: 0,
           totalVotes: 0,
-          correctVotes: 0
+          correctVotes: 0,
+          latitude: profile?.latitude,
+          longitude: profile?.longitude
         };
       }
       
@@ -53,10 +106,30 @@ export default function StreakLeaderboard() {
     });
     
     // Sort by best streak
-    const sorted = Object.values(userStreaks)
-      .filter(u => u.bestStreak > 0)
-      .sort((a, b) => b.bestStreak - a.bestStreak)
-      .slice(0, 10);
+    let sorted = Object.values(userStreaks)
+      .filter(u => u.bestStreak > 0);
+
+    // Filter by view mode
+    if (viewMode === 'friends') {
+      sorted = sorted.filter(u => friends.includes(u.email));
+    } else if (viewMode === 'nearby' && currentUser) {
+      const userProfile = profileMap[currentUser.email];
+      if (userProfile?.latitude && userProfile?.longitude) {
+        const radiusMiles = parseInt(regionRadius);
+        sorted = sorted.filter(u => {
+          if (!u.latitude || !u.longitude) return false;
+          const distance = calculateDistance(
+            userProfile.latitude,
+            userProfile.longitude,
+            u.latitude,
+            u.longitude
+          );
+          return distance <= radiusMiles;
+        });
+      }
+    }
+
+    sorted = sorted.sort((a, b) => b.bestStreak - a.bestStreak).slice(0, 10);
     
     setLeaderboard(sorted);
     setIsLoading(false);
@@ -138,6 +211,41 @@ export default function StreakLeaderboard() {
           <p className="text-zinc-400">Top players with the longest winning streaks</p>
         </motion.div>
 
+        {/* View Mode Filters */}
+        <div className="mb-6 space-y-4">
+          <Tabs value={viewMode} onValueChange={setViewMode}>
+            <TabsList className="bg-zinc-900 border border-purple-500/30 w-full grid grid-cols-3">
+              <TabsTrigger value="global" className="data-[state=active]:bg-orange-600">
+                <Trophy className="w-4 h-4 mr-2" />
+                Global
+              </TabsTrigger>
+              <TabsTrigger value="friends" className="data-[state=active]:bg-orange-600">
+                <Users className="w-4 h-4 mr-2" />
+                Friends
+              </TabsTrigger>
+              <TabsTrigger value="nearby" className="data-[state=active]:bg-orange-600">
+                <MapPin className="w-4 h-4 mr-2" />
+                Nearby
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {viewMode === 'nearby' && (
+            <Select value={regionRadius} onValueChange={setRegionRadius}>
+              <SelectTrigger className="bg-zinc-900 border-orange-500/30">
+                <SelectValue placeholder="Select radius" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">Within 10 miles</SelectItem>
+                <SelectItem value="25">Within 25 miles</SelectItem>
+                <SelectItem value="50">Within 50 miles</SelectItem>
+                <SelectItem value="100">Within 100 miles</SelectItem>
+                <SelectItem value="250">Within 250 miles</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
         <div className="space-y-4">
           {isLoading ? (
             <LoadingSkeleton />
@@ -146,7 +254,13 @@ export default function StreakLeaderboard() {
               <LeaderboardCard key={user.email} user={user} rank={index} />
             ))
           ) : (
-            <p className="text-center text-zinc-500 py-12">No streaks recorded yet. Start voting!</p>
+            <div className="text-center py-12">
+              <p className="text-zinc-500 mb-2">
+                {viewMode === 'friends' ? 'No friends with streaks yet.' :
+                 viewMode === 'nearby' ? 'No players found nearby with streaks.' :
+                 'No streaks recorded yet. Start voting!'}
+              </p>
+            </div>
           )}
         </div>
       </div>
