@@ -84,9 +84,10 @@ export default function AIChallenge() {
   };
 
   const handleVote = async (guessedBot) => {
-    if (!isAnswering || !images[currentIndex]) return;
+    if (!isAnswering || currentIndex >= images.length) return;
 
     const image = images[currentIndex];
+    if (!image?.id) return;
     const correct = guessedBot === image.is_bot;
 
     const playerAnswer = {
@@ -139,6 +140,8 @@ export default function AIChallenge() {
 
   const skipImage = async () => {
     const image = images[currentIndex];
+    if (!image) return;
+    
     setUserAnswers(prev => [...prev, {
       imageId: image.id,
       guessed: null,
