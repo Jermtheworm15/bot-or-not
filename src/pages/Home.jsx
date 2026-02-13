@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkipForward, RefreshCw } from 'lucide-react';
-import { playSound } from '@/utils/soundEffects';
+import { playSound } from '@/components/audio/SoundEffects';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
