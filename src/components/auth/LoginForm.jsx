@@ -18,11 +18,11 @@ export default function LoginForm({ onSuccess }) {
 
     try {
       if (isSignUp) {
-        // Redirect to platform's signup page
-        window.location.href = '/auth/signup';
+        // Redirect to platform's signup page with next URL
+        window.location.href = '/auth/signup?next=%2FHome';
       } else {
-        // Redirect to platform's login page
-        window.location.href = '/auth/login';
+        // Redirect to platform's login page with next URL
+        window.location.href = '/auth/login?next=%2FHome';
       }
     } catch (err) {
       console.error('Auth error:', err);
