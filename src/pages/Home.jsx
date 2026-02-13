@@ -158,6 +158,7 @@ export default function Home() {
         id: item.id,
         url: item.url || item.data?.url,
         is_bot: item.is_bot ?? item.data?.is_bot,
+        is_other: item.is_other ?? item.data?.is_other ?? false,
         source: item.source || item.data?.source,
         user_uploaded: item.user_uploaded ?? item.data?.user_uploaded,
         uploader_name: item.uploader_name || item.data?.uploader_name,
@@ -207,10 +208,19 @@ export default function Home() {
   };
 
   
-  const handleVote = async (guessedBot) => {
+  const handleVote = async (guess) => {
     if (!currentItem) return;
 
-    const correct = guessedBot === currentItem.is_bot;
+    // Determine if the guess was correct
+    let correct = false;
+    if (currentItem.is_other) {
+      correct = guess === 'other';
+    } else if (guess === 'other') {
+      correct = false;
+    } else {
+      correct = (guess === 'bot') === currentItem.is_bot;
+    }
+
     setWasCorrect(correct);
     setHasVoted(true);
 
@@ -321,7 +331,8 @@ export default function Home() {
     // Save vote (without rating yet)
     await base44.entities.Vote.create({
       image_id: currentItem.id,
-      guessed_bot: guessedBot,
+      guess: guess,
+      guessed_bot: guess === 'bot',
       was_correct: correct,
       user_email: user.email
     });
