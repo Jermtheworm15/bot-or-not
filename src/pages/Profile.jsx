@@ -16,7 +16,7 @@ import ChallengeUser from '@/components/challenges/ChallengeUser';
 import FriendButton from '@/components/social/FriendButton';
 import FriendsList from '@/components/messaging/FriendsList';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 
@@ -165,6 +165,14 @@ export default function Profile() {
       console.error('Error resetting profile:', err);
     } finally {
       setIsResetting(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await base44.auth.logout('/Landing');
+    } catch (err) {
+      console.error('Sign out error:', err);
     }
   };
   
@@ -382,6 +390,17 @@ export default function Profile() {
               </button>
               <p className="text-xs text-zinc-400">
                 Deleting your account is permanent and cannot be undone. All your data will be removed.
+              </p>
+
+              <button
+                onClick={handleSignOut}
+                className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+              <p className="text-xs text-zinc-400 mt-3">
+                Sign out of your account and return to the login page.
               </p>
             </CardContent>
           </Card>
