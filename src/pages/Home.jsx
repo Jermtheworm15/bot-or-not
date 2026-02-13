@@ -14,6 +14,7 @@ import PointsAnimation from '@/components/gamification/PointsAnimation';
 import MilestonePopup from '@/components/gamification/MilestonePopup';
 import ImageAnalysis from '@/components/ImageAnalysis';
 import MobileNav from '@/components/mobile/MobileNav';
+import ImageComments from '@/components/comments/ImageComments';
 
 import { createPageUrl } from '@/utils';
 
@@ -472,7 +473,10 @@ export default function Home() {
             isMobile={isMobile}
           />
           {hasVoted && currentItem && !isMobile && (
-            <ImageAnalysis image={currentItem} />
+            <>
+              <ImageAnalysis image={currentItem} />
+              <ImageComments imageId={currentItem.id} isRevealed={hasVoted} />
+            </>
           )}
         </div>
         
