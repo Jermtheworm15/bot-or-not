@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkipForward, RefreshCw } from 'lucide-react';
+import { playSound } from '@/utils/soundEffects';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
@@ -242,6 +243,13 @@ export default function Home() {
       correct = guessedBot === currentItem.is_bot;
     }
 
+    // Play sound effect
+    if (correct) {
+      playSound.correct();
+    } else {
+      playSound.incorrect();
+    }
+
     setWasCorrect(correct);
     setHasVoted(true);
 
@@ -289,12 +297,15 @@ export default function Home() {
       // Award badges
       if (stats.total === 0 && !newBadges.includes('first_vote')) {
         newBadges.push('first_vote');
+        playSound.achievement();
       }
       if (newStreak === 5 && !newBadges.includes('streak_5')) {
         newBadges.push('streak_5');
+        playSound.achievement();
       }
       if (newStreak === 10 && !newBadges.includes('streak_10')) {
         newBadges.push('streak_10');
+        playSound.achievement();
       }
 
       const updatedProfile = await base44.entities.UserProfile.update(userProfile.id, {
