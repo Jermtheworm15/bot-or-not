@@ -381,7 +381,7 @@ export default function Home() {
   };
   
   return (
-    <div className="min-h-screen bg-zinc-950 text-white pb-24">
+    <div className="min-h-screen bg-zinc-950 text-white">
       {/* Gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
 
