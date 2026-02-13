@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, TrendingUp, MessageCircle } from 'lucide-react';
+import { Menu, Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, MessageCircle } from 'lucide-react';
 
 export default function MobileNav({ currentPageName }) {
   const [open, setOpen] = useState(false);
 
   const navItems = [
     { name: 'Home', icon: Eye, label: 'Vote' },
-    { name: 'Analytics', icon: TrendingUp, label: 'Analytics' },
     { name: 'UserLeaderboard', icon: Trophy, label: 'Players' },
     { name: 'StreakLeaderboard', icon: Flame, label: 'Streaks' },
     { name: 'Upload', icon: Upload, label: 'Upload' },
