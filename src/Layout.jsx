@@ -24,12 +24,9 @@ export default function Layout({ children, currentPageName }) {
   React.useEffect(() => {
     const checkAuth = async () => {
       try {
-        const isAuth = await base44.auth.isAuthenticated();
-        setIsAuthenticated(isAuth);
-        if (isAuth) {
-          const user = await base44.auth.me();
-          setCurrentUser(user);
-        }
+        const user = await base44.auth.me();
+        setCurrentUser(user);
+        setIsAuthenticated(true);
       } catch (err) {
         console.log('Auth error:', err);
         setIsAuthenticated(false);
