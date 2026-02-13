@@ -154,19 +154,25 @@ export default function Home() {
       // Extract data from entity structure - NO FILTERING
       const data = rawData.map(item => ({
         id: item.id,
-        url: item.data?.url,
-        is_bot: item.data?.is_bot,
-        source: item.data?.source,
-        user_uploaded: item.data?.user_uploaded,
-        uploader_name: item.data?.uploader_name,
-        ai_category: item.data?.ai_category,
-        ai_tags: item.data?.ai_tags,
-        nsfw_flag: item.data?.nsfw_flag,
+        url: item.url || item.data?.url,
+        is_bot: item.is_bot ?? item.data?.is_bot,
+        source: item.source || item.data?.source,
+        user_uploaded: item.user_uploaded ?? item.data?.user_uploaded,
+        uploader_name: item.uploader_name || item.data?.uploader_name,
+        ai_category: item.ai_category || item.data?.ai_category,
+        ai_tags: item.ai_tags || item.data?.ai_tags,
+        nsfw_flag: item.nsfw_flag ?? item.data?.nsfw_flag,
         created_date: item.created_date
       }));
 
-      // Use all data without filtering
-      const validData = data;
+      // Filter out items without valid URLs
+      const validData = data.filter(item => {
+        const hasUrl = item.url && typeof item.url === 'string' && item.url.trim() !== '';
+        if (!hasUrl) {
+          console.log('Skipping item without valid URL:', item.id);
+        }
+        return hasUrl;
+      });
 
       if (validData.length === 0) {
         setItems([]);

@@ -20,11 +20,17 @@ export default function ImageCard({ imageUrl, isLoading, isRevealed, isBot, wasC
               alt="Mystery face"
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop
+                e.target.onerror = null;
                 console.error('Image failed to load:', imageUrl);
-                if (onError) onError();
+                console.error('Error details:', e);
+                if (onError) {
+                  // Auto-skip failed images after a brief delay
+                  setTimeout(() => onError(), 300);
+                }
               }}
+              onLoad={() => console.log('Image loaded successfully:', imageUrl)}
               loading="eager"
+              crossOrigin="anonymous"
             />
             
             {/* Gradient overlay */}
