@@ -16,8 +16,9 @@ import ChallengeUser from '@/components/challenges/ChallengeUser';
 import FriendButton from '@/components/social/FriendButton';
 import FriendsList from '@/components/messaging/FriendsList';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -29,6 +30,8 @@ export default function Profile() {
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -137,6 +140,31 @@ export default function Profile() {
     } catch (err) {
       console.error('Error deleting account:', err);
       setIsDeleting(false);
+    }
+  };
+
+  const handleResetProfile = async () => {
+    setIsResetting(true);
+    try {
+      if (profile) {
+        // Reset profile to initial state
+        await base44.entities.UserProfile.update(profile.id, {
+          points: 0,
+          level: 1,
+          badges: ['newcomer'],
+          daily_votes: 0,
+          weekly_votes: 0,
+          perfect_streak: 0,
+          bio: '',
+          zip_code: ''
+        });
+        await loadProfile();
+        setShowResetDialog(false);
+      }
+    } catch (err) {
+      console.error('Error resetting profile:', err);
+    } finally {
+      setIsResetting(false);
     }
   };
   
@@ -323,19 +351,65 @@ export default function Profile() {
                 Account Settings
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              <Button
+                onClick={() => navigate('/Onboarding')}
+                variant="outline"
+                className="w-full border-purple-500/30 text-purple-400 hover:bg-purple-900/30"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Profile Setup
+              </Button>
+              <p className="text-xs text-zinc-400">
+                Re-do your onboarding to update your username, password, and profile photo.
+              </p>
+
+              <button
+                onClick={() => setShowResetDialog(true)}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded transition-colors"
+              >
+                Reset Profile Stats
+              </button>
+              <p className="text-xs text-zinc-400">
+                Clear all points, badges, and streaks. This cannot be undone.
+              </p>
+
               <button
                 onClick={() => setShowDeleteDialog(true)}
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors"
               >
                 Delete Account
               </button>
-              <p className="text-xs text-zinc-400 mt-3">
+              <p className="text-xs text-zinc-400">
                 Deleting your account is permanent and cannot be undone. All your data will be removed.
               </p>
             </CardContent>
           </Card>
         )}
+
+        {/* Reset Profile Dialog */}
+        <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+          <AlertDialogContent className="bg-zinc-900 border-purple-500/30">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-orange-400">Reset Profile Stats</AlertDialogTitle>
+              <AlertDialogDescription className="text-zinc-300">
+                Are you sure? This will reset all your points, badges, streaks, and profile information. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex gap-3 justify-end">
+              <AlertDialogCancel className="bg-zinc-800 text-white hover:bg-zinc-700">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleResetProfile}
+                disabled={isResetting}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                {isResetting ? 'Resetting...' : 'Reset'}
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Delete Account Dialog */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
