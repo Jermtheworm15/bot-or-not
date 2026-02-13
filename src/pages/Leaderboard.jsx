@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Bot, User, Trophy } from 'lucide-react';
+import { Star, Bot, User, Trophy, RefreshCw } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Leaderboard() {
   const [botLeaderboard, setBotLeaderboard] = useState([]);
   const [humanLeaderboard, setHumanLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [touchStart, setTouchStart] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const pullRef = useRef(null);
 
   useEffect(() => {
     loadLeaderboards();
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const loadLeaderboards = async () => {
@@ -131,9 +138,45 @@ export default function Leaderboard() {
     </div>
   );
 
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0].clientY;
+    const diff = touch - touchStart;
+    if (diff > 0 && diff < 100 && pullRef.current?.scrollTop === 0) {
+      setIsPulling(true);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isPulling) {
+      loadLeaderboards();
+    }
+    setIsPulling(false);
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white py-8">
+    <div 
+      className="min-h-screen bg-zinc-950 text-white py-8"
+      ref={pullRef}
+      onTouchStart={isMobile ? handleTouchStart : undefined}
+      onTouchMove={isMobile ? handleTouchMove : undefined}
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
+    >
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+      
+      {/* Pull to Refresh Indicator */}
+      {isMobile && isPulling && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40"
+        >
+          <RefreshCw className="w-6 h-6 text-purple-400 animate-spin" />
+        </motion.div>
+      )}
       
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <motion.div

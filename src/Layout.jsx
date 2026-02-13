@@ -9,7 +9,7 @@ import HieroglyphicRain from './components/HieroglyphicRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
-import MobileNav from './components/mobile/MobileNav';
+import BottomTabBar from './components/mobile/BottomTabBar';
 import NotificationBell from './components/notifications/NotificationBell';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
@@ -128,11 +128,11 @@ export default function Layout({ children, currentPageName }) {
             <span className="tracking-wider uppercase">Bot or Not</span>
           </Link>
           <div className="flex items-center gap-2">
-            {currentUser && <NotificationBell />}
-            <Link to={createPageUrl('Messages')}>
-              <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
-            </Link>
-          </div>
+                    {currentUser && <NotificationBell />}
+                    <Link to={createPageUrl('Messages')} className="hidden md:block">
+                      <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
+                    </Link>
+                  </div>
         </div>
       </div>
 
@@ -140,10 +140,11 @@ export default function Layout({ children, currentPageName }) {
       <TopShowcase />
 
       {/* Bottom Navigation - Desktop */}
-      {!isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow">
-          <div className="w-full px-2 py-3">
-            <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollBehavior: 'smooth' }}>
+        {!isMobile && (
+          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow"
+               style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)' }}>
+            <div className="w-full px-2 py-3">
+              <div className="flex gap-1 overflow-x-auto pb-2" style={{ scrollBehavior: 'smooth' }}>
               <Link to={createPageUrl('Home')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'Home' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Eye className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Vote</span></Link>
               <Link to={createPageUrl('UserLeaderboard')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'UserLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Players</span></Link>
               <Link to={createPageUrl('StreakLeaderboard')} className={`flex-shrink-0 flex flex-col items-center gap-1 py-2 px-3 rounded-lg font-medium transition-all whitespace-nowrap ${currentPageName === 'StreakLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Flame className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Streaks</span></Link>
@@ -163,11 +164,11 @@ export default function Layout({ children, currentPageName }) {
         </nav>
       )}
 
-      {/* Mobile Navigation Button */}
-      {isMobile && currentPageName !== 'Home' && (
-        <MobileNav currentPageName={currentPageName} />
+      {/* Mobile Bottom Tab Bar */}
+      {isMobile && (
+        <BottomTabBar currentPageName={currentPageName} />
       )}
-      <div className="relative z-10 pb-0">
+      <div className="relative z-10 pb-20 md:pb-0" style={{ paddingBottom: 'max(calc(5rem + env(safe-area-inset-bottom, 0px)), 5rem)' }}>
         {children}
       </div>
     </div>

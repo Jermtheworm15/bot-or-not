@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, MapPin, Briefcase, GraduationCap } from 'lucide-react';
 
 export default function DemographicsForm({ profile, onSave }) {
@@ -54,17 +55,17 @@ export default function DemographicsForm({ profile, onSave }) {
           {/* Sex */}
           <div>
             <label className="block text-sm text-zinc-400 mb-2">Gender (Optional)</label>
-            <select
-              value={formData.sex}
-              onChange={(e) => handleChange('sex', e.target.value)}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-white focus:outline-none focus:border-purple-500"
-            >
-              <option value="">Select...</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="non-binary">Non-binary</option>
-              <option value="prefer_not_to_say">Prefer not to say</option>
-            </select>
+            <Select value={formData.sex} onValueChange={(value) => handleChange('sex', value)}>
+              <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white">
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="non-binary">Non-binary</SelectItem>
+                <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Location */}

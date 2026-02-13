@@ -7,9 +7,16 @@ css
   overflow-x: hidden;
 }
 
-body {
+html, body {
   overflow-x: hidden;
   width: 100%;
+  overscroll-behavior: none;
+}
+
+button, [role="button"], a, nav, .mobile-nav, [class*="nav-item"], [class*="icon"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 @layer utilities {

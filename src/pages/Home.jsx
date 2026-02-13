@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SkipForward } from 'lucide-react';
+import { SkipForward, RefreshCw } from 'lucide-react';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
@@ -36,6 +36,9 @@ export default function Home() {
   const [showMilestone, setShowMilestone] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [errorSkipInProgress, setErrorSkipInProgress] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const pullRef = useRef(null);
   const currentItem = items[currentIndex];
 
   React.useEffect(() => {
@@ -416,6 +419,27 @@ export default function Home() {
     await loadContent();
   };
 
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (currentIndex === 0) {
+      const touch = e.touches[0].clientY;
+      const diff = touch - touchStart;
+      if (diff > 0 && diff < 100) {
+        setIsPulling(true);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isPulling) {
+      handleRefresh();
+    }
+    setIsPulling(false);
+  };
+
   const handleShowInfo = () => {
     if (currentItem) {
       alert(`Image Info:\nSource: ${currentItem.source || 'Unknown'}\nUploader: ${currentItem.uploader_name || 'N/A'}\nCategory: ${currentItem.ai_category || 'N/A'}`);
@@ -440,9 +464,26 @@ export default function Home() {
   };
   
   return (
-    <div className="min-h-screen bg-zinc-950 text-white overflow-x-hidden">
+    <div 
+      className="min-h-screen bg-zinc-950 text-white overflow-x-hidden"
+      ref={pullRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+
+      {/* Pull to Refresh Indicator */}
+      {isMobile && isPulling && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40"
+        >
+          <RefreshCw className="w-6 h-6 text-purple-400 animate-spin" />
+        </motion.div>
+      )}
 
       {/* Combo Counter - Desktop only */}
       {!isMobile && (

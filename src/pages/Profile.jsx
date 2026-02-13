@@ -15,6 +15,9 @@ import SocialMediaLinks from '@/components/profile/SocialMediaLinks';
 import ChallengeUser from '@/components/challenges/ChallengeUser';
 import FriendButton from '@/components/social/FriendButton';
 import FriendsList from '@/components/messaging/FriendsList';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -24,6 +27,9 @@ export default function Profile() {
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     loadProfile();
@@ -118,6 +124,21 @@ export default function Profile() {
       console.error('Error saving bio:', err);
     }
   };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      // Delete user profile and related data
+      if (profile) {
+        await base44.entities.UserProfile.delete(profile.id);
+      }
+      // Logout and redirect
+      await base44.auth.logout(createPageUrl('Home'));
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      setIsDeleting(false);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -127,6 +148,10 @@ export default function Profile() {
     );
   }
   
+  const createPageUrl = (pageName) => {
+    return `/${pageName}`;
+  };
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white py-8">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
@@ -291,6 +316,53 @@ export default function Profile() {
             <BadgeDisplay badges={profile?.badges || []} size="lg" />
           </CardContent>
         </Card>
+
+        {/* Account Settings */}
+        {isOwnProfile && (
+          <Card className="bg-zinc-900 border-purple-500/30 border-red-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-400">
+                <Trash2 className="w-6 h-6" />
+                Account Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors"
+              >
+                Delete Account
+              </button>
+              <p className="text-xs text-zinc-400 mt-3">
+                Deleting your account is permanent and cannot be undone. All your data will be removed.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Delete Account Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent className="bg-zinc-900 border-purple-500/30">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-red-400">Delete Account</AlertDialogTitle>
+              <AlertDialogDescription className="text-zinc-300">
+                Are you sure? This will permanently delete your account and all associated data. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex gap-3 justify-end">
+              <AlertDialogCancel className="bg-zinc-800 text-white hover:bg-zinc-700">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Share Stats */}
         <motion.div
