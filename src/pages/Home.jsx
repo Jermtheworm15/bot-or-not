@@ -510,7 +510,6 @@ export default function Home() {
           disabled={isLoading}
         />
       )}
-        </div>
-        </div>
-        );
-        }
+    </div>
+  );
+}
