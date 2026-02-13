@@ -10,6 +10,9 @@ import VotingButtons from '@/components/voting/VotingButtons';
 export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
@@ -46,8 +49,27 @@ export default function Onboarding() {
     }
   };
 
+  const validatePassword = () => {
+    setPasswordError('');
+    if (!password) {
+      setPasswordError('Password is required');
+      return false;
+    }
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return false;
+    }
+    if (password !== passwordConfirm) {
+      setPasswordError('Passwords do not match');
+      return false;
+    }
+    return true;
+  };
+
   const handleUsernameSubmit = async () => {
-    if (!username.trim() || !zipCode.trim() || !profileImage) return;
+    if (!username.trim() || !password || !passwordConfirm || !zipCode.trim() || !profileImage) return;
+    
+    if (!validatePassword()) return;
     
     setIsUploading(true);
     try {
@@ -57,10 +79,11 @@ export default function Onboarding() {
       const { data } = await base44.integrations.Core.UploadFile({ file: profileImage });
       const imageUrl = data.file_url;
       
-      // Update user with username and profile image
+      // Update user with username, password, and profile image
       await base44.auth.updateMe({ 
         full_name: username,
-        profile_image: imageUrl
+        profile_image: imageUrl,
+        password: password
       });
       
       // Create user profile with zip code
@@ -79,6 +102,7 @@ export default function Onboarding() {
       setStep(1);
     } catch (err) {
       console.log('Error setting username:', err);
+      setPasswordError('Failed to save account. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -152,6 +176,26 @@ export default function Onboarding() {
                 />
                 
                 <input
+                  type="password"
+                  placeholder="Create a password (min 8 chars)..."
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
+                />
+                
+                <input
+                  type="password"
+                  placeholder="Confirm your password..."
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  className="w-full px-6 py-4 bg-zinc-900 border border-purple-500/30 rounded-xl text-white text-center text-lg focus:outline-none focus:border-purple-500"
+                />
+                
+                {passwordError && (
+                  <p className="text-red-400 text-sm">{passwordError}</p>
+                )}
+                
+                <input
                   type="text"
                   placeholder="Enter your zip code..."
                   value={zipCode}
@@ -200,7 +244,7 @@ export default function Onboarding() {
                 
                 <Button
                   onClick={handleUsernameSubmit}
-                  disabled={!username.trim() || !zipCode.trim() || !profileImage || isUploading}
+                  disabled={!username.trim() || !password || !passwordConfirm || !zipCode.trim() || !profileImage || isUploading}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-bold"
                 >
                   {isUploading ? 'Uploading...' : 'Start Playing'} <ArrowRight className="ml-2 w-5 h-5" />
