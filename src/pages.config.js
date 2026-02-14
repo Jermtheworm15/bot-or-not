@@ -65,6 +65,7 @@ import Community from './pages/Community';
 import CreateChallenge from './pages/CreateChallenge';
 import Discover from './pages/Discover';
 import Home from './pages/Home';
+import Landing from './pages/Landing';
 import Leaderboard from './pages/Leaderboard';
 import Messages from './pages/Messages';
 import Onboarding from './pages/Onboarding';
@@ -75,7 +76,6 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import Landing from './pages/Landing';
 import __Layout from './Layout.jsx';
 
 
@@ -98,6 +98,7 @@ export const PAGES = {
     "CreateChallenge": CreateChallenge,
     "Discover": Discover,
     "Home": Home,
+    "Landing": Landing,
     "Leaderboard": Leaderboard,
     "Messages": Messages,
     "Onboarding": Onboarding,
@@ -108,7 +109,6 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "Landing": Landing,
 }
 
 export const pagesConfig = {

@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState({ total: 0, correct: 0, accuracy: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -42,27 +43,60 @@ export default function Profile() {
     setIsLoading(true);
     
     try {
-      const currentUser = await base44.auth.me();
-      if (!currentUser) {
+      const loggedInUser = await base44.auth.me();
+      if (!loggedInUser) {
         navigate('/Landing');
         return;
       }
-      setUser(currentUser);
+      setCurrentUser(loggedInUser);
+    
+    // Check if viewing another user's profile via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewUserEmail = urlParams.get('user');
+    const targetEmail = viewUserEmail || loggedInUser.email;
+    const isOwn = !viewUserEmail || viewUserEmail === loggedInUser.email;
+    setIsOwnProfile(isOwn);
+    
+    // Load target user data
+    if (!isOwn) {
+      const allUsers = await base44.entities.User.list();
+      const targetUser = allUsers.find(u => u.email === targetEmail);
+      if (!targetUser) {
+        navigate('/Community');
+        return;
+      }
+      setUser(targetUser);
+    } else {
+      setUser(loggedInUser);
+    }
     
     // Load or create profile
-    const profiles = await base44.entities.UserProfile.filter({ user_email: currentUser.email });
+    const profiles = await base44.entities.UserProfile.filter({ user_email: targetEmail });
     let userProfile;
     
     if (profiles.length === 0) {
-      userProfile = await base44.entities.UserProfile.create({
-        user_email: currentUser.email,
-        points: 0,
-        level: 1,
-        badges: [],
-        daily_votes: 0,
-        weekly_votes: 0,
-        perfect_streak: 0
-      });
+      if (isOwn) {
+        userProfile = await base44.entities.UserProfile.create({
+          user_email: targetEmail,
+          points: 0,
+          level: 1,
+          badges: [],
+          daily_votes: 0,
+          weekly_votes: 0,
+          perfect_streak: 0
+        });
+      } else {
+        // Viewing user with no profile
+        userProfile = {
+          user_email: targetEmail,
+          points: 0,
+          level: 1,
+          badges: [],
+          daily_votes: 0,
+          weekly_votes: 0,
+          perfect_streak: 0
+        };
+      }
     } else {
       userProfile = profiles[0];
     }
@@ -71,8 +105,8 @@ export default function Profile() {
     
     // Calculate stats and rank
     const [imageVotes, videoVotes, allProfiles] = await Promise.all([
-      base44.entities.Vote.filter({ user_email: currentUser.email }),
-      base44.entities.VideoVote.filter({ user_email: currentUser.email }),
+      base44.entities.Vote.filter({ user_email: targetEmail }),
+      base44.entities.VideoVote.filter({ user_email: targetEmail }),
       base44.entities.UserProfile.list()
     ]);
     
@@ -82,12 +116,12 @@ export default function Profile() {
     
     // Calculate rank
     const sortedByPoints = [...allProfiles].sort((a, b) => (b.points || 0) - (a.points || 0));
-    const rank = sortedByPoints.findIndex(p => p.user_email === currentUser.email) + 1;
+    const rank = sortedByPoints.findIndex(p => p.user_email === targetEmail) + 1;
     
     // Load followers and following
     const [followerData, followingData] = await Promise.all([
-      base44.entities.Follow.filter({ following_email: currentUser.email }),
-      base44.entities.Follow.filter({ follower_email: currentUser.email })
+      base44.entities.Follow.filter({ following_email: targetEmail }),
+      base44.entities.Follow.filter({ follower_email: targetEmail })
     ]);
     
     setFollowers(followerData);
@@ -237,12 +271,12 @@ export default function Profile() {
                     <a href="/UserLeaderboard" className="text-purple-400 text-sm hover:underline">View Leaderboard →</a>
                   </div>
                 </div>
-                {user && user.email !== user?.email && (
+                {!isOwnProfile && currentUser && user && (
                   <ChallengeUser 
                     targetUserEmail={user?.email} 
                     targetUserName={user?.username || user?.email}
-                    currentUserEmail={user?.email}
-                    currentUserName={user?.username || user?.email}
+                    currentUserEmail={currentUser?.email}
+                    currentUserName={currentUser?.username || currentUser?.email}
                   />
                 )}
               </CardContent>
@@ -277,11 +311,17 @@ export default function Profile() {
         </motion.div>
 
         {/* Friend Actions */}
-        {user && user.email !== user?.email && (
-          <FriendButton 
-            targetUserEmail={user?.email}
-            currentUserEmail={user?.email}
-          />
+        {!isOwnProfile && currentUser && user && (
+          <div className="flex gap-2">
+            <FriendButton 
+              targetUserEmail={user?.email}
+              currentUserEmail={currentUser?.email}
+            />
+            <FollowButton
+              targetUserEmail={user?.email}
+              currentUserEmail={currentUser?.email}
+            />
+          </div>
         )}
 
         {/* Level & Points */}
@@ -330,13 +370,24 @@ export default function Profile() {
         </Card>
         
         {/* Bio */}
-        <BioEditor bio={profile?.bio} onSave={handleBioSave} />
+        {isOwnProfile ? (
+          <BioEditor bio={profile?.bio} onSave={handleBioSave} />
+        ) : profile?.bio ? (
+          <Card className="bg-zinc-900 border-purple-500/30">
+            <CardHeader>
+              <CardTitle>About</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-zinc-300 whitespace-pre-wrap">{profile.bio}</div>
+            </CardContent>
+          </Card>
+        ) : null}
 
         {/* Social Media Links */}
-        <SocialMediaLinks userProfile={profile} onUpdate={loadProfile} />
+        <SocialMediaLinks userProfile={profile} onUpdate={isOwnProfile ? loadProfile : null} />
 
         {/* Portfolio */}
-        <PortfolioShowcase userEmail={user?.email} isOwnProfile={true} />
+        <PortfolioShowcase userEmail={user?.email} isOwnProfile={isOwnProfile} />
 
         {/* Friends List */}
         {isOwnProfile && (
@@ -344,7 +395,9 @@ export default function Profile() {
         )}
 
         {/* Demographics */}
-        <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
+        {isOwnProfile && (
+          <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
+        )}
 
         {/* Badges */}
         <Card className="bg-zinc-900 border-purple-500/30">
