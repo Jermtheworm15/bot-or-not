@@ -17,6 +17,8 @@ import { playSound } from '@/components/audio/SoundEffects';
 export default function PendingChallenges({ userEmail }) {
   const [challenges, setChallenges] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentChallenge, setCurrentChallenge] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     loadChallenges();
