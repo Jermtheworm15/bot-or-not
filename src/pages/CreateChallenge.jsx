@@ -68,7 +68,7 @@ export default function CreateChallenge() {
         sender_name: currentUser.full_name || currentUser.email,
         type: 'challenge',
         content: `challenged you to a ${rounds}-round blitz!`,
-        link: '/challenges',
+        link: '/Home',
         metadata: { challenge_id: challenge.id }
       });
 
