@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight, Users, MapPin } from 'lucide-react';
 import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
+import ClickableUsername from '@/components/community/ClickableUsername';
 
 export default function UserLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -253,8 +254,17 @@ export default function UserLeaderboard() {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-white font-bold text-lg">
-                  {user.username}
-                  {isCurrentUser && <span className="text-purple-400 text-sm ml-2">(You)</span>}
+                  {isCurrentUser ? (
+                    <>
+                      {user.username}
+                      <span className="text-purple-400 text-sm ml-2">(You)</span>
+                    </>
+                  ) : (
+                    <ClickableUsername 
+                      username={user.username}
+                      userEmail={user.email}
+                    />
+                  )}
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${getTierBg(user.tier)} ${getTierColor(user.tier)}`}>
                   {user.tier}

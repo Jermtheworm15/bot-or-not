@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Zap, Trophy, Flame, Users, MapPin } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
+import ClickableUsername from '@/components/community/ClickableUsername';
 
 export default function StreakLeaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -186,7 +187,12 @@ export default function StreakLeaderboard() {
                 </span>
                 <span className="text-zinc-500 text-sm">streak</span>
               </div>
-              <p className="text-zinc-400 text-sm">{displayName}</p>
+              <p className="text-zinc-400 text-sm">
+                <ClickableUsername 
+                  username={displayName}
+                  userEmail={user.email}
+                />
+              </p>
               <div className="flex gap-3 text-xs text-zinc-500 mt-1">
                 <span>{accuracy}% accuracy</span>
                 <span>•</span>
