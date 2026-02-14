@@ -80,59 +80,55 @@ export default function PendingChallenges({ userEmail }) {
     }
   };
 
-  if (isLoading) return null;
-
-  if (challenges.length === 0) return null;
+  if (isLoading || !currentChallenge) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-20 right-4 z-40 max-w-sm"
-      >
-        <Card className="bg-gradient-to-br from-purple-900/80 to-orange-900/80 border-purple-500/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Zap className="w-5 h-5 text-orange-400" />
-              Blitz Challenges
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {challenges.map((challenge) => (
-              <motion.div
-                key={challenge.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="bg-zinc-900/50 border border-purple-500/30 rounded-lg p-3 space-y-2"
-              >
-                <p className="text-white font-bold text-sm">
-                  {challenge.challenger_name} challenges you!
-                </p>
-                <p className="text-zinc-300 text-xs">{challenge.rounds} rounds</p>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleAccept(challenge.id)}
-                    size="sm"
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-xs"
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={() => handleDecline(challenge.id)}
-                    size="sm"
-                    variant="outline"
-                    className="border-red-500/50 text-red-400 hover:bg-red-900/20 text-xs"
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-          </CardContent>
-        </Card>
-      </motion.div>
-    </AnimatePresence>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogContent className="bg-gradient-to-br from-purple-950 to-black border-2 border-purple-500/50 max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-2xl text-center justify-center">
+            <Gamepad2 className="w-8 h-8 text-purple-400 animate-pulse" />
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Challenge Received!
+            </span>
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-center space-y-4 pt-4">
+            <div className="text-white text-lg font-bold">
+              <span className="text-purple-400">{currentChallenge.challenger_name}</span> has challenged you to a blitz battle!
+            </div>
+            <div className="bg-purple-900/30 rounded-lg p-4 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Rounds:</span>
+                <span className="text-white font-bold">{currentChallenge.rounds}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Mode:</span>
+                <span className="text-white font-bold">Head-to-Head</span>
+              </div>
+            </div>
+            {challenges.length > 1 && (
+              <p className="text-xs text-gray-400">
+                +{challenges.length - 1} more {challenges.length === 2 ? 'challenge' : 'challenges'} pending
+              </p>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+          <Button
+            onClick={handleDecline}
+            variant="outline"
+            className="w-full border-red-500/50 text-red-400 hover:bg-red-900/20"
+          >
+            Decline
+          </Button>
+          <Button
+            onClick={handleAccept}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          >
+            Accept Challenge
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
