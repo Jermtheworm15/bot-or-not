@@ -27,6 +27,19 @@ export default function AIChallenge() {
 
   useEffect(() => {
     loadPlayerStats();
+    
+    // Check URL params for auto-start
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlDifficulty = urlParams.get('difficulty');
+    const urlRounds = urlParams.get('rounds');
+    
+    if (urlDifficulty && urlRounds) {
+      setDifficulty(parseInt(urlDifficulty));
+      setRounds(parseInt(urlRounds));
+      setTimeout(() => {
+        startGame(parseInt(urlDifficulty));
+      }, 500);
+    }
   }, []);
 
   useEffect(() => {

@@ -3,14 +3,15 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Gamepad2, Users, Trophy } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Gamepad2, Users, Trophy, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { playSound } from '@/components/audio/SoundEffects';
+import DifficultySelector from '@/components/challenges/DifficultySelector';
 
 export default function CreateChallenge() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,6 +20,9 @@ export default function CreateChallenge() {
   const [selectedOpponent, setSelectedOpponent] = useState(null);
   const [rounds, setRounds] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [challengeType, setChallengeType] = useState('user');
+  const [difficulty, setDifficulty] = useState(2);
+  const [playerStats, setPlayerStats] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +34,16 @@ export default function CreateChallenge() {
     try {
       const user = await base44.auth.me();
       setCurrentUser(user);
+      
+      // Load player stats for AI challenge
+      const profile = await base44.entities.UserProfile.filter({ user_email: user.email });
+      if (profile.length > 0) {
+        const votes = await base44.entities.Vote.filter({ user_email: user.email });
+        const accuracy = votes.length > 0 
+          ? (votes.filter(v => v.was_correct).length / votes.length) * 100 
+          : 0;
+        setPlayerStats({ accuracy, totalVotes: votes.length });
+      }
     } catch (err) {
       console.log('Auth error:', err);
     }
@@ -46,10 +60,20 @@ export default function CreateChallenge() {
 
   const handleCreateChallenge = async (e) => {
     e.preventDefault();
-    if (!selectedOpponent || !currentUser) return;
+    if (!currentUser) return;
 
     setIsSubmitting(true);
     playSound.challengeStart();
+
+    if (challengeType === 'ai') {
+      // Start AI challenge directly
+      navigate(`/AIChallenge?difficulty=${difficulty}&rounds=${rounds}`);
+      return;
+    }
+
+    // User challenge
+    if (!selectedOpponent) return;
+    
     try {
       const challenge = await base44.entities.UserChallenge.create({
         challenger_email: currentUser.email,
@@ -58,10 +82,9 @@ export default function CreateChallenge() {
         opponent_name: selectedOpponent.user_email,
         rounds: parseInt(rounds),
         status: 'pending',
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
       });
 
-      // Create notification for opponent
       await base44.entities.Notification.create({
         recipient_email: selectedOpponent.user_email,
         sender_email: currentUser.email,
@@ -72,7 +95,6 @@ export default function CreateChallenge() {
         metadata: { challenge_id: challenge.id }
       });
 
-      // Create activity
       await base44.entities.Activity.create({
         user_email: currentUser.email,
         username: currentUser.full_name || currentUser.email,
@@ -115,14 +137,21 @@ export default function CreateChallenge() {
         </motion.div>
 
         <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-purple-500" />
-              Challenge Setup
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreateChallenge} className="space-y-6">
+          <CardContent className="pt-6">
+            <Tabs value={challengeType} onValueChange={setChallengeType} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2 bg-zinc-800">
+                <TabsTrigger value="user" className="data-[state=active]:bg-purple-600">
+                  <Users className="w-4 h-4 mr-2" />
+                  Challenge Player
+                </TabsTrigger>
+                <TabsTrigger value="ai" className="data-[state=active]:bg-orange-600">
+                  <Brain className="w-4 h-4 mr-2" />
+                  Challenge AI
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="user" className="space-y-6">
+                <form onSubmit={handleCreateChallenge} className="space-y-6">
               {/* Opponent Selection */}
               <div className="space-y-2">
                 <Label className="text-zinc-300">Select Opponent</Label>
@@ -195,15 +224,66 @@ export default function CreateChallenge() {
                 </div>
               )}
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={!selectedOpponent || isSubmitting}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold text-lg"
-              >
-                {isSubmitting ? 'Sending Challenge...' : 'Send Challenge'}
-              </Button>
-            </form>
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    disabled={!selectedOpponent || isSubmitting}
+                    className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold text-lg"
+                  >
+                    {isSubmitting ? 'Sending Challenge...' : 'Send Challenge'}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="ai" className="space-y-6">
+                <form onSubmit={handleCreateChallenge} className="space-y-6">
+                  {/* AI Difficulty */}
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300">AI Difficulty</Label>
+                    <DifficultySelector
+                      selectedDifficulty={difficulty}
+                      onSelect={setDifficulty}
+                      playerStats={playerStats}
+                    />
+                  </div>
+
+                  {/* Rounds Selection */}
+                  <div className="space-y-2">
+                    <Label className="text-zinc-300">Number of Rounds</Label>
+                    <Select value={rounds.toString()} onValueChange={(v) => setRounds(parseInt(v))}>
+                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-800 border-zinc-700">
+                        <SelectItem value="5">5 Rounds (Quick)</SelectItem>
+                        <SelectItem value="10">10 Rounds (Standard)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* AI Challenge Preview */}
+                  <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
+                    <p className="text-sm text-white">
+                      <span className="font-semibold text-green-400">You</span>
+                      {' vs '}
+                      <span className="font-semibold text-orange-400">AI ({['Easy', 'Medium', 'Hard'][difficulty - 1]})</span>
+                    </p>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      {rounds} rounds • Test your detection skills
+                    </p>
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full h-12 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold text-lg"
+                  >
+                    {isSubmitting ? 'Starting...' : 'Start AI Challenge'}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
