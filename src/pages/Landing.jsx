@@ -23,8 +23,7 @@ export default function Landing() {
   }, []);
 
   const handleSignIn = () => {
-    const nextUrl = window.location.origin + createPageUrl('Home');
-    base44.auth.redirectToLogin(nextUrl);
+    window.location.href = createPageUrl('Login');
   };
 
   return (
