@@ -219,9 +219,7 @@ export default function Layout({ children, currentPageName }) {
                             </Link>
                             <button
                               onClick={() => {
-                                base44.auth.logout();
-                                setIsAuthenticated(false);
-                                setCurrentUser(null);
+                                base44.auth.logout(createPageUrl('Landing'));
                               }}
                               className="text-green-400 hover:text-white transition-colors"
                               title="Logout"
