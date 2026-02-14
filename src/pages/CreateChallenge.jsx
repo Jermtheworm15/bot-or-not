@@ -68,7 +68,7 @@ export default function CreateChallenge() {
         sender_name: currentUser.full_name || currentUser.email,
         type: 'challenge',
         content: `challenged you to a ${rounds}-round blitz!`,
-        link: '/Home',
+        link: '/Challenges',
         metadata: { challenge_id: challenge.id }
       });
 
@@ -83,7 +83,7 @@ export default function CreateChallenge() {
 
       playSound.arcade();
       toast.success('Challenge sent!');
-      navigate('/Home');
+      navigate('/Challenges');
     } catch (err) {
       console.error('Error creating challenge:', err);
       toast.error('Failed to create challenge');
