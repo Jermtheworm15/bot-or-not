@@ -45,19 +45,25 @@ export default function BlitzGame() {
       setCurrentUser(user);
 
       const urlParams = new URLSearchParams(window.location.search);
-      const challengeId = urlParams.get('challengeId');
+      const challengeId = urlParams.get('challenge_id');
 
       if (challengeId) {
-        const challengeData = await base44.entities.UserChallenge.filter({ id: challengeId });
-        if (challengeData.length > 0) {
-          setChallenge(challengeData[0]);
+        const allChallenges = await base44.entities.UserChallenge.list();
+        const challengeData = allChallenges.find(c => c.id === challengeId);
+        if (challengeData) {
+          setChallenge(challengeData);
+          
+          // Load images based on challenge rounds
+          const allImages = await base44.entities.Image.list();
+          const shuffled = allImages.sort(() => 0.5 - Math.random()).slice(0, challengeData.rounds);
+          setImages(shuffled);
         }
+      } else {
+        // Load default 10 images if no challenge
+        const allImages = await base44.entities.Image.list();
+        const shuffled = allImages.sort(() => 0.5 - Math.random()).slice(0, 10);
+        setImages(shuffled);
       }
-
-      // Load random images
-      const allImages = await base44.entities.Image.list();
-      const shuffled = allImages.sort(() => 0.5 - Math.random()).slice(0, 10);
-      setImages(shuffled);
     } catch (err) {
       console.error('Error initializing game:', err);
     }
@@ -120,13 +126,28 @@ export default function BlitzGame() {
       const finalScore = correctCount * 10;
       setOpponentScore(finalScore);
 
-      await base44.entities.UserChallenge.update(challenge.id, {
+      // Determine if user is challenger or opponent
+      const isChallenger = currentUser.email === challenge.challenger_email;
+      
+      const updateData = {
         status: 'completed',
-        opponent_score: finalScore,
-        opponent_answers: userAnswers,
-        completed_at: new Date().toISOString(),
-        winner_email: finalScore > challenge.challenger_score ? currentUser.email : challenge.challenger_email
-      });
+        completed_at: new Date().toISOString()
+      };
+      
+      if (isChallenger) {
+        updateData.challenger_score = finalScore;
+        updateData.challenger_answers = userAnswers;
+        // Winner determined when opponent completes
+        if (challenge.opponent_score) {
+          updateData.winner_email = finalScore > challenge.opponent_score ? currentUser.email : challenge.opponent_email;
+        }
+      } else {
+        updateData.opponent_score = finalScore;
+        updateData.opponent_answers = userAnswers;
+        updateData.winner_email = finalScore > (challenge.challenger_score || 0) ? currentUser.email : challenge.challenger_email;
+      }
+
+      await base44.entities.UserChallenge.update(challenge.id, updateData);
     }
   };
 
