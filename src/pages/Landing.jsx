@@ -22,8 +22,10 @@ export default function Landing() {
     checkAuth();
   }, []);
 
-  const handleSignIn = () => {
-    window.location.href = createPageUrl('Login');
+  const handleSignIn = async () => {
+    setIsLoading(true);
+    const nextUrl = window.location.origin + createPageUrl('Home');
+    base44.auth.redirectToLogin(nextUrl);
   };
 
   return (
