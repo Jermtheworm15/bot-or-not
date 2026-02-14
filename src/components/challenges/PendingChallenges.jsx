@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
-import { Zap, X } from 'lucide-react';
+import { Zap, Gamepad2 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
+import { playSound } from '@/components/audio/SoundEffects';
 
 export default function PendingChallenges({ userEmail }) {
   const [challenges, setChallenges] = useState([]);
