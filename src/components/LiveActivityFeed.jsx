@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Flame, TrendingUp, Upload, Award, Zap } from 'lucide-react';
+import ClickableUsername from './community/ClickableUsername';
 
 export default function LiveActivityFeed() {
   const [currentActivity, setCurrentActivity] = useState(null);
@@ -55,7 +56,10 @@ export default function LiveActivityFeed() {
               <div className="mt-0.5">{getIcon(currentActivity.action_type)}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white font-medium truncate">
-                  {currentActivity.username || 'User'}
+                  <ClickableUsername 
+                    username={currentActivity.username || 'User'}
+                    userEmail={currentActivity.user_email}
+                  />
                 </p>
                 <p className="text-sm text-zinc-400 truncate">
                   {currentActivity.description}
