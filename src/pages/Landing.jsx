@@ -3,29 +3,28 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Zap, Eye, Trophy, Users, Gamepad2, ArrowRight } from 'lucide-react';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
 
 export default function Landing() {
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   // Check if already logged in
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const isAuth = await base44.auth.isAuthenticated();
-        if (isAuth) {
-          navigate('/Home');
+        const user = await base44.auth.me();
+        if (user) {
+          window.location.href = createPageUrl('Home');
         }
       } catch (err) {
-        console.log('Auth check error:', err);
+        // Not authenticated, stay on landing
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   const handleSignIn = () => {
-    navigate(createPageUrl('Login'));
+    const nextUrl = window.location.origin + createPageUrl('Home');
+    base44.auth.redirectToLogin(nextUrl);
   };
 
   return (
