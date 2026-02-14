@@ -51,23 +51,12 @@ export default function Layout({ children, currentPageName }) {
     document.head.appendChild(script);
   }, []);
 
-  // If not authenticated, show login form
-  if (isAuthenticated === false) {
-    return (
-      <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden flex flex-col items-center justify-center px-4">
-        <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-black to-green-950/20 pointer-events-none" />
-        <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
-        <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-green-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
-        <div className="relative z-10">
-          <LoginForm onSuccess={async () => {
-            const user = await base44.auth.me();
-            setCurrentUser(user);
-            setIsAuthenticated(true);
-          }} />
-        </div>
-      </div>
-    );
-  }
+  // If not authenticated, redirect to Landing
+  React.useEffect(() => {
+    if (isAuthenticated === false) {
+      navigate('/Landing');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Show loading state while checking auth
   if (isAuthenticated === null) {
