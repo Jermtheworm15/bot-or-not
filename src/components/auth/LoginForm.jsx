@@ -18,7 +18,8 @@ export default function LoginForm({ onSuccess }) {
     setIsLoading(true);
 
     try {
-      base44.auth.redirectToLogin(createPageUrl('Home'));
+      const nextUrl = window.location.origin + createPageUrl('Home');
+      base44.auth.redirectToLogin(nextUrl);
     } catch (err) {
       console.error('Auth error:', err);
       setError('Redirecting to authentication...');
