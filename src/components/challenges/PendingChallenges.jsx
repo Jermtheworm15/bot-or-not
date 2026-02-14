@@ -47,19 +47,34 @@ export default function PendingChallenges({ userEmail }) {
     setIsLoading(false);
   };
 
-  const handleAccept = async (challengeId) => {
+  const handleAccept = async () => {
+    if (!currentChallenge) return;
     try {
-      await base44.entities.UserChallenge.update(challengeId, { status: 'accepted' });
-      window.location.href = createPageUrl(`BlitzGame?challengeId=${challengeId}`);
+      playSound.click();
+      await base44.entities.UserChallenge.update(currentChallenge.id, { status: 'accepted' });
+      setIsOpen(false);
+      window.location.href = createPageUrl(`BlitzGame?challengeId=${currentChallenge.id}`);
     } catch (err) {
       console.error('Error accepting challenge:', err);
     }
   };
 
-  const handleDecline = async (challengeId) => {
+  const handleDecline = async () => {
+    if (!currentChallenge) return;
     try {
-      await base44.entities.UserChallenge.update(challengeId, { status: 'declined' });
-      await loadChallenges();
+      playSound.click();
+      await base44.entities.UserChallenge.update(currentChallenge.id, { status: 'declined' });
+      setIsOpen(false);
+      setCurrentChallenge(null);
+      
+      // Show next challenge if any
+      const remaining = challenges.filter(c => c.id !== currentChallenge.id);
+      if (remaining.length > 0) {
+        setTimeout(() => {
+          setCurrentChallenge(remaining[0]);
+          setIsOpen(true);
+        }, 500);
+      }
     } catch (err) {
       console.error('Error declining challenge:', err);
     }
