@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { User, UserPlus, MessageCircle, Trophy } from 'lucide-react';
-import FriendButton from './FriendButton';
+import FriendButton from '@/components/social/FriendButton';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import { useNavigate } from 'react-router-dom';
