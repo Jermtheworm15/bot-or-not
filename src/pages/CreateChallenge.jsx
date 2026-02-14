@@ -83,7 +83,7 @@ export default function CreateChallenge() {
 
       playSound.arcade();
       toast.success('Challenge sent!');
-      navigate('/challenges');
+      navigate('/Home');
     } catch (err) {
       console.error('Error creating challenge:', err);
       toast.error('Failed to create challenge');
