@@ -35,8 +35,8 @@ export default function PendingChallenges({ userEmail }) {
       const pending = await base44.entities.UserChallenge.filter({ opponent_email: userEmail, status: 'pending' });
       setChallenges(pending);
       
-      // Show pop-up for first pending challenge
-      if (pending.length > 0 && !currentChallenge) {
+      // Show pop-up for first pending challenge only if none is currently shown
+      if (pending.length > 0 && !currentChallenge && !isOpen) {
         setCurrentChallenge(pending[0]);
         setIsOpen(true);
         playSound.achievement();

@@ -67,7 +67,7 @@ export default function Home() {
     try {
       const user = await base44.auth.me();
       if (!user) {
-        window.location.href = createPageUrl('Onboarding');
+        window.location.href = createPageUrl('Landing');
         return;
       }
 
@@ -90,12 +90,13 @@ export default function Home() {
       if (refCode) {
         handleReferral(refCode, user.email);
       }
+      
+      loadContent();
+      loadUserProfile();
     } catch (err) {
       console.log('Auth check error:', err);
+      window.location.href = createPageUrl('Landing');
     }
-
-    loadContent();
-    loadUserProfile();
   };
   
   const handleReferral = async (refCode, userEmail) => {

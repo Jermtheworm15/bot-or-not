@@ -61,6 +61,7 @@ import BlitzChallengeLeaderboard from './pages/BlitzChallengeLeaderboard';
 import BlitzGame from './pages/BlitzGame';
 import Board from './pages/Board';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
+import Challenges from './pages/Challenges';
 import Community from './pages/Community';
 import CreateChallenge from './pages/CreateChallenge';
 import Discover from './pages/Discover';
@@ -76,7 +77,6 @@ import StreakLeaderboard from './pages/StreakLeaderboard';
 import Upload from './pages/Upload';
 import UserLeaderboard from './pages/UserLeaderboard';
 import UsernameSetup from './pages/UsernameSetup';
-import Challenges from './pages/Challenges';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +95,7 @@ export const PAGES = {
     "BlitzGame": BlitzGame,
     "Board": Board,
     "ChallengeLeaderboard": ChallengeLeaderboard,
+    "Challenges": Challenges,
     "Community": Community,
     "CreateChallenge": CreateChallenge,
     "Discover": Discover,
@@ -110,7 +111,6 @@ export const PAGES = {
     "Upload": Upload,
     "UserLeaderboard": UserLeaderboard,
     "UsernameSetup": UsernameSetup,
-    "Challenges": Challenges,
 }
 
 export const pagesConfig = {
