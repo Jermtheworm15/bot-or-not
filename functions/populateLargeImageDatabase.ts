@@ -169,33 +169,20 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Add human images from Unsplash - ensure we get exactly targetPerType
-    let humanAttempts = 0;
-    const usedIds = new Set();
-    while (humanImages.length < targetPerType && humanAttempts < targetPerType * 3) {
-      humanAttempts++;
-      try {
-        let photoId;
-        do {
-          photoId = humanIds[Math.floor(Math.random() * humanIds.length)];
-        } while (usedIds.has(photoId) && usedIds.size < humanIds.length);
-        
-        usedIds.add(photoId);
-        const url = `https://images.unsplash.com/photo-${photoId}?w=800&h=800&fit=crop&crop=faces&auto=format&q=80&sig=${Date.now()}`;
-        
-        // Validate image URL
-        const testResponse = await fetch(url, { method: 'HEAD' });
-        if (testResponse.ok) {
-          const imageRecord = await base44.asServiceRole.entities.Image.create({
-            url,
-            is_bot: false,
-            source: 'unsplash'
-          });
-          humanImages.push(imageRecord);
-        }
-      } catch (error) {
-        console.error('Failed to add human image:', error);
+    // Add human images from multiple sources
+    try {
+      const multiResult = await base44.asServiceRole.functions.invoke('fetchMultiSourceImages', {
+        count: targetPerType,
+        query: 'portrait person face',
+        save: true
+      });
+      const fetched = multiResult?.images || [];
+      for (const img of fetched) {
+        humanImages.push({ url: img.url, is_bot: false, source: img.source });
       }
+      console.log(`Multi-source fetched ${humanImages.length} human images`);
+    } catch (error) {
+      console.error('Multi-source fetch error:', error);
     }
 
     const newImages = [...botImages, ...humanImages];
