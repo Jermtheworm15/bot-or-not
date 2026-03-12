@@ -195,12 +195,12 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
               <p className="text-green-500/30 text-xs">{voteCount} rating{voteCount !== 1 ? 's' : ''} · avg {avgRating.toFixed(1)}</p>
             ) : <span />}
             {onSkip && !submitError && (
-              <button onClick={onSkip} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline">
+              <button onClick={() => { fireOnRated(); }} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline">
                 Skip rating
               </button>
             )}
             {submitError && onSkip && (
-              <button onClick={onSkip} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline ml-auto">
+              <button onClick={() => { fireOnRated(); }} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline ml-auto">
                 Skip
               </button>
             )}
