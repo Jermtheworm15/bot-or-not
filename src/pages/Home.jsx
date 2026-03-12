@@ -477,15 +477,12 @@ export default function Home() {
   const moveToNextImage = () => {
     setHasVoted(false);
     setPointsAnimations(prev => prev.slice(-5));
-    
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+
+    const idx = items.findIndex(i => i.id === currentItem?.id);
+    if (idx >= 0 && idx < items.length - 1) {
+      setCurrentItem(items[idx + 1]);
     } else {
-      // Generate fresh content and reload
-      setIsLoading(true);
-      loadContent().catch(error => {
-        console.error('Error loading content:', error);
-      });
+      loadContent();
     }
   };
   
