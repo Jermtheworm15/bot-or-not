@@ -67,42 +67,47 @@ export default function Onboarding() {
   };
 
   const handleUsernameSubmit = async () => {
-    if (!username.trim() || !password || !passwordConfirm || !zipCode.trim() || !profileImage) return;
-    
-    if (!validatePassword()) return;
+    if (!username.trim() || !zipCode.trim() || !profileImage) return;
     
     setIsUploading(true);
+    setPasswordError('');
     try {
       const user = await base44.auth.me();
       
-      // Upload profile image
-      const { data } = await base44.integrations.Core.UploadFile({ file: profileImage });
-      const imageUrl = data.file_url;
+      // Upload profile image — UploadFile returns {file_url} directly
+      const { file_url: imageUrl } = await base44.integrations.Core.UploadFile({ file: profileImage });
       
-      // Update user with username, password, and profile image
+      // Update user display name and profile image
       await base44.auth.updateMe({ 
         full_name: username,
         profile_image: imageUrl,
-        password: password
       });
       
-      // Create user profile with zip code
-      const profile = await base44.entities.UserProfile.create({
-        user_email: user.email,
-        zip_code: zipCode,
-        points: 0,
-        level: 1,
-        badges: ['newcomer'],
-        daily_votes: 0,
-        weekly_votes: 0,
-        perfect_streak: 0
-      });
+      // Upsert profile — handles retries gracefully
+      const existingProfiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      let profile;
+      if (existingProfiles.length > 0) {
+        profile = await base44.entities.UserProfile.update(existingProfiles[0].id, {
+          zip_code: zipCode,
+        });
+      } else {
+        profile = await base44.entities.UserProfile.create({
+          user_email: user.email,
+          zip_code: zipCode,
+          points: 0,
+          level: 1,
+          badges: ['newcomer'],
+          daily_votes: 0,
+          weekly_votes: 0,
+          perfect_streak: 0
+        });
+      }
       
       setUserProfile(profile);
       setStep(1);
     } catch (err) {
       console.log('Error setting username:', err);
-      setPasswordError('Failed to save account. Please try again.');
+      setPasswordError('Failed to save profile. Please try again.');
     } finally {
       setIsUploading(false);
     }
