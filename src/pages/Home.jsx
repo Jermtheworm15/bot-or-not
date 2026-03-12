@@ -37,11 +37,12 @@ export default function Home() {
   const [milestone, setMilestone] = useState(null);
   const [showMilestone, setShowMilestone] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [currentItem, setCurrentItem] = useState(null);
   const [errorSkipInProgress, setErrorSkipInProgress] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
   const pullRef = useRef(null);
-  const currentItem = items[currentIndex];
+  const loadingGuard = useRef(false);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
