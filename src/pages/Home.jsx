@@ -407,14 +407,14 @@ export default function Home() {
       await loadUserProfile();
     }
 
-    // Save vote
-            await base44.entities.Vote.create({
-              image_id: currentItem.id,
-              guess: guess,
-              guessed_bot: guess === 'bot',
-              was_correct: correct,
-              user_email: user.email
-            });
+    // Save vote (use snapshot to guarantee correct image id)
+    await base44.entities.Vote.create({
+      image_id: votedItem.id,
+      guess: guess,
+      guessed_bot: guess === 'bot',
+      was_correct: correct,
+      user_email: user.email
+    });
 
             // Do NOT auto-advance — wait for difficulty rating submission
           };
