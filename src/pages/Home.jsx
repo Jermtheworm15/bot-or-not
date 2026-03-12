@@ -247,7 +247,9 @@ export default function Home() {
 
   
   const handleVote = async (guessedBot) => {
-    if (!currentItem) return;
+    if (!currentItem || hasVoted) return;
+    // Snapshot the item at vote time — prevents any async re-render from changing it
+    const votedItem = currentItem;
 
     // Convert boolean to string format
     const guess = guessedBot ? 'bot' : 'human';
