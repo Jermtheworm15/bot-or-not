@@ -90,8 +90,9 @@ Deno.serve(async (req) => {
       try {
         const multiResult = await base44.asServiceRole.functions.invoke('fetchMultiSourceImages', {
           count: realBatchSize,
-          query: 'portrait person face',
-          save: true
+          query: 'human portrait face person',
+          save: true,
+          validate_faces: true
         });
         const fetched = multiResult?.images || [];
         for (const img of fetched) {
