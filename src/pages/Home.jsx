@@ -234,11 +234,15 @@ export default function Home() {
       });
 
       setItems(shuffled);
+      // Lock in the first item immediately so it never re-randomizes
+      setCurrentItem(shuffled[0]);
     } catch (err) {
       console.error('Error loading content:', err);
       setItems([]);
+      setCurrentItem(null);
     }
     setIsLoading(false);
+    loadingGuard.current = false;
   };
 
   
