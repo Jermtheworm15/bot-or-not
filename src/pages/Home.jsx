@@ -23,7 +23,6 @@ import { createPageUrl } from '@/utils';
 
 export default function Home() {
   const [items, setItems] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [hasVoted, setHasVoted] = useState(false);
   const [wasCorrect, setWasCorrect] = useState(false);
