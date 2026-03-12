@@ -176,13 +176,32 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
               {isSubmitting ? 'Saving…' : 'Rate'}
             </Button>
           </div>
+          {submitError && (
+            <div className="flex items-center justify-between mt-2 p-2 bg-red-900/30 border border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                <span className="text-red-400 text-xs">{submitError}</span>
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="text-red-400 hover:text-red-300 text-xs underline ml-2 shrink-0"
+              >
+                Retry
+              </button>
+            </div>
+          )}
           <div className="flex items-center justify-between mt-2">
             {voteCount > 0 && avgRating !== null ? (
               <p className="text-green-500/30 text-xs">{voteCount} rating{voteCount !== 1 ? 's' : ''} · avg {avgRating.toFixed(1)}</p>
             ) : <span />}
-            {onSkip && (
+            {onSkip && !submitError && (
               <button onClick={onSkip} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline">
                 Skip rating
+              </button>
+            )}
+            {submitError && onSkip && (
+              <button onClick={onSkip} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline ml-auto">
+                Skip
               </button>
             )}
           </div>
