@@ -21,7 +21,7 @@ const difficultyLabel = (r) => {
   return { text: 'Easy', color: 'text-green-400' };
 };
 
-export default function DifficultyRating({ imageId }) {
+export default function DifficultyRating({ imageId, onRated, onSkip }) {
   const [rating, setRating] = useState(5.0);
   const [hasRated, setHasRated] = useState(false);
   const [myRating, setMyRating] = useState(null);
@@ -83,6 +83,7 @@ export default function DifficultyRating({ imageId }) {
     });
     await loadVoteData();
     setIsSubmitting(false);
+    if (onRated) onRated();
   };
 
   if (isLoading) return null;
@@ -126,9 +127,16 @@ export default function DifficultyRating({ imageId }) {
               {isSubmitting ? 'Saving…' : 'Rate'}
             </Button>
           </div>
-          {voteCount > 0 && avgRating !== null && (
-            <p className="text-green-500/30 text-xs mt-1">{voteCount} rating{voteCount !== 1 ? 's' : ''} · avg {avgRating.toFixed(1)}</p>
-          )}
+          <div className="flex items-center justify-between mt-2">
+            {voteCount > 0 && avgRating !== null ? (
+              <p className="text-green-500/30 text-xs">{voteCount} rating{voteCount !== 1 ? 's' : ''} · avg {avgRating.toFixed(1)}</p>
+            ) : <span />}
+            {onSkip && (
+              <button onClick={onSkip} className="text-green-500/30 hover:text-green-400/60 text-xs transition-colors underline">
+                Skip rating
+              </button>
+            )}
+          </div>
         </>
       ) : (
         <div className="flex justify-between items-start">
