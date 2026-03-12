@@ -544,9 +544,13 @@ export default function Home() {
           />
           {hasVoted && currentItem && !isMobile && (
             <>
+              <DifficultyRating imageId={currentItem.id} />
               <ImageAnalysis image={currentItem} />
               <ImageComments imageId={currentItem.id} isRevealed={hasVoted} />
             </>
+          )}
+          {hasVoted && currentItem && isMobile && (
+            <DifficultyRating imageId={currentItem.id} />
           )}
         </div>
         
