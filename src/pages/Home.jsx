@@ -16,6 +16,7 @@ import MilestonePopup from '@/components/gamification/MilestonePopup';
 import ImageAnalysis from '@/components/ImageAnalysis';
 import MobileNav from '@/components/mobile/MobileNav';
 import ImageComments from '@/components/comments/ImageComments';
+import DifficultyRating from '@/components/voting/DifficultyRating';
 
 import { createPageUrl } from '@/utils';
 
