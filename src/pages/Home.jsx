@@ -404,8 +404,7 @@ export default function Home() {
               user_email: user.email
             });
 
-            // Auto-advance after 2 seconds
-            setTimeout(moveToNextImage, 2000);
+            // Do NOT auto-advance — wait for difficulty rating submission
           };
   
   const handleContentError = () => {
@@ -544,13 +543,13 @@ export default function Home() {
           />
           {hasVoted && currentItem && !isMobile && (
             <>
-              <DifficultyRating imageId={currentItem.id} />
+              <DifficultyRating imageId={currentItem.id} onRated={moveToNextImage} onSkip={moveToNextImage} />
               <ImageAnalysis image={currentItem} />
               <ImageComments imageId={currentItem.id} isRevealed={hasVoted} />
             </>
           )}
           {hasVoted && currentItem && isMobile && (
-            <DifficultyRating imageId={currentItem.id} />
+            <DifficultyRating imageId={currentItem.id} onRated={moveToNextImage} onSkip={moveToNextImage} />
           )}
         </div>
         
