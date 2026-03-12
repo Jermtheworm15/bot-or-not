@@ -175,12 +175,18 @@ export default function Home() {
       }));
 
       // Filter out items without valid URLs
+      // Also reject items that are clearly not person images based on source metadata
+      const REJECT_TERMS = ['landscape', 'building', 'animal', 'dog', 'cat', 'bird', 'plant', 'flower', 'tree', 'mountain', 'ocean', 'sky', 'sunset', 'abstract', 'food', 'car', 'interior', 'nature', 'forest', 'beach'];
       const validData = data.filter(item => {
         const hasUrl = item.url && typeof item.url === 'string' && item.url.trim() !== '';
-        if (!hasUrl) {
-          console.log('Skipping item without valid URL:', item.id);
+        if (!hasUrl) return false;
+        // Soft reject based on ai_tags or ai_category metadata
+        const tags = (item.ai_tags || []).join(' ').toLowerCase();
+        const category = (item.ai_category || '').toLowerCase();
+        if (REJECT_TERMS.some(t => tags.includes(t) || category.includes(t))) {
+          return false;
         }
-        return hasUrl;
+        return true;
       });
 
       if (validData.length === 0) {
