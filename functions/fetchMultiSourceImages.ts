@@ -119,24 +119,32 @@ async function fromOpenverse(count, query) {
   } catch { return []; }
 }
 
-// --- LLM Face Validation (batch, used when validate_faces=true) ---
+// --- LLM Face Validation (only for URLs with a detectable image extension) ---
+
+const IMAGE_EXT_RE = /\.(jpg|jpeg|png|webp)(\?|$)/i;
 
 async function validateFaces(images, base44) {
-  const BATCH_SIZE = 5;
-  const validated = [];
+  // Split into validatable (has image ext) and pass-through (CDN dynamic URLs)
+  const toValidate = images.filter(img => IMAGE_EXT_RE.test(img.url));
+  const passThrough = images.filter(img => !IMAGE_EXT_RE.test(img.url));
 
-  for (let i = 0; i < images.length; i += BATCH_SIZE) {
-    const batch = images.slice(i, i + BATCH_SIZE);
+  if (toValidate.length === 0) return images;
+
+  const BATCH_SIZE = 5;
+  const validated = [...passThrough]; // CDN URLs pass through without LLM check
+
+  for (let i = 0; i < toValidate.length; i += BATCH_SIZE) {
+    const batch = toValidate.slice(i, i + BATCH_SIZE);
     try {
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are validating images for a "Bot or Not" game. Players guess if a face is human or AI-generated.
+        prompt: `You are validating images for a "Bot or Not" game where players guess if a face is human or AI-generated.
 
-For each of the ${batch.length} attached image(s), answer: does this image primarily feature a human face, human portrait, or human/humanoid figure as the MAIN subject?
+For each of the ${batch.length} attached image(s), answer: does this image primarily feature a human face, human portrait, or humanoid figure as the MAIN subject?
 
-ACCEPT: human faces, portraits, headshots, full body shots of people, AI-generated human faces.
-REJECT: landscapes, buildings, animals, plants, objects, abstract art, logos, text, images where no person is visible or person is tiny/background.
+ACCEPT: human faces, portraits, headshots, full/partial body of people, AI-generated human faces.
+REJECT: landscapes, buildings, animals, plants, objects, abstract art, logos, food, vehicles, images with no visible person.
 
-Respond ONLY as JSON: {"0": true, "1": false, ...} — one entry per image index (0-based).`,
+Respond ONLY as JSON: {"0": true, "1": false, ...} — one boolean per image index (0-based).`,
         file_urls: batch.map(img => img.url),
         response_json_schema: {
           type: 'object',
@@ -145,12 +153,10 @@ Respond ONLY as JSON: {"0": true, "1": false, ...} — one entry per image index
       });
 
       batch.forEach((img, idx) => {
-        // Default to keeping if result is missing for this index
         if (result?.[String(idx)] !== false) validated.push(img);
       });
     } catch {
-      // On error, keep the batch to avoid dropping good images
-      validated.push(...batch);
+      validated.push(...batch); // Keep on error
     }
   }
 
