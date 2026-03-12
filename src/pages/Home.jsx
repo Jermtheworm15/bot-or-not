@@ -254,12 +254,12 @@ export default function Home() {
     // Convert boolean to string format
     const guess = guessedBot ? 'bot' : 'human';
 
-    // Determine if the guess was correct
+    // Determine if the guess was correct (use snapshot)
     let correct = false;
-    if (currentItem.is_other) {
-      correct = false; // Neither bot nor human is correct for "other"
+    if (votedItem.is_other) {
+      correct = false;
     } else {
-      correct = guessedBot === currentItem.is_bot;
+      correct = guessedBot === votedItem.is_bot;
     }
 
     // Play sound effect
