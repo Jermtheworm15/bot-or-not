@@ -54,16 +54,18 @@ export default function Home() {
     checkUsernameAndLoad();
   }, []);
 
-  // Preload next image
+  // Preload next image whenever items or currentItem changes
   useEffect(() => {
-    if (items.length > 0 && currentIndex < items.length - 1) {
-      const nextImage = items[currentIndex + 1];
+    if (!items.length || !currentItem) return;
+    const idx = items.findIndex(i => i.id === currentItem.id);
+    if (idx >= 0 && idx < items.length - 1) {
+      const nextImage = items[idx + 1];
       if (nextImage?.url) {
         const img = new Image();
         img.src = nextImage.url;
       }
     }
-  }, [currentIndex, items]);
+  }, [currentItem, items]);
   
   const checkUsernameAndLoad = async () => {
     try {
