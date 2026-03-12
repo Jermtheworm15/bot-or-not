@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
-import { Gauge } from 'lucide-react';
+import { Gauge, AlertCircle } from 'lucide-react';
 
 const getSessionId = () => {
   let sid = localStorage.getItem('bot_difficulty_session');
@@ -29,7 +29,22 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
   const [voteCount, setVoteCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
+  // Track auto-advance timer so it can be cleared on unmount / imageId change
+  const autoAdvanceTimer = useRef(null);
+  // Prevent onRated from firing more than once per image
+  const onRatedFired = useRef(false);
+
+  // Reset per-image state when imageId changes
+  useEffect(() => {
+    onRatedFired.current = false;
+    setSubmitError(null);
+    setIsSubmitting(false);
+    return () => {
+      if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
+    };
+  }, [imageId]);
 
   useEffect(() => {
     base44.auth.me().then(u => setUserEmail(u?.email || null)).catch(() => setUserEmail(null));
@@ -38,7 +53,18 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
   useEffect(() => {
     if (!imageId) return;
     loadVoteData();
+    return () => {
+      if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
+    };
   }, [imageId, userEmail]);
+
+  const fireOnRated = () => {
+    if (onRatedFired.current) return;
+    onRatedFired.current = true;
+    console.log('[DifficultyRating] navigation started');
+    if (onRated) onRated();
+    console.log('[DifficultyRating] navigation completed');
+  };
 
   const loadVoteData = async () => {
     setIsLoading(true);
@@ -63,29 +89,50 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
         setHasRated(true);
         setMyRating(myVote.difficulty_rating);
         setRating(myVote.difficulty_rating);
-        // Already rated this image — advance automatically after a short display
-        if (onRated) setTimeout(onRated, 1500);
+        // Already rated — auto-advance after brief display
+        autoAdvanceTimer.current = setTimeout(fireOnRated, 1500);
       } else {
         setHasRated(false);
       }
     } catch (err) {
-      console.log('DifficultyRating load error:', err);
+      console.log('[DifficultyRating] load error:', err);
     }
     setIsLoading(false);
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return; // prevent double-tap
     setIsSubmitting(true);
-    const sessionId = getSessionId();
-    await base44.entities.ImageDifficultyVote.create({
-      image_id: imageId,
-      user_id: userEmail || null,
-      session_id: sessionId,
-      difficulty_rating: rating
-    });
-    await loadVoteData();
-    setIsSubmitting(false);
-    if (onRated) onRated();
+    setSubmitError(null);
+    console.log('[DifficultyRating] submit started, imageId:', imageId, 'rating:', rating);
+
+    try {
+      console.log('[DifficultyRating] save started');
+      const sessionId = getSessionId();
+      await base44.entities.ImageDifficultyVote.create({
+        image_id: imageId,
+        user_id: userEmail || null,
+        session_id: sessionId,
+        difficulty_rating: rating
+      });
+      console.log('[DifficultyRating] save succeeded');
+
+      // Update state locally — no re-fetch needed, avoids double-fire of onRated
+      const newCount = voteCount + 1;
+      const newAvg = avgRating !== null
+        ? Math.round(((avgRating * voteCount) + rating) / newCount * 10) / 10
+        : rating;
+      setVoteCount(newCount);
+      setAvgRating(newAvg);
+      setMyRating(rating);
+      setHasRated(true);
+
+      fireOnRated();
+    } catch (err) {
+      console.error('[DifficultyRating] save failed:', err);
+      setSubmitError('Could not save rating. Tap "Retry" or skip.');
+      setIsSubmitting(false); // unstick so user can retry
+    }
   };
 
   if (isLoading) return null;
