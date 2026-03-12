@@ -149,8 +149,11 @@ export default function Home() {
   };
   
   const loadContent = async () => {
+    // Guard against concurrent loads (e.g. React Strict Mode double-invoke)
+    if (loadingGuard.current) return;
+    loadingGuard.current = true;
+
     setIsLoading(true);
-    setCurrentIndex(0);
     setHasVoted(false);
 
     try {
