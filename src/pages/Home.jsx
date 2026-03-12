@@ -420,17 +420,14 @@ export default function Home() {
           };
   
   const handleContentError = () => {
-    // Prevent rapid-fire error skips
     if (errorSkipInProgress) return;
-
     setErrorSkipInProgress(true);
 
-    // Skip to next image after brief delay
     setTimeout(() => {
-      if (currentIndex < items.length - 1) {
-        setCurrentIndex(prev => prev + 1);
+      const idx = items.findIndex(i => i.id === currentItem?.id);
+      if (idx >= 0 && idx < items.length - 1) {
+        setCurrentItem(items[idx + 1]);
       } else {
-        // Reload content if we're at the end
         loadContent();
       }
       setErrorSkipInProgress(false);
