@@ -449,7 +449,8 @@ export default function Home() {
   };
 
   const handleTouchMove = (e) => {
-    if (currentIndex === 0) {
+    const isFirstItem = items.length === 0 || (currentItem && items[0]?.id === currentItem.id);
+    if (isFirstItem) {
       const touch = e.touches[0].clientY;
       const diff = touch - touchStart;
       if (diff > 0 && diff < 100) {
