@@ -63,6 +63,8 @@ export default function DifficultyRating({ imageId, onRated, onSkip }) {
         setHasRated(true);
         setMyRating(myVote.difficulty_rating);
         setRating(myVote.difficulty_rating);
+        // Already rated this image — advance automatically after a short display
+        if (onRated) setTimeout(onRated, 1500);
       } else {
         setHasRated(false);
       }
