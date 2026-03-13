@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Eye, Trophy, ShoppingCart, Package, User } from 'lucide-react';
+import { Eye, Trophy, ShoppingCart, Package, User, Upload } from 'lucide-react';
 import { playSound } from '@/components/audio/SoundEffects';
 
 export default function BottomTabBar({ currentPageName }) {
   const tabItems = [
     { name: 'Home', icon: Eye, label: 'Vote' },
+    { name: 'Upload', icon: Upload, label: 'Upload' },
     { name: 'Marketplace', icon: ShoppingCart, label: 'Market' },
     { name: 'Collection', icon: Package, label: 'Items' },
-    { name: 'UserLeaderboard', icon: Trophy, label: 'Ranks' },
     { name: 'Profile', icon: User, label: 'Profile' },
   ];
 
@@ -23,7 +23,7 @@ export default function BottomTabBar({ currentPageName }) {
           return (
             <Link
               key={item.name}
-              to={createPageUrl(item.name)}
+              to={`/${item.name}`}
               onClick={() => playSound.click()}
               className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
                 isActive
