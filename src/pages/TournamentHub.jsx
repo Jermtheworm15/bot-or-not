@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,11 +13,12 @@ import { Trophy, Swords, Users, Bot, TrendingUp, Award, Plus, Crown } from 'luci
 import { toast } from 'sonner';
 
 export default function TournamentHub() {
+  const navigate = useNavigate();
   const [tournaments, setTournaments] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(false);
+  const [joining, setJoining] = useState(null);
   const [user, setUser] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('tournaments');
@@ -80,7 +82,7 @@ export default function TournamentHub() {
     }
 
     console.log('[Tournament] Joining tournament:', tournament.id);
-    setJoining(true);
+    setJoining(tournament.id);
 
     try {
       // Check if already joined
@@ -89,14 +91,14 @@ export default function TournamentHub() {
 
       if (alreadyJoined) {
         toast.info('You already joined this tournament');
-        setJoining(false);
+        setJoining(null);
         return;
       }
 
       // Check if tournament is full
       if (participants.length >= tournament.max_participants) {
         toast.error('Tournament is full');
-        setJoining(false);
+        setJoining(null);
         return;
       }
 
@@ -104,7 +106,7 @@ export default function TournamentHub() {
       const wallets = await base44.entities.TokenWallet.filter({ user_email: user.email });
       if (wallets.length === 0 || wallets[0].balance < tournament.entry_fee) {
         toast.error(`Insufficient tokens. Need ${tournament.entry_fee} tokens`);
-        setJoining(false);
+        setJoining(null);
         return;
       }
 
@@ -156,7 +158,7 @@ export default function TournamentHub() {
       toast.error('Failed to join tournament');
     }
 
-    setJoining(false);
+    setJoining(null);
   };
 
   const handleCreateTournament = async () => {
@@ -351,10 +353,10 @@ export default function TournamentHub() {
                           <Button 
                             size="sm" 
                             onClick={() => handleJoinTournament(tournament)}
-                            disabled={joining}
+                            disabled={joining === tournament.id}
                             className="bg-green-600 hover:bg-green-700"
                           >
-                            {joining ? 'Joining...' : 'Join Tournament'}
+                            {joining === tournament.id ? 'Joining...' : 'Join Tournament'}
                           </Button>
                         )}
                         {isJoined && (
@@ -365,7 +367,7 @@ export default function TournamentHub() {
                           variant="outline"
                           onClick={() => {
                             console.log('[Tournament] View bracket:', tournament.id);
-                            toast.info('Bracket view coming soon!');
+                            navigate(`/TournamentBracket/${tournament.id}`);
                           }}
                         >
                           View Bracket
