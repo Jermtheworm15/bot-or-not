@@ -160,9 +160,9 @@ export default function Home() {
     try {
       const user = await base44.auth.me();
 
-      // Load images and user's votes in parallel
+      // Load images and user's votes in parallel - INCREASED POOL SIZE
       const [rawData, userVotes] = await Promise.all([
-        base44.entities.Image.list('-created_date', 100),
+        base44.entities.Image.list('-created_date', 500), // Increased from 100 to 500
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
@@ -208,21 +208,24 @@ export default function Home() {
       const uploadedValidCount = validData.filter(img => img.user_uploaded === true).length;
       console.log('[Voting] User-uploaded images in valid pool:', uploadedValidCount);
 
-      // Filter out recently voted images (last 50 votes) to prevent immediate repetition
-      const recentVotedIds = new Set(
-        userVotes
+      // IMPROVED: Filter out recently voted images (last 100 votes) + session-viewed images
+      const sessionViewedIds = JSON.parse(sessionStorage.getItem('viewedImages') || '[]');
+      const recentVotedIds = new Set([
+        ...userVotes
           .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-          .slice(0, 50)
-          .map(v => v.image_id)
-      );
+          .slice(0, 100) // Increased from 50 to 100
+          .map(v => v.image_id),
+        ...sessionViewedIds
+      ]);
       
       const freshData = validData.filter(item => !recentVotedIds.has(item.id));
       console.log('[Voting] After filtering recently voted:', freshData.length, 'fresh images');
+      console.log('[Voting] Session viewed images filtered:', sessionViewedIds.length);
       const uploadedFreshCount = freshData.filter(img => img.user_uploaded === true).length;
       console.log('[Voting] User-uploaded images in fresh pool:', uploadedFreshCount);
 
       // Use fresh data if available, otherwise fall back to valid data
-      const finalData = freshData.length > 0 ? freshData : validData;
+      const finalData = freshData.length > 10 ? freshData : validData;
 
       if (finalData.length === 0) {
         console.log('[Voting] No images available for voting');
@@ -231,6 +234,16 @@ export default function Home() {
         return;
       }
 
+      // IMPROVED RANDOMIZATION: Fisher-Yates shuffle for better distribution
+      const fisherYatesShuffle = (array) => {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      };
+
       // Separate by gender for balanced distribution
       const maleImages = finalData.filter(item => item.gender === 'male');
       const femaleImages = finalData.filter(item => item.gender === 'female');
@@ -238,10 +251,10 @@ export default function Home() {
       
       console.log('[Voting] Gender distribution - Male:', maleImages.length, 'Female:', femaleImages.length, 'Other/Unknown:', otherImages.length);
 
-      // Shuffle each group
-      const shuffleMale = [...maleImages].sort(() => Math.random() - 0.5);
-      const shuffleFemale = [...femaleImages].sort(() => Math.random() - 0.5);
-      const shuffleOther = [...otherImages].sort(() => Math.random() - 0.5);
+      // Shuffle each group with Fisher-Yates
+      const shuffleMale = fisherYatesShuffle(maleImages);
+      const shuffleFemale = fisherYatesShuffle(femaleImages);
+      const shuffleOther = fisherYatesShuffle(otherImages);
 
       // Interleave male and female images evenly
       const shuffled = [];
@@ -266,6 +279,10 @@ export default function Home() {
 
       console.log('[Voting] Final shuffled queue size:', shuffled.length, 'images');
       console.log('[Voting] First image:', shuffled[0]?.id, 'User-uploaded:', shuffled[0]?.user_uploaded);
+
+      // Track session-viewed images (keep last 50 in memory)
+      const currentSessionViewed = JSON.parse(sessionStorage.getItem('viewedImages') || '[]');
+      sessionStorage.setItem('viewedImages', JSON.stringify([...currentSessionViewed, shuffled[0]?.id].slice(-50)));
 
       setItems(shuffled);
       // Lock in the first item immediately so it never re-randomizes
@@ -566,7 +583,13 @@ export default function Home() {
 
     const idx = items.findIndex(i => i.id === currentItem?.id);
     if (idx >= 0 && idx < items.length - 1) {
-      setCurrentItem(items[idx + 1]);
+      const nextItem = items[idx + 1];
+      
+      // Track in session storage
+      const currentSessionViewed = JSON.parse(sessionStorage.getItem('viewedImages') || '[]');
+      sessionStorage.setItem('viewedImages', JSON.stringify([...currentSessionViewed, nextItem.id].slice(-50)));
+      
+      setCurrentItem(nextItem);
     } else {
       loadContent();
     }
