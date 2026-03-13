@@ -17,6 +17,7 @@ import ImageAnalysis from '@/components/ImageAnalysis';
 import MobileNav from '@/components/mobile/MobileNav';
 import ImageComments from '@/components/comments/ImageComments';
 import DifficultyRating from '@/components/voting/DifficultyRating';
+import RewardNotification from '@/components/rewards/RewardNotification';
 
 import { createPageUrl } from '@/utils';
 
@@ -42,6 +43,7 @@ export default function Home() {
   const [isPulling, setIsPulling] = useState(false);
   const pullRef = useRef(null);
   const loadingGuard = useRef(false);
+  const [rewardNotification, setRewardNotification] = useState(null);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -407,13 +409,40 @@ export default function Home() {
     }
 
     // Save vote (use snapshot to guarantee correct image id)
-    await base44.entities.Vote.create({
+    const vote = await base44.entities.Vote.create({
       image_id: votedItem.id,
       guess: guess,
       guessed_bot: guess === 'bot',
       was_correct: correct,
       user_email: user.email
     });
+
+    // Process vote reward if correct
+    if (correct) {
+      try {
+        const rewardResult = await base44.functions.invoke('processVoteReward', {
+          vote_id: vote.id,
+          was_correct: correct,
+          image_id: votedItem.id
+        });
+
+        if (rewardResult.data?.success) {
+          const rewardData = rewardResult.data;
+          let message = `Correct vote!`;
+          if (rewardData.streak_bonus > 0) {
+            message = rewardData.streak_message || `${rewardData.current_streak}-vote streak!`;
+          }
+
+          setRewardNotification({
+            amount: rewardData.reward_amount,
+            message: message,
+            streak: rewardData.current_streak
+          });
+        }
+      } catch (error) {
+        console.error('[Reward] Error processing vote reward:', error);
+      }
+    }
 
             // Do NOT auto-advance — wait for difficulty rating submission
           };
@@ -534,6 +563,14 @@ export default function Home() {
 
       {/* Success Explosion - Desktop only */}
       {!isMobile && <SuccessExplosion show={showExplosion} />}
+
+      {/* Reward Notification */}
+      {rewardNotification && (
+        <RewardNotification 
+          reward={rewardNotification}
+          onComplete={() => setRewardNotification(null)}
+        />
+      )}
       
       <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-center h-screen overflow-hidden pt-16 pb-24' : 'justify-center min-h-screen py-8'} px-4`}>
         {/* Content Display - Main Focal Point */}
