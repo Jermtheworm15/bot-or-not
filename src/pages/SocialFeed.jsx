@@ -109,7 +109,9 @@ export default function SocialFeed() {
 
   return (
     <div className="min-h-screen bg-black text-green-400 p-4 pb-32 overflow-y-auto">
-      <div className="max-w-2xl mx-auto">
+      <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+      
+      <div className="relative z-10 max-w-2xl mx-auto">
         <h1 className="text-3xl font-black mb-6">Community Feed</h1>
 
         {feed.length === 0 ? (
