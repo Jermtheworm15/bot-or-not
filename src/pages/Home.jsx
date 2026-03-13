@@ -166,6 +166,12 @@ export default function Home() {
         base44.entities.Vote.filter({ user_email: user.email })
       ]);
 
+      console.log('[Voting] Loaded', rawData.length, 'total images from database');
+      
+      // Count user-uploaded images
+      const uploadedCount = rawData.filter(img => img.user_uploaded === true).length;
+      console.log('[Voting] Found', uploadedCount, 'user-uploaded images in pool');
+
       // Extract data from entity structure - NO FILTERING
       const data = rawData.map(item => ({
         id: item.id,
@@ -192,21 +198,45 @@ export default function Home() {
         const tags = (item.ai_tags || []).join(' ').toLowerCase();
         const category = (item.ai_category || '').toLowerCase();
         if (REJECT_TERMS.some(t => tags.includes(t) || category.includes(t))) {
+          console.log('[Voting] Filtered out image due to content tags:', item.id, 'tags:', tags, 'category:', category);
           return false;
         }
         return true;
       });
 
-      if (validData.length === 0) {
+      console.log('[Voting] After filtering:', validData.length, 'valid images');
+      const uploadedValidCount = validData.filter(img => img.user_uploaded === true).length;
+      console.log('[Voting] User-uploaded images in valid pool:', uploadedValidCount);
+
+      // Filter out recently voted images (last 50 votes) to prevent immediate repetition
+      const recentVotedIds = new Set(
+        userVotes
+          .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
+          .slice(0, 50)
+          .map(v => v.image_id)
+      );
+      
+      const freshData = validData.filter(item => !recentVotedIds.has(item.id));
+      console.log('[Voting] After filtering recently voted:', freshData.length, 'fresh images');
+      const uploadedFreshCount = freshData.filter(img => img.user_uploaded === true).length;
+      console.log('[Voting] User-uploaded images in fresh pool:', uploadedFreshCount);
+
+      // Use fresh data if available, otherwise fall back to valid data
+      const finalData = freshData.length > 0 ? freshData : validData;
+
+      if (finalData.length === 0) {
+        console.log('[Voting] No images available for voting');
         setItems([]);
         setIsLoading(false);
         return;
       }
 
       // Separate by gender for balanced distribution
-      const maleImages = validData.filter(item => item.gender === 'male');
-      const femaleImages = validData.filter(item => item.gender === 'female');
-      const otherImages = validData.filter(item => item.gender === 'other' || item.gender === 'unknown');
+      const maleImages = finalData.filter(item => item.gender === 'male');
+      const femaleImages = finalData.filter(item => item.gender === 'female');
+      const otherImages = finalData.filter(item => item.gender === 'other' || item.gender === 'unknown');
+      
+      console.log('[Voting] Gender distribution - Male:', maleImages.length, 'Female:', femaleImages.length, 'Other/Unknown:', otherImages.length);
 
       // Shuffle each group
       const shuffleMale = [...maleImages].sort(() => Math.random() - 0.5);
@@ -233,6 +263,9 @@ export default function Home() {
         const img = new Image();
         img.src = item.url;
       });
+
+      console.log('[Voting] Final shuffled queue size:', shuffled.length, 'images');
+      console.log('[Voting] First image:', shuffled[0]?.id, 'User-uploaded:', shuffled[0]?.user_uploaded);
 
       setItems(shuffled);
       // Lock in the first item immediately so it never re-randomizes

@@ -187,6 +187,8 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
         console.log('[Upload] Collectible ID:', collectible.id);
         console.log('[Upload] Sequence:', uploadSequence);
         console.log('[Upload] Owner:', user.email);
+        console.log('[Upload] user_uploaded flag:', newImage.user_uploaded);
+        console.log('[Upload] ✓ Image is now available in the voting pool');
 
         return Response.json({ 
             success: true,
@@ -195,7 +197,8 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             image_id: newImage.id,
             collectible_id: collectible.id,
             image_url: file_url,
-            owner_email: user.email
+            owner_email: user.email,
+            in_voting_pool: true
         });
 
     } catch (error) {

@@ -97,10 +97,11 @@ export default function Upload() {
 
       console.log('[Upload UI] ✓ Upload successful!');
       console.log('[Upload UI] Image added to collection - Collectible ID:', data.collectible_id);
+      console.log('[Upload UI] Image added to voting pool:', data.in_voting_pool);
       setUploadSuccess(true);
       
       const uploadNum = data.upload_number || '';
-      toast.success(`✓ Image uploaded and added to your collection! Upload #${uploadNum}`);
+      toast.success(`✓ Image uploaded, added to collection, and now available for voting! Upload #${uploadNum}`);
       
       // Grant upload reward
       try {
