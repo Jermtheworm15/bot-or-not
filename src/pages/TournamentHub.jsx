@@ -3,7 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Swords, Users, Bot, TrendingUp, Award, Plus, Crown } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,6 +20,14 @@ export default function TournamentHub() {
   const [user, setUser] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('tournaments');
+  const [creating, setCreating] = useState(false);
+  const [newTournament, setNewTournament] = useState({
+    name: '',
+    description: '',
+    entry_fee: 100,
+    max_participants: 8,
+    rounds: 5
+  });
 
   useEffect(() => {
     loadData();
@@ -149,8 +160,67 @@ export default function TournamentHub() {
   };
 
   const handleCreateTournament = async () => {
-    console.log('[Tournament] Create tournament clicked');
-    toast.info('Tournament creation coming soon!');
+    if (!user) {
+      toast.error('Please sign in to create a tournament');
+      return;
+    }
+
+    console.log('[Tournament] Creating tournament:', newTournament);
+    setCreating(true);
+
+    try {
+      // Validate inputs
+      if (!newTournament.name || !newTournament.name.trim()) {
+        toast.error('Tournament name is required');
+        setCreating(false);
+        return;
+      }
+
+      if (newTournament.entry_fee < 0) {
+        toast.error('Entry fee must be positive');
+        setCreating(false);
+        return;
+      }
+
+      if (newTournament.max_participants < 2) {
+        toast.error('Need at least 2 participants');
+        setCreating(false);
+        return;
+      }
+
+      // Create tournament
+      const tournament = await base44.entities.Tournament.create({
+        name: newTournament.name.trim(),
+        description: newTournament.description?.trim() || '',
+        entry_fee: newTournament.entry_fee,
+        max_participants: newTournament.max_participants,
+        rounds: newTournament.rounds,
+        prize_pool: 0,
+        participants: [],
+        status: 'open',
+        start_date: new Date().toISOString()
+      });
+
+      console.log('[Tournament] Created:', tournament.id);
+      toast.success('Tournament created successfully!');
+      
+      setShowCreateDialog(false);
+      setNewTournament({
+        name: '',
+        description: '',
+        entry_fee: 100,
+        max_participants: 8,
+        rounds: 5
+      });
+
+      loadData();
+
+    } catch (error) {
+      console.error('[Tournament] Create error:', error);
+      toast.error('Failed to create tournament');
+    }
+
+    setCreating(false);
   };
 
   const statusColors = {
@@ -223,7 +293,7 @@ export default function TournamentHub() {
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold">Active & Upcoming</h2>
               <Button 
-                onClick={handleCreateTournament}
+                onClick={() => setShowCreateDialog(true)}
                 className="bg-purple-600 hover:bg-purple-700"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -290,7 +360,14 @@ export default function TournamentHub() {
                         {isJoined && (
                           <Badge className="bg-blue-600">Already Joined</Badge>
                         )}
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            console.log('[Tournament] View bracket:', tournament.id);
+                            toast.info('Bracket view coming soon!');
+                          }}
+                        >
                           View Bracket
                         </Button>
                       </div>
@@ -353,6 +430,95 @@ export default function TournamentHub() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Create Tournament Dialog */}
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogContent className="bg-black border-purple-500/30 text-green-400">
+            <DialogHeader>
+              <DialogTitle className="text-white">Create Tournament</DialogTitle>
+              <DialogDescription className="text-green-500/60">
+                Set up a new tournament for players to compete
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Tournament Name</Label>
+                <Input
+                  id="name"
+                  value={newTournament.name}
+                  onChange={(e) => setNewTournament({...newTournament, name: e.target.value})}
+                  placeholder="Spring Championship"
+                  className="bg-black/60 border-purple-500/30"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newTournament.description}
+                  onChange={(e) => setNewTournament({...newTournament, description: e.target.value})}
+                  placeholder="Describe the tournament..."
+                  className="bg-black/60 border-purple-500/30"
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="entry_fee">Entry Fee</Label>
+                  <Input
+                    id="entry_fee"
+                    type="number"
+                    value={newTournament.entry_fee}
+                    onChange={(e) => setNewTournament({...newTournament, entry_fee: parseInt(e.target.value) || 0})}
+                    className="bg-black/60 border-purple-500/30"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="max_participants">Max Players</Label>
+                  <Input
+                    id="max_participants"
+                    type="number"
+                    value={newTournament.max_participants}
+                    onChange={(e) => setNewTournament({...newTournament, max_participants: parseInt(e.target.value) || 2})}
+                    className="bg-black/60 border-purple-500/30"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="rounds">Rounds</Label>
+                  <Input
+                    id="rounds"
+                    type="number"
+                    value={newTournament.rounds}
+                    onChange={(e) => setNewTournament({...newTournament, rounds: parseInt(e.target.value) || 1})}
+                    className="bg-black/60 border-purple-500/30"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCreateDialog(false)}
+                disabled={creating}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreateTournament}
+                disabled={creating}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {creating ? 'Creating...' : 'Create Tournament'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
