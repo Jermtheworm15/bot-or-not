@@ -75,7 +75,7 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
         });
 
         // Create the image record using service role to ensure it's created
-        await base44.asServiceRole.entities.Image.create({
+        const newImage = await base44.asServiceRole.entities.Image.create({
             url: file_url,
             is_bot: isBot,
             source: 'user-upload',
@@ -86,6 +86,36 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             nsfw_flag: (aiAnalysis.nsfw_score || 0) > 0.5,
             nsfw_score: aiAnalysis.nsfw_score || 0
         });
+
+        // Create collectible for uploaded image
+        try {
+            await base44.asServiceRole.entities.ImageCollectible.create({
+                image_id: newImage.id,
+                owner_email: user.email,
+                original_uploader_email: user.email,
+                average_difficulty: 5.0,
+                vote_count: 0,
+                value_score: 5.0,
+                rarity_tier: 'common',
+                acquisition_date: new Date().toISOString(),
+                total_trades: 0,
+                is_listed: false
+            });
+        } catch (collectibleError) {
+            console.error('Failed to create collectible:', collectibleError);
+            // Continue anyway - image is still uploaded
+        }
+
+        // Ensure user has a wallet
+        const wallets = await base44.asServiceRole.entities.TokenWallet.filter({ user_email: user.email });
+        if (wallets.length === 0) {
+            await base44.asServiceRole.entities.TokenWallet.create({
+                user_email: user.email,
+                balance: 1000,
+                lifetime_earned: 1000,
+                lifetime_spent: 0
+            });
+        }
 
         return Response.json({ 
             success: true,
