@@ -205,22 +205,22 @@ export default function Layout({ children, currentPageName }) {
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
-                            <Link to={createPageUrl('Marketplace')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Link to="/Marketplace" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <ShoppingCart className="w-5 h-5" /> Marketplace
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
-                            <Link to={createPageUrl('Collection')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Link to="/Collection" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <Package className="w-5 h-5" /> My Collection
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
-                            <Link to={createPageUrl('Wallet')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Link to="/Wallet" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <WalletIcon className="w-5 h-5" /> Wallet
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
-                            <Link to={createPageUrl('Trades')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                            <Link to="/Trades" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <Repeat className="w-5 h-5" /> Trades
                             </Link>
                           </SheetClose>
@@ -253,11 +253,11 @@ export default function Layout({ children, currentPageName }) {
                style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)' }}>
             <div className="w-full px-2 py-3">
               <div className="flex w-full">
-              <Link to={createPageUrl('Home')} className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Home' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Eye className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Vote</span></Link>
-              <Link to={createPageUrl('Marketplace')} className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Marketplace' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><ShoppingCart className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Market</span></Link>
-              <Link to={createPageUrl('Collection')} className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Collection' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Package className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Items</span></Link>
-              <Link to={createPageUrl('UserLeaderboard')} className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'UserLeaderboard' || currentPageName === 'StreakLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Ranks</span></Link>
-              <Link to={createPageUrl('Profile')} className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Profile' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><User className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Profile</span></Link>
+              <Link to="/Home" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Home' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Eye className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Vote</span></Link>
+              <Link to="/Upload" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Upload' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Upload className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Upload</span></Link>
+              <Link to="/Marketplace" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Marketplace' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><ShoppingCart className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Market</span></Link>
+              <Link to="/Collection" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Collection' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Package className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Items</span></Link>
+              <Link to="/UserLeaderboard" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'UserLeaderboard' || currentPageName === 'StreakLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Ranks</span></Link>
             </div>
           </div>
         </nav>
