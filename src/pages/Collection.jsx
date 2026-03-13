@@ -45,8 +45,13 @@ export default function Collection() {
       
       // Get image data
       const enriched = await Promise.all(myCollectibles.map(async (c) => {
-        const image = await base44.entities.Image.get(c.image_id);
-        return { ...c, image };
+        try {
+          const image = await base44.entities.Image.get(c.image_id);
+          return { ...c, image };
+        } catch (err) {
+          console.error('Failed to load image for collectible:', err);
+          return { ...c, image: null };
+        }
       }));
 
       setCollectibles(enriched);
@@ -157,7 +162,7 @@ export default function Collection() {
         </div>
 
         {/* Collection Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {collectibles.map((collectible) => (
             <Card key={collectible.id} className="bg-black/60 border-purple-500/30 overflow-hidden">
               <div className="aspect-square relative">
@@ -165,56 +170,59 @@ export default function Collection() {
                   src={collectible.image?.url}
                   alt="Collectible"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/400x400/1a1a1a/4a5568?text=No+Image';
+                  }}
                 />
-                <div className="absolute top-2 right-2">
-                  <Badge className={rarityColors[collectible.rarity_tier]}>
+                <div className="absolute top-1 right-1 md:top-2 md:right-2">
+                  <Badge className={`${rarityColors[collectible.rarity_tier]} text-xs`}>
                     {collectible.rarity_tier}
                   </Badge>
                 </div>
                 {collectible.is_listed && (
-                  <div className="absolute top-2 left-2">
-                    <Badge className="bg-yellow-600 text-white">Listed</Badge>
+                  <div className="absolute top-1 left-1 md:top-2 md:left-2">
+                    <Badge className="bg-yellow-600 text-white text-xs">Listed</Badge>
                   </div>
                 )}
               </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-2 md:p-4">
+                <div className="flex items-center justify-between mb-1 md:mb-2">
                   <div className="text-xs text-green-500/60">
-                    Difficulty: {collectible.average_difficulty?.toFixed(1)}/10
+                    Diff: {collectible.average_difficulty?.toFixed(1)}/10
                   </div>
                   <div className="text-xs text-green-500/60">
-                    {collectible.vote_count} votes
+                    {collectible.vote_count}v
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="hidden md:flex items-center justify-between mb-2">
                   <div className="text-sm text-green-500/80">
-                    Value Score: {collectible.value_score?.toFixed(2)}
+                    Value: {collectible.value_score?.toFixed(2)}
                   </div>
                   <div className="text-xs text-green-500/60">
                     Trades: {collectible.total_trades || 0}
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-2 md:mt-4">
                   {collectible.is_listed ? (
                     <div>
-                      <div className="text-lg font-bold text-yellow-400 mb-2">
-                        Listed for {collectible.list_price?.toLocaleString()} 🪙
+                      <div className="text-sm md:text-lg font-bold text-yellow-400 mb-2">
+                        {collectible.list_price?.toLocaleString()} 🪙
                       </div>
                       <Button
                         onClick={() => handleCancelListing(collectible)}
                         variant="outline"
                         size="sm"
-                        className="w-full"
+                        className="w-full text-xs md:text-sm"
                       >
-                        Cancel Listing
+                        Cancel
                       </Button>
                     </div>
                   ) : (
                     <Dialog open={showListDialog === collectible.id} onOpenChange={(open) => setShowListDialog(open ? collectible.id : null)}>
                       <DialogTrigger asChild>
-                        <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
-                          <Tag className="w-4 h-4 mr-2" />
-                          List for Sale
+                        <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700 text-xs md:text-sm">
+                          <Tag className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                          List
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="bg-black border-purple-500/30">

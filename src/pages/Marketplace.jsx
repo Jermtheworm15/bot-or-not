@@ -59,12 +59,19 @@ export default function Marketplace() {
       
       // Get collectible and image data for each listing
       const enriched = await Promise.all(activeListings.map(async (listing) => {
-        const collectible = await base44.entities.ImageCollectible.get(listing.collectible_id);
-        const image = await base44.entities.Image.get(listing.image_id);
-        return { ...listing, collectible, image };
+        try {
+          const collectible = await base44.entities.ImageCollectible.get(listing.collectible_id);
+          const image = await base44.entities.Image.get(listing.image_id);
+          return { ...listing, collectible, image };
+        } catch (err) {
+          console.error('Failed to enrich listing:', err);
+          return null;
+        }
       }));
 
-      setListings(enriched);
+      const validListings = enriched.filter(l => l !== null);
+
+      setListings(validListings);
     } catch (error) {
       console.error('Load marketplace error:', error);
       toast.error('Failed to load marketplace');
@@ -183,7 +190,7 @@ export default function Marketplace() {
         </div>
 
         {/* Listings Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {filteredListings.map((listing) => (
             <Card key={listing.id} className="bg-black/60 border-purple-500/30 overflow-hidden">
               <div className="aspect-square relative">
@@ -191,41 +198,44 @@ export default function Marketplace() {
                   src={listing.image?.url}
                   alt="Collectible"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/400x400/1a1a1a/4a5568?text=No+Image';
+                  }}
                 />
-                <div className="absolute top-2 right-2">
-                  <Badge className={rarityColors[listing.collectible?.rarity_tier || 'common']}>
+                <div className="absolute top-1 right-1 md:top-2 md:right-2">
+                  <Badge className={`${rarityColors[listing.collectible?.rarity_tier || 'common']} text-xs`}>
                     {listing.collectible?.rarity_tier || 'common'}
                   </Badge>
                 </div>
               </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-2 md:p-4">
+                <div className="flex items-center justify-between mb-1 md:mb-2">
                   <div className="text-xs text-green-500/60">
-                    Difficulty: {listing.collectible?.average_difficulty?.toFixed(1)}/10
+                    Diff: {listing.collectible?.average_difficulty?.toFixed(1)}/10
                   </div>
                   <div className="text-xs text-green-500/60">
-                    {listing.collectible?.vote_count} votes
+                    {listing.collectible?.vote_count}v
                   </div>
                 </div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="hidden md:flex items-center justify-between mb-2">
                   <div className="text-sm text-green-500/80">
-                    Value Score: {listing.collectible?.value_score?.toFixed(2)}
+                    Value: {listing.collectible?.value_score?.toFixed(2)}
                   </div>
                   <div className="text-xs text-green-500/60">
                     Trades: {listing.collectible?.total_trades || 0}
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-4">
-                  <div className="text-2xl font-bold text-purple-400">
+                <div className="flex items-center justify-between mt-2 md:mt-4">
+                  <div className="text-lg md:text-2xl font-bold text-purple-400">
                     {listing.price.toLocaleString()} 🪙
                   </div>
                   <Button
                     onClick={() => handlePurchase(listing)}
                     disabled={listing.seller_email === user?.email || (myWallet?.balance || 0) < listing.price}
                     size="sm"
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 text-xs md:text-sm"
                   >
-                    Buy Now
+                    Buy
                   </Button>
                 </div>
               </div>
