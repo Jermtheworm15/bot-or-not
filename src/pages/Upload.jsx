@@ -59,13 +59,17 @@ export default function Upload() {
     console.log('[Upload UI] Starting upload process...');
 
     try {
+      console.log('[Upload UI] Preparing upload data...');
+      console.log('[Upload UI] File:', file.name, 'Size:', file.size);
+      console.log('[Upload UI] Uploader:', uploaderName, 'IsBot:', isBot);
+      
       // Create form data for backend function
       const formData = new FormData();
       formData.append('file', file);
       formData.append('uploaderName', uploaderName);
       formData.append('isBot', String(isBot));
 
-      console.log('[Upload UI] Calling backend function...');
+      console.log('[Upload UI] FormData created, calling backend function...');
       
       // Call backend function to handle upload and moderation securely
       const response = await base44.functions.invoke('uploadImageWithModeration', formData);
