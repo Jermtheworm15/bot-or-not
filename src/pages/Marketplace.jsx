@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, Sparkles, TrendingUp, Filter } from 'lucide-react';
 import { toast } from 'sonner';
+import { createPageUrl } from '@/utils';
 
 const rarityColors = {
   common: 'bg-slate-600 text-white',
@@ -107,8 +109,26 @@ export default function Marketplace() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-green-400 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-black text-green-400 p-4 pb-32">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-black flex items-center gap-2">
+              <ShoppingCart className="w-8 h-8" />
+              Marketplace
+            </h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1,2,3].map(i => (
+              <div key={i} className="bg-black/60 border border-purple-500/30 rounded-lg overflow-hidden animate-pulse">
+                <div className="aspect-square bg-purple-900/20" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-purple-900/20 rounded w-3/4" />
+                  <div className="h-4 bg-purple-900/20 rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -125,10 +145,10 @@ export default function Marketplace() {
             <p className="text-green-500/60">Buy rare collectible images with tokens</p>
           </div>
           {myWallet && (
-            <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg px-4 py-2">
+            <Link to={createPageUrl('Wallet')} className="bg-purple-900/30 border border-purple-500/30 rounded-lg px-4 py-2 hover:bg-purple-900/50 transition-colors cursor-pointer">
               <div className="text-xs text-green-500/60">Your Balance</div>
               <div className="text-2xl font-bold text-purple-400">{myWallet.balance.toLocaleString()} 🪙</div>
-            </div>
+            </Link>
           )}
         </div>
 

@@ -10,6 +10,8 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import DifficultyRanking from './pages/DifficultyRanking';
 import Marketplace from './pages/Marketplace';
 import Collection from './pages/Collection';
+import Wallet from './pages/Wallet';
+import Trades from './pages/Trades';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -64,6 +66,8 @@ const AuthenticatedApp = () => {
       <Route path="/DifficultyRanking" element={<LayoutWrapper currentPageName="DifficultyRanking"><DifficultyRanking /></LayoutWrapper>} />
       <Route path="/Marketplace" element={<LayoutWrapper currentPageName="Marketplace"><Marketplace /></LayoutWrapper>} />
       <Route path="/Collection" element={<LayoutWrapper currentPageName="Collection"><Collection /></LayoutWrapper>} />
+      <Route path="/Wallet" element={<LayoutWrapper currentPageName="Wallet"><Wallet /></LayoutWrapper>} />
+      <Route path="/Trades" element={<LayoutWrapper currentPageName="Trades"><Trades /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
