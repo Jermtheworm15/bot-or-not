@@ -14,19 +14,32 @@ Deno.serve(async (req) => {
         const formData = await req.formData();
         const file = formData.get('file');
         const uploaderName = formData.get('uploaderName');
-        const isBot = formData.get('isBot') === 'true';
+        const isBotString = formData.get('isBot');
+        const isBot = isBotString === 'true' || isBotString === true;
+
+        console.log('[Upload] Received data - File:', !!file, 'Name:', uploaderName, 'IsBot:', isBot);
 
         if (!file) {
+            console.error('[Upload] No file provided');
             return Response.json({ success: false, error: 'No file provided' }, { status: 400 });
         }
 
         if (!uploaderName || uploaderName.trim() === '') {
+            console.error('[Upload] No uploader name');
             return Response.json({ success: false, error: 'Uploader name is required' }, { status: 400 });
         }
 
         console.log('[Upload] Uploading file...');
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        console.log('[Upload] File uploaded:', file_url);
+        console.log('[Upload] File uploaded to storage:', file_url);
+
+        if (!file_url) {
+            console.error('[Upload] File upload returned no URL');
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to upload file to storage' 
+            }, { status: 500 });
+        }
 
         // AI Moderation check
         console.log('[Upload] Running moderation check...');
@@ -123,12 +136,20 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             nsfw_score: aiAnalysis.nsfw_score || 0
         });
 
-        console.log('[Upload] Image created:', newImage.id);
+        console.log('[Upload] Image record created successfully - ID:', newImage.id);
+
+        if (!newImage.id) {
+            console.error('[Upload] Image created but no ID returned');
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to save image to database' 
+            }, { status: 500 });
+        }
 
         // Create collectible for uploaded image
-        console.log('[Upload] Creating collectible...');
+        console.log('[Upload] Creating collectible for image:', newImage.id);
         try {
-            await base44.asServiceRole.entities.ImageCollectible.create({
+            const collectible = await base44.asServiceRole.entities.ImageCollectible.create({
                 image_id: newImage.id,
                 owner_email: user.email,
                 original_uploader_email: user.email,
@@ -141,9 +162,10 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
                 total_trades: 0,
                 is_listed: false
             });
-            console.log('[Upload] Collectible created');
+            console.log('[Upload] Collectible created successfully - ID:', collectible.id);
         } catch (collectibleError) {
-            console.error('[Upload] Failed to create collectible:', collectibleError);
+            console.error('[Upload] Failed to create collectible:', collectibleError.message);
+            // Don't fail the upload if collectible creation fails
         }
 
         // Ensure user has a wallet
@@ -159,19 +181,22 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             console.log('[Upload] Wallet created');
         }
 
-        console.log('[Upload] Upload completed successfully');
+        console.log('[Upload] Upload completed successfully! Image ID:', newImage.id, 'Sequence:', uploadSequence);
 
         return Response.json({ 
             success: true,
             message: 'Image uploaded successfully',
-            upload_number: uploadSequence
+            upload_number: uploadSequence,
+            image_id: newImage.id,
+            image_url: file_url
         });
 
     } catch (error) {
-        console.error('[Upload] Error:', error);
+        console.error('[Upload] CRITICAL ERROR:', error.message);
+        console.error('[Upload] Error stack:', error.stack);
         return Response.json({ 
             success: false,
-            error: error.message || 'Upload failed' 
+            error: error.message || 'Upload failed - unknown error' 
         }, { status: 500 });
     }
 });

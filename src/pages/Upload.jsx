@@ -18,6 +18,7 @@ export default function Upload() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [aiEnhancements, setAiEnhancements] = useState(null);
 
@@ -36,6 +37,9 @@ export default function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Clear previous errors
+    setUploadError(null);
+    
     if (!file) {
       toast.error('Please select an image');
       return;
@@ -52,30 +56,72 @@ export default function Upload() {
     }
 
     setIsUploading(true);
+    console.log('[Upload UI] Starting upload process...');
 
     try {
       // Create form data for backend function
       const formData = new FormData();
       formData.append('file', file);
       formData.append('uploaderName', uploaderName);
-      formData.append('isBot', isBot);
+      formData.append('isBot', String(isBot));
 
+      console.log('[Upload UI] Calling backend function...');
+      
       // Call backend function to handle upload and moderation securely
-      console.log('[Upload UI] Invoking upload function...');
-      const { data } = await base44.functions.invoke('uploadImageWithModeration', formData);
-      console.log('[Upload UI] Upload response:', data);
+      const response = await base44.functions.invoke('uploadImageWithModeration', formData);
+      
+      console.log('[Upload UI] Response received:', response);
+
+      if (!response.data) {
+        throw new Error('No response from server');
+      }
+
+      const data = response.data;
 
       if (!data.success) {
-        toast.error(data.error || 'Upload failed');
-        setIsUploading(false);
+        const errorMsg = data.error || 'Upload failed';
+        console.error('[Upload UI] Upload failed:', errorMsg);
+        setUploadError(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
+      console.log('[Upload UI] Upload successful!');
       setUploadSuccess(true);
-      const uploadNum = data.upload_number || '';
-      toast.success(`Image uploaded successfully! ${uploadNum ? `This is upload #${uploadNum}` : ''}`);
       
-      // Reset form after 2 seconds
+      const uploadNum = data.upload_number || '';
+      toast.success(`✓ Image uploaded successfully! ${uploadNum ? `Upload #${uploadNum}` : ''}`);
+      
+      // Grant upload reward
+      try {
+        await base44.functions.invoke('grantReward', {
+          reward_type: 'upload_accepted',
+          amount: 100,
+          metadata: {
+            upload_number: uploadNum
+          }
+        });
+      } catch (rewardError) {
+        console.error('[Upload UI] Reward grant failed:', rewardError);
+      }
+
+      // Create social feed entry
+      try {
+        await base44.entities.SocialFeed.create({
+          user_email: (await base44.auth.me()).email,
+          activity_type: 'upload',
+          title: 'Uploaded a new image',
+          description: `${uploaderName} contributed image #${uploadNum}`,
+          metadata: {
+            upload_number: uploadNum,
+            is_bot: isBot
+          }
+        });
+      } catch (feedError) {
+        console.error('[Upload UI] Feed creation failed:', feedError);
+      }
+      
+      // Reset form after 3 seconds
       setTimeout(() => {
         setFile(null);
         setPreview(null);
@@ -83,11 +129,14 @@ export default function Upload() {
         setIsBot(false);
         setAgreedToTerms(false);
         setUploadSuccess(false);
-      }, 2000);
+        setUploadError(null);
+      }, 3000);
       
     } catch (error) {
       console.error('[Upload UI] Upload error:', error);
-      toast.error(error.message || 'Upload failed. Please try again.');
+      const errorMsg = error.response?.data?.error || error.message || 'Upload failed. Please try again.';
+      setUploadError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsUploading(false);
     }
@@ -247,6 +296,26 @@ export default function Upload() {
                   </motion.div>
                 )}
 
+                {/* Upload Error */}
+                {uploadError && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-red-500/10 border border-red-500/30 p-4 rounded-lg"
+                  >
+                    <p className="text-sm text-red-400 font-medium">Upload Failed</p>
+                    <p className="text-xs text-red-400/70 mt-1">{uploadError}</p>
+                    <Button
+                      type="button"
+                      onClick={() => setUploadError(null)}
+                      className="mt-3 bg-red-600 hover:bg-red-700"
+                      size="sm"
+                    >
+                      Try Again
+                    </Button>
+                  </motion.div>
+                )}
+
                 {/* Terms Agreement */}
                 <div className="bg-zinc-800 rounded-lg p-4 space-y-3">
                   <p className="text-sm text-zinc-300 leading-relaxed">
@@ -271,7 +340,13 @@ export default function Upload() {
                 <Button
                   type="submit"
                   disabled={isUploading || uploadSuccess}
-                  className="w-full h-12 bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800 text-white font-semibold text-lg"
+                  className={`w-full h-12 font-semibold text-lg transition-all ${
+                    uploadSuccess
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : uploadError
+                      ? 'bg-red-600 hover:bg-red-700'
+                      : 'bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800'
+                  } text-white`}
                 >
                   {uploadSuccess ? (
                     <>
@@ -279,7 +354,10 @@ export default function Upload() {
                       Uploaded Successfully!
                     </>
                   ) : isUploading ? (
-                   'Uploading & Checking...'
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Uploading & Checking...
+                    </div>
                   ) : (
                     <>
                       <UploadIcon className="w-5 h-5 mr-2" />
