@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut, Gauge } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut, Gauge, ShoppingCart, Package } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
@@ -202,6 +202,16 @@ export default function Layout({ children, currentPageName }) {
                           <SheetClose asChild>
                             <Link to="/DifficultyRanking" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <Gauge className="w-5 h-5" /> Difficulty Ranks
+                            </Link>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Link to={createPageUrl('Marketplace')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <ShoppingCart className="w-5 h-5" /> Marketplace
+                            </Link>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Link to={createPageUrl('Collection')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Package className="w-5 h-5" /> My Collection
                             </Link>
                           </SheetClose>
                         </div>
