@@ -442,6 +442,30 @@ export default function Home() {
       } catch (error) {
         console.error('[Reward] Error processing vote reward:', error);
       }
+
+      // Update voting streak
+      try {
+        await base44.functions.invoke('updateStreak', {
+          streak_type: 'voting'
+        });
+      } catch (error) {
+        console.error('[Streak] Error updating voting streak:', error);
+      }
+
+      // Create social feed activity for milestones
+      if (newStreak % 10 === 0 && newStreak > 0) {
+        try {
+          await base44.entities.SocialFeed.create({
+            user_email: user.email,
+            activity_type: 'vote_milestone',
+            title: `${newStreak} Correct Votes!`,
+            description: `Achieved ${newStreak} correct votes in a row`,
+            metadata: { streak: newStreak }
+          });
+        } catch (error) {
+          console.error('[Feed] Error creating feed item:', error);
+        }
+      }
     }
 
             // Do NOT auto-advance — wait for difficulty rating submission

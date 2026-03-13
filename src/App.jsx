@@ -17,6 +17,8 @@ import TournamentBracket from './pages/TournamentBracket';
 import CollectionAnalytics from './pages/CollectionAnalytics';
 import AdminAnalytics from './pages/AdminAnalytics';
 import RewardHistory from './pages/RewardHistory';
+import SocialFeed from './pages/SocialFeed';
+import DailyRewards from './pages/DailyRewards';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -78,6 +80,8 @@ const AuthenticatedApp = () => {
       <Route path="/CollectionAnalytics" element={<LayoutWrapper currentPageName="CollectionAnalytics"><CollectionAnalytics /></LayoutWrapper>} />
       <Route path="/AdminAnalytics" element={<LayoutWrapper currentPageName="AdminAnalytics"><AdminAnalytics /></LayoutWrapper>} />
       <Route path="/RewardHistory" element={<LayoutWrapper currentPageName="RewardHistory"><RewardHistory /></LayoutWrapper>} />
+      <Route path="/SocialFeed" element={<LayoutWrapper currentPageName="SocialFeed"><SocialFeed /></LayoutWrapper>} />
+      <Route path="/DailyRewards" element={<LayoutWrapper currentPageName="DailyRewards"><DailyRewards /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
