@@ -95,11 +95,12 @@ export default function Upload() {
         return;
       }
 
-      console.log('[Upload UI] Upload successful!');
+      console.log('[Upload UI] ✓ Upload successful!');
+      console.log('[Upload UI] Image added to collection - Collectible ID:', data.collectible_id);
       setUploadSuccess(true);
       
       const uploadNum = data.upload_number || '';
-      toast.success(`✓ Image uploaded successfully! ${uploadNum ? `Upload #${uploadNum}` : ''}`);
+      toast.success(`✓ Image uploaded and added to your collection! Upload #${uploadNum}`);
       
       // Grant upload reward
       try {
@@ -107,9 +108,12 @@ export default function Upload() {
           reward_type: 'upload_accepted',
           amount: 100,
           metadata: {
-            upload_number: uploadNum
+            upload_number: uploadNum,
+            image_id: data.image_id,
+            collectible_id: data.collectible_id
           }
         });
+        console.log('[Upload UI] Reward granted');
       } catch (rewardError) {
         console.error('[Upload UI] Reward grant failed:', rewardError);
       }
@@ -124,12 +128,18 @@ export default function Upload() {
           description: `${uploaderName} contributed image #${uploadNum}`,
           metadata: {
             upload_number: uploadNum,
-            is_bot: isBot
+            is_bot: isBot,
+            image_id: data.image_id,
+            collectible_id: data.collectible_id
           }
         });
+        console.log('[Upload UI] Social feed entry created');
       } catch (feedError) {
         console.error('[Upload UI] Feed creation failed:', feedError);
       }
+
+      // Broadcast collection update event for real-time refresh
+      console.log('[Upload UI] Broadcasting collection update event');
       
       // Reset form after 3 seconds
       setTimeout(() => {

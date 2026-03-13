@@ -133,10 +133,11 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             }, { status: 500 });
         }
 
-        // Create collectible for uploaded image
+        // CRITICAL: Create collectible for uploaded image - this MUST succeed
         console.log('[Upload] Creating collectible for image:', newImage.id);
+        let collectible;
         try {
-            const collectible = await base44.asServiceRole.entities.ImageCollectible.create({
+            collectible = await base44.asServiceRole.entities.ImageCollectible.create({
                 image_id: newImage.id,
                 owner_email: user.email,
                 original_uploader_email: user.email,
@@ -149,10 +150,23 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
                 total_trades: 0,
                 is_listed: false
             });
-            console.log('[Upload] Collectible created successfully - ID:', collectible.id);
+            console.log('[Upload] ✓ Collectible created successfully - ID:', collectible.id);
         } catch (collectibleError) {
-            console.error('[Upload] Failed to create collectible:', collectibleError.message);
-            // Don't fail the upload if collectible creation fails
+            console.error('[Upload] CRITICAL: Failed to create collectible:', collectibleError.message);
+            console.error('[Upload] Stack:', collectibleError.stack);
+            // FAIL the upload if collectible creation fails - image without collectible is useless
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to add image to collection: ' + collectibleError.message 
+            }, { status: 500 });
+        }
+
+        if (!collectible || !collectible.id) {
+            console.error('[Upload] CRITICAL: Collectible created but no ID returned');
+            return Response.json({ 
+                success: false, 
+                error: 'Failed to add image to collection' 
+            }, { status: 500 });
         }
 
         // Ensure user has a wallet
@@ -168,14 +182,20 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             console.log('[Upload] Wallet created');
         }
 
-        console.log('[Upload] Upload completed successfully! Image ID:', newImage.id, 'Sequence:', uploadSequence);
+        console.log('[Upload] ✓ Upload completed successfully!');
+        console.log('[Upload] Image ID:', newImage.id);
+        console.log('[Upload] Collectible ID:', collectible.id);
+        console.log('[Upload] Sequence:', uploadSequence);
+        console.log('[Upload] Owner:', user.email);
 
         return Response.json({ 
             success: true,
-            message: 'Image uploaded successfully',
+            message: 'Image uploaded and added to collection',
             upload_number: uploadSequence,
             image_id: newImage.id,
-            image_url: file_url
+            collectible_id: collectible.id,
+            image_url: file_url,
+            owner_email: user.email
         });
 
     } catch (error) {

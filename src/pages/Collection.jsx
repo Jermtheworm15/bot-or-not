@@ -28,6 +28,19 @@ export default function Collection() {
 
   useEffect(() => {
     loadData();
+
+    // Subscribe to collection updates
+    const unsubscribe = base44.entities.ImageCollectible.subscribe((event) => {
+      console.log('[Collection] Real-time update:', event.type);
+      if (event.type === 'create' || event.type === 'update' || event.type === 'delete') {
+        console.log('[Collection] Refreshing collection...');
+        loadData();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const loadData = async () => {
