@@ -69,6 +69,8 @@ export default function Collection() {
       return;
     }
 
+    const toastId = toast.loading('Listing item...');
+
     try {
       const listing = await base44.entities.MarketplaceListing.create({
         collectible_id: collectible.id,
@@ -83,16 +85,19 @@ export default function Collection() {
         list_price: price
       });
 
-      toast.success('Listed for sale!');
+      toast.success('Listed for sale!', { id: toastId });
       setShowListDialog(null);
+      setListingPrice({ ...listingPrice, [collectible.id]: '' });
       loadData();
     } catch (error) {
       console.error('List error:', error);
-      toast.error('Failed to list item');
+      toast.error('Failed to list item - please try again', { id: toastId });
     }
   };
 
   const handleCancelListing = async (collectible) => {
+    const toastId = toast.loading('Cancelling listing...');
+
     try {
       const listings = await base44.entities.MarketplaceListing.filter({
         collectible_id: collectible.id,
@@ -108,11 +113,11 @@ export default function Collection() {
         list_price: null
       });
 
-      toast.success('Listing cancelled');
+      toast.success('Listing cancelled', { id: toastId });
       loadData();
     } catch (error) {
       console.error('Cancel listing error:', error);
-      toast.error('Failed to cancel listing');
+      toast.error('Failed to cancel - please try again', { id: toastId });
     }
   };
 

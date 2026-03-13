@@ -39,18 +39,20 @@ export default function Trades() {
   };
 
   const handleAcceptTrade = async (tradeId) => {
+    const toastId = toast.loading('Processing trade...');
+
     try {
       const result = await base44.functions.invoke('acceptTradeOffer', { trade_id: tradeId });
       if (result.data.success) {
-        toast.success('Trade accepted!');
+        toast.success('Trade accepted!', { id: toastId });
         loadData();
         setSelectedOffer(null);
       } else {
-        toast.error(result.data.error || 'Trade failed');
+        toast.error(result.data.error || 'Trade failed', { id: toastId });
       }
     } catch (error) {
       console.error('Accept trade error:', error);
-      toast.error('Failed to accept trade');
+      toast.error('Failed to accept trade - please try again', { id: toastId });
     }
   };
 

@@ -100,17 +100,19 @@ export default function Marketplace() {
       return;
     }
 
+    const toastId = toast.loading('Processing purchase...');
+
     try {
       const result = await base44.functions.invoke('purchaseCollectible', { listing_id: listing.id });
       if (result.data.success) {
-        toast.success('Purchase successful!');
+        toast.success('Purchase successful!', { id: toastId });
         loadData();
       } else {
-        toast.error(result.data.error || 'Purchase failed');
+        toast.error(result.data.error || 'Purchase failed', { id: toastId });
       }
     } catch (error) {
       console.error('Purchase error:', error);
-      toast.error('Purchase failed');
+      toast.error('Purchase failed - please try again', { id: toastId });
     }
   };
 
