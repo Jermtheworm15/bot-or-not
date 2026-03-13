@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Eye, Trophy, Upload, User } from 'lucide-react';
+import { Eye, Trophy, ShoppingCart, Package, User } from 'lucide-react';
 import { playSound } from '@/components/audio/SoundEffects';
 
 export default function BottomTabBar({ currentPageName }) {
   const tabItems = [
-    { name: 'Home', icon: Eye, label: 'Home' },
-    { name: 'UserLeaderboard', icon: Trophy, label: 'Leaders' },
-    { name: 'Upload', icon: Upload, label: 'Upload' },
+    { name: 'Home', icon: Eye, label: 'Vote' },
+    { name: 'Marketplace', icon: ShoppingCart, label: 'Market' },
+    { name: 'Collection', icon: Package, label: 'Items' },
+    { name: 'UserLeaderboard', icon: Trophy, label: 'Ranks' },
     { name: 'Profile', icon: User, label: 'Profile' },
   ];
 
