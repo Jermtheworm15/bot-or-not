@@ -70,7 +70,8 @@ export default function Upload() {
       }
 
       setUploadSuccess(true);
-      toast.success('Image uploaded successfully!');
+      const uploadNum = data.upload_number || '';
+      toast.success(`Image uploaded successfully! ${uploadNum ? `This is upload #${uploadNum}` : ''}`);
       
       // Reset form after 2 seconds
       setTimeout(() => {

@@ -12,6 +12,8 @@ import Marketplace from './pages/Marketplace';
 import Collection from './pages/Collection';
 import Wallet from './pages/Wallet';
 import Trades from './pages/Trades';
+import TournamentHub from './pages/TournamentHub';
+import CollectionAnalytics from './pages/CollectionAnalytics';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -68,6 +70,8 @@ const AuthenticatedApp = () => {
       <Route path="/Collection" element={<LayoutWrapper currentPageName="Collection"><Collection /></LayoutWrapper>} />
       <Route path="/Wallet" element={<LayoutWrapper currentPageName="Wallet"><Wallet /></LayoutWrapper>} />
       <Route path="/Trades" element={<LayoutWrapper currentPageName="Trades"><Trades /></LayoutWrapper>} />
+      <Route path="/TournamentHub" element={<LayoutWrapper currentPageName="TournamentHub"><TournamentHub /></LayoutWrapper>} />
+      <Route path="/CollectionAnalytics" element={<LayoutWrapper currentPageName="CollectionAnalytics"><CollectionAnalytics /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

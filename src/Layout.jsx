@@ -224,6 +224,16 @@ export default function Layout({ children, currentPageName }) {
                               <Repeat className="w-5 h-5" /> Trades
                             </Link>
                           </SheetClose>
+                          <SheetClose asChild>
+                            <Link to="/TournamentHub" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Trophy className="w-5 h-5" /> Tournaments
+                            </Link>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Link to="/CollectionAnalytics" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Gauge className="w-5 h-5" /> Analytics
+                            </Link>
+                          </SheetClose>
                         </div>
                       </SheetContent>
                     </Sheet>

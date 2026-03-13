@@ -6,8 +6,10 @@ Deno.serve(async (req) => {
         const user = await base44.auth.me();
 
         if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
+            return Response.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
+
+        console.log('[Upload] Starting upload for user:', user.email);
 
         const formData = await req.formData();
         const file = formData.get('file');
@@ -15,17 +17,19 @@ Deno.serve(async (req) => {
         const isBot = formData.get('isBot') === 'true';
 
         if (!file) {
-            return Response.json({ error: 'No file provided' }, { status: 400 });
+            return Response.json({ success: false, error: 'No file provided' }, { status: 400 });
         }
 
         if (!uploaderName || uploaderName.trim() === '') {
-            return Response.json({ error: 'Uploader name is required' }, { status: 400 });
+            return Response.json({ success: false, error: 'Uploader name is required' }, { status: 400 });
         }
 
-        // Upload the file
+        console.log('[Upload] Uploading file...');
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        console.log('[Upload] File uploaded:', file_url);
 
         // AI Moderation check
+        console.log('[Upload] Running moderation check...');
         const moderation = await base44.integrations.Core.InvokeLLM({
             prompt: `Analyze this image for content moderation. Check if it contains:
 - Inappropriate content (nudity, violence, hate symbols)
@@ -44,13 +48,17 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
         });
 
         if (!moderation.is_appropriate) {
+            console.log('[Upload] Moderation failed:', moderation.reason);
             return Response.json({ 
                 success: false,
                 error: `Image rejected: ${moderation.reason}` 
             }, { status: 400 });
         }
 
+        console.log('[Upload] Moderation passed');
+
         // AI analysis for tags and categories
+        console.log('[Upload] Running AI analysis...');
         const aiAnalysis = await base44.integrations.Core.InvokeLLM({
             prompt: `Analyze this image and provide:
 1. A list of descriptive tags (5-10 keywords that describe what's in the image)
@@ -74,25 +82,57 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
             }
         });
 
-        // Create the image record using service role to ensure it's created
+        console.log('[Upload] AI analysis complete');
+
+        // Atomically get next upload sequence number
+        console.log('[Upload] Getting upload sequence number...');
+        let uploadSequence = 1;
+        
+        const counters = await base44.asServiceRole.entities.UserUploadCounter.filter({ 
+            user_email: user.email 
+        });
+
+        if (counters.length > 0) {
+            const counter = counters[0];
+            uploadSequence = (counter.current_count || 0) + 1;
+            await base44.asServiceRole.entities.UserUploadCounter.update(counter.id, {
+                current_count: uploadSequence
+            });
+        } else {
+            await base44.asServiceRole.entities.UserUploadCounter.create({
+                user_email: user.email,
+                current_count: 1
+            });
+            uploadSequence = 1;
+        }
+
+        console.log('[Upload] Sequence number:', uploadSequence);
+
+        // Create the image record
+        console.log('[Upload] Creating image record...');
         const newImage = await base44.asServiceRole.entities.Image.create({
             url: file_url,
             is_bot: isBot,
             source: 'user-upload',
             user_uploaded: true,
             uploader_name: uploaderName.trim(),
+            creator_upload_sequence: uploadSequence,
             ai_tags: aiAnalysis.tags || [],
             ai_category: aiAnalysis.category || 'other',
             nsfw_flag: (aiAnalysis.nsfw_score || 0) > 0.5,
             nsfw_score: aiAnalysis.nsfw_score || 0
         });
 
+        console.log('[Upload] Image created:', newImage.id);
+
         // Create collectible for uploaded image
+        console.log('[Upload] Creating collectible...');
         try {
             await base44.asServiceRole.entities.ImageCollectible.create({
                 image_id: newImage.id,
                 owner_email: user.email,
                 original_uploader_email: user.email,
+                creator_upload_sequence: uploadSequence,
                 average_difficulty: 5.0,
                 vote_count: 0,
                 value_score: 5.0,
@@ -101,12 +141,13 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
                 total_trades: 0,
                 is_listed: false
             });
+            console.log('[Upload] Collectible created');
         } catch (collectibleError) {
-            console.error('Failed to create collectible:', collectibleError);
-            // Continue anyway - image is still uploaded
+            console.error('[Upload] Failed to create collectible:', collectibleError);
         }
 
         // Ensure user has a wallet
+        console.log('[Upload] Checking wallet...');
         const wallets = await base44.asServiceRole.entities.TokenWallet.filter({ user_email: user.email });
         if (wallets.length === 0) {
             await base44.asServiceRole.entities.TokenWallet.create({
@@ -115,15 +156,19 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
                 lifetime_earned: 1000,
                 lifetime_spent: 0
             });
+            console.log('[Upload] Wallet created');
         }
+
+        console.log('[Upload] Upload completed successfully');
 
         return Response.json({ 
             success: true,
-            message: 'Image uploaded successfully' 
+            message: 'Image uploaded successfully',
+            upload_number: uploadSequence
         });
 
     } catch (error) {
-        console.error('Upload error:', error);
+        console.error('[Upload] Error:', error);
         return Response.json({ 
             success: false,
             error: error.message || 'Upload failed' 
