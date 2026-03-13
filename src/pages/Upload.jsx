@@ -61,7 +61,9 @@ export default function Upload() {
       formData.append('isBot', isBot);
 
       // Call backend function to handle upload and moderation securely
+      console.log('[Upload UI] Invoking upload function...');
       const { data } = await base44.functions.invoke('uploadImageWithModeration', formData);
+      console.log('[Upload UI] Upload response:', data);
 
       if (!data.success) {
         toast.error(data.error || 'Upload failed');
@@ -84,14 +86,15 @@ export default function Upload() {
       }, 2000);
       
     } catch (error) {
-      toast.error('Upload failed. Please try again.');
+      console.error('[Upload UI] Upload error:', error);
+      toast.error(error.message || 'Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white py-12">
+    <div className="min-h-screen bg-zinc-950 text-white py-12 pb-32 overflow-y-auto">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
       
       <div className="relative z-10 max-w-2xl mx-auto px-4">

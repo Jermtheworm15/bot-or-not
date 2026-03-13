@@ -143,7 +143,7 @@ export default function Marketplace() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 p-4 pb-32">
+    <div className="min-h-screen bg-black text-green-400 p-4 pb-32 overflow-y-auto">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>

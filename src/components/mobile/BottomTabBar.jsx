@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Eye, Trophy, ShoppingCart, Package, User, Upload } from 'lucide-react';
+import { Eye, Trophy, ShoppingCart, Package, User, Upload, Swords } from 'lucide-react';
 import { playSound } from '@/components/audio/SoundEffects';
 
 export default function BottomTabBar({ currentPageName }) {
@@ -9,7 +9,7 @@ export default function BottomTabBar({ currentPageName }) {
     { name: 'Home', icon: Eye, label: 'Vote' },
     { name: 'Upload', icon: Upload, label: 'Upload' },
     { name: 'Marketplace', icon: ShoppingCart, label: 'Market' },
-    { name: 'Collection', icon: Package, label: 'Items' },
+    { name: 'TournamentHub', icon: Swords, label: 'Battle' },
     { name: 'Profile', icon: User, label: 'Profile' },
   ];
 

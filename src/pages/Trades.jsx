@@ -88,7 +88,7 @@ export default function Trades() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 p-4 pb-32">
+    <div className="min-h-screen bg-black text-green-400 p-4 pb-32 overflow-y-auto">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-black mb-2 flex items-center gap-2">

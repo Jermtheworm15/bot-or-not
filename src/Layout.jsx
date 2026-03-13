@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut, Gauge, ShoppingCart, Package, Wallet as WalletIcon, Repeat } from 'lucide-react';
+import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut, Gauge, ShoppingCart, Package, Wallet as WalletIcon, Repeat, Swords, BarChart3 } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
@@ -157,8 +157,8 @@ export default function Layout({ children, currentPageName }) {
                           <Menu className="w-6 h-6" />
                         </button>
                       </SheetTrigger>
-                      <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-64">
-                        <div className="mt-8 space-y-2">
+                      <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-64 overflow-y-auto">
+                        <div className="mt-8 space-y-2 pb-8">
                           <SheetClose asChild>
                             <Link to={createPageUrl('Home')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <Eye className="w-5 h-5" /> Vote
@@ -226,15 +226,17 @@ export default function Layout({ children, currentPageName }) {
                           </SheetClose>
                           <SheetClose asChild>
                             <Link to="/TournamentHub" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Trophy className="w-5 h-5" /> Tournaments
+                              <Swords className="w-5 h-5" /> Tournaments
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
                             <Link to="/CollectionAnalytics" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Gauge className="w-5 h-5" /> Analytics
+                              <BarChart3 className="w-5 h-5" /> Analytics
                             </Link>
                           </SheetClose>
                         </div>
+                        {/* Bottom safe area for scrolling */}
+                        <div className="h-20"></div>
                       </SheetContent>
                     </Sheet>
                             {currentUser && <NotificationBell />}
@@ -267,7 +269,8 @@ export default function Layout({ children, currentPageName }) {
               <Link to="/Upload" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Upload' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Upload className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Upload</span></Link>
               <Link to="/Marketplace" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Marketplace' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><ShoppingCart className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Market</span></Link>
               <Link to="/Collection" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Collection' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Package className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Items</span></Link>
-              <Link to="/UserLeaderboard" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'UserLeaderboard' || currentPageName === 'StreakLeaderboard' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Trophy className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Ranks</span></Link>
+              <Link to="/TournamentHub" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'TournamentHub' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Swords className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Battle</span></Link>
+              <Link to="/Profile" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Profile' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><User className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Profile</span></Link>
             </div>
           </div>
         </nav>
