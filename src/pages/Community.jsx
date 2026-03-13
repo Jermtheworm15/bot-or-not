@@ -56,7 +56,9 @@ export default function Community() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-32 pt-6">
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+      
+      <div className="relative z-10 max-w-6xl mx-auto px-4">
         {/* User Search Section */}
         <div className="mb-12">
           <UserSearch />
@@ -125,6 +127,18 @@ export default function Community() {
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-zinc-900 rounded-lg h-64 animate-pulse" />
             ))}
+          </div>
+        ) : boards.length === 0 ? (
+          <div className="text-center py-16">
+            <Grid3x3 className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
+            <p className="text-zinc-500 mb-4">No community boards yet</p>
+            <Button
+              onClick={() => setShowNewBoard(true)}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create First Board
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

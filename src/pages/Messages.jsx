@@ -31,12 +31,12 @@ export default function Messages() {
   }, [currentUser]);
 
   useEffect(() => {
-    if (selectedConversation) {
+    if (selectedConversation && currentUser) {
       loadMessages(selectedConversation);
       const interval = setInterval(() => loadMessages(selectedConversation), 5000);
       return () => clearInterval(interval);
     }
-  }, [selectedConversation]);
+  }, [selectedConversation, currentUser]);
 
   const loadUser = async () => {
     try {
@@ -92,6 +92,8 @@ export default function Messages() {
   };
 
   const loadMessages = async (otherUserEmail) => {
+    if (!currentUser) return;
+    
     try {
       const sent = await base44.entities.Message.filter(
         { sender_email: currentUser.email, recipient_email: otherUserEmail },
@@ -167,8 +169,16 @@ export default function Messages() {
     conv.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white py-8">
+    <div className="min-h-screen bg-zinc-950 text-white py-8 pb-32">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
       
       <div className="relative z-10 max-w-6xl mx-auto px-4">

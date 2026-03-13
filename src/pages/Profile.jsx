@@ -127,15 +127,6 @@ export default function Profile() {
     setFollowers(followerData);
     setFollowing(followingData);
     
-    const handleDemographicsSave = async (data) => {
-      try {
-        await base44.entities.UserProfile.update(profiles[0].id, data);
-        await loadProfile();
-      } catch (err) {
-        console.error('Error saving demographics:', err);
-      }
-    };
-    
     setStats({
       total: allVotes.length,
       correct,
@@ -179,7 +170,7 @@ export default function Profile() {
         await base44.entities.UserProfile.delete(profile.id);
       }
       // Logout and redirect
-      await base44.auth.logout(createPageUrl('Home'));
+      await base44.auth.logout('/Landing');
     } catch (err) {
       console.error('Error deleting account:', err);
       setIsDeleting(false);
@@ -226,11 +217,6 @@ export default function Profile() {
       </div>
     );
   }
-  
-  const createPageUrl = (pageName) => {
-    return `/${pageName}`;
-  };
-
   return (
     <div className="min-h-screen bg-zinc-950 text-white py-8">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
