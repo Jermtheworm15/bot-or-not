@@ -11,17 +11,14 @@ Deno.serve(async (req) => {
 
         console.log('[Upload] Starting upload for user:', user.email);
 
-        const formData = await req.formData();
-        const file = formData.get('file');
-        const uploaderName = formData.get('uploaderName');
-        const isBotString = formData.get('isBot');
-        const isBot = isBotString === 'true' || isBotString === true;
+        const payload = await req.json();
+        const { file_url, uploaderName, isBot } = payload;
 
-        console.log('[Upload] Received data - File:', !!file, 'Name:', uploaderName, 'IsBot:', isBot);
+        console.log('[Upload] Received data - URL:', file_url, 'Name:', uploaderName, 'IsBot:', isBot);
 
-        if (!file) {
-            console.error('[Upload] No file provided');
-            return Response.json({ success: false, error: 'No file provided' }, { status: 400 });
+        if (!file_url) {
+            console.error('[Upload] No file URL provided');
+            return Response.json({ success: false, error: 'No file URL provided' }, { status: 400 });
         }
 
         if (!uploaderName || uploaderName.trim() === '') {
@@ -29,17 +26,7 @@ Deno.serve(async (req) => {
             return Response.json({ success: false, error: 'Uploader name is required' }, { status: 400 });
         }
 
-        console.log('[Upload] Uploading file...');
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        console.log('[Upload] File uploaded to storage:', file_url);
-
-        if (!file_url) {
-            console.error('[Upload] File upload returned no URL');
-            return Response.json({ 
-                success: false, 
-                error: 'Failed to upload file to storage' 
-            }, { status: 500 });
-        }
+        console.log('[Upload] File already uploaded to:', file_url);
 
         // AI Moderation check
         console.log('[Upload] Running moderation check...');

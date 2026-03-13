@@ -59,20 +59,25 @@ export default function Upload() {
     console.log('[Upload UI] Starting upload process...');
 
     try {
-      console.log('[Upload UI] Preparing upload data...');
+      console.log('[Upload UI] Starting direct upload to storage...');
       console.log('[Upload UI] File:', file.name, 'Size:', file.size);
-      console.log('[Upload UI] Uploader:', uploaderName, 'IsBot:', isBot);
       
-      // Create form data for backend function
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('uploaderName', uploaderName);
-      formData.append('isBot', String(isBot));
+      // Step 1: Upload file directly to storage
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      console.log('[Upload UI] File uploaded to:', file_url);
+      
+      if (!file_url) {
+        throw new Error('File upload failed - no URL returned');
+      }
 
-      console.log('[Upload UI] FormData created, calling backend function...');
+      console.log('[Upload UI] Calling moderation and save function...');
       
-      // Call backend function to handle upload and moderation securely
-      const response = await base44.functions.invoke('uploadImageWithModeration', formData);
+      // Step 2: Call backend to moderate and create database records
+      const response = await base44.functions.invoke('uploadImageWithModeration', {
+        file_url,
+        uploaderName,
+        isBot
+      });
       
       console.log('[Upload UI] Response received:', response);
 
@@ -111,8 +116,9 @@ export default function Upload() {
 
       // Create social feed entry
       try {
+        const user = await base44.auth.me();
         await base44.entities.SocialFeed.create({
-          user_email: (await base44.auth.me()).email,
+          user_email: user.email,
           activity_type: 'upload',
           title: 'Uploaded a new image',
           description: `${uploaderName} contributed image #${uploadNum}`,
