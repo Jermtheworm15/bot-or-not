@@ -8,7 +8,7 @@ export default function CompactBottomNav({ currentPageName }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const quickAccess = [
-    { path: '/BlitzMode', icon: Gamepad2, label: 'Games' },
+    { path: '/ArcadeHub', icon: Gamepad2, label: 'Games' },
     { path: '/UserLeaderboard', icon: Trophy, label: 'Rewards' },
     { path: '/Marketplace', icon: ShoppingCart, label: 'Market' },
     { path: '/SocialFeed', icon: Users, label: 'Social' },

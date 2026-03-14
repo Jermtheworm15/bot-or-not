@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import EmptyArcadeState from '@/components/arcade/EmptyArcadeState';
 
 export default function ArcadeHub() {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ export default function ArcadeHub() {
 
       // Filter active games on client side
       const activeGames = gamesData.filter(g => g.is_active !== false);
+      
+      console.log('[ArcadeHub] Loaded games:', activeGames.length);
       
       setGames(activeGames);
       setMyStats(statsData);
@@ -225,6 +228,61 @@ export default function ArcadeHub() {
           </Card>
         )}
 
+        {/* Arcade Master Card */}
+        {arcadeMaster?.unlocked && (
+          <Card className="bg-gradient-to-br from-yellow-900/30 to-orange-900/20 border-yellow-500/50 p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Crown className="w-12 h-12 text-yellow-400" />
+                <div>
+                  <div className="text-2xl font-black text-white mb-1">
+                    👑 Arcade Master
+                  </div>
+                  <div className="text-sm text-yellow-300 mb-2">
+                    The ultimate challenge awaits
+                  </div>
+                  <div className="flex gap-4 text-xs text-green-500/80">
+                    <span>Record: {arcadeMaster.wins}W - {arcadeMaster.losses}L</span>
+                    {arcadeMaster.best_victory_score && (
+                      <span>Best Victory: {arcadeMaster.best_victory_score}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button
+                onClick={() => navigate('/ArcadeGame/reaction-test?arcadeMaster=true')}
+                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 cursor-pointer"
+              >
+                <Swords className="w-5 h-5 mr-2" />
+                Challenge
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Pending Challenges */}
+        {challenges.length > 0 && (
+          <Card className="bg-gradient-to-br from-orange-900/30 to-red-900/20 border-orange-500/50 p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Target className="w-6 h-6 text-orange-400" />
+                <div>
+                  <div className="font-bold text-white">
+                    {challenges.length} Challenge{challenges.length > 1 ? 's' : ''} Waiting
+                  </div>
+                  <div className="text-sm text-orange-300">Beat your friends' scores!</div>
+                </div>
+              </div>
+              <Button
+                onClick={() => navigate('/ArcadeChallenges')}
+                className="bg-orange-600 hover:bg-orange-700 cursor-pointer"
+              >
+                View
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Trending Games Carousel */}
         {trending.length > 0 && (
           <div className="mb-8">
@@ -293,6 +351,10 @@ export default function ArcadeHub() {
 
           {/* Games Grid */}
           <TabsContent value="games">
+            {games.length === 0 ? (
+              <EmptyArcadeState onSeeded={loadData} />
+            ) : (
+              <>
             {/* Search and Filters */}
             <Card className="bg-black/60 border-purple-500/30 p-4 mb-6">
               <div className="flex flex-col md:flex-row gap-3">
@@ -386,24 +448,51 @@ export default function ArcadeHub() {
               </div>
             </Card>
 
-            {games.length === 0 ? (
+            {games.filter(game => {
+              const matchesCategory = categoryFilter === 'all' || game.category === categoryFilter;
+              const matchesDifficulty = difficultyFilter === 'all' || game.difficulty === difficultyFilter;
+              const matchesSearch = !searchQuery || game.name.toLowerCase().includes(searchQuery.toLowerCase());
+              return matchesCategory && matchesDifficulty && matchesSearch;
+            }).length === 0 ? (
               <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
                 <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-purple-400/30" />
-                <p className="text-green-500/60 mb-4">No games available yet</p>
-                <Button
-                  onClick={async () => {
-                    try {
-                      await base44.functions.invoke('seedArcadeGames', {});
-                      toast.success('Games seeded! Refreshing...');
-                      await loadData();
-                    } catch (error) {
-                      toast.error('Failed to seed games');
-                    }
-                  }}
-                  className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
-                >
-                  Initialize Arcade Games
-                </Button>
+                {games.length === 0 ? (
+                  <>
+                    <p className="text-green-500/60 mb-4">No games available yet</p>
+                    <Button
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          await base44.functions.invoke('seedExpandedArcade', {});
+                          toast.success('Arcade seeded! Refreshing...');
+                          await loadData();
+                        } catch (error) {
+                          console.error(error);
+                          toast.error('Failed to seed arcade');
+                        }
+                        setLoading(false);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
+                    >
+                      Initialize Arcade Games
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-green-500/60 mb-4">No games match your filters</p>
+                    <Button
+                      onClick={() => {
+                        setCategoryFilter('all');
+                        setDifficultyFilter('all');
+                        setSearchQuery('');
+                      }}
+                      variant="outline"
+                      className="border-green-500/30 text-green-400 cursor-pointer"
+                    >
+                      Clear Filters
+                    </Button>
+                  </>
+                )}
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -472,6 +561,8 @@ export default function ArcadeHub() {
                   );
                 })}
               </div>
+            )}
+            </>
             )}
           </TabsContent>
 
