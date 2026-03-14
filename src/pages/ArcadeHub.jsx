@@ -137,7 +137,7 @@ export default function ArcadeHub() {
               </div>
               <Button
                 onClick={() => navigate('/ArcadeGame/reaction-test?arcadeMaster=true')}
-                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500"
+                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 cursor-pointer"
               >
                 <Swords className="w-5 h-5 mr-2" />
                 Challenge
@@ -161,7 +161,7 @@ export default function ArcadeHub() {
               </div>
               <Button
                 onClick={() => navigate('/ArcadeChallenges')}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-orange-600 hover:bg-orange-700 cursor-pointer"
               >
                 View
               </Button>
@@ -201,7 +201,7 @@ export default function ArcadeHub() {
                       toast.error('Failed to seed games');
                     }
                   }}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
                 >
                   Initialize Arcade Games
                 </Button>
@@ -247,7 +247,7 @@ export default function ArcadeHub() {
                           </div>
                         </div>
 
-                        <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 group-hover:scale-105 transition-transform">
+                        <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 group-hover:scale-105 transition-transform cursor-pointer">
                           <Play className="w-4 h-4 mr-2" />
                           Play Now
                         </Button>
