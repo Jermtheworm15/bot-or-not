@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords } from 'lucide-react';
+import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords, Search } from 'lucide-react';
+import ArcadeChat from '@/components/arcade/ArcadeChat';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
