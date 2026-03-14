@@ -230,10 +230,13 @@ export default function Achievements() {
               <Button
                 onClick={generatePersonalizedChallenges}
                 disabled={isGenerating}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
               >
                 {isGenerating ? (
-                  <>Generating...</>
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2 inline-block" />
+                    Generating...
+                  </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 mr-2" />
@@ -287,10 +290,19 @@ export default function Achievements() {
                   <Button
                     onClick={generatePersonalizedChallenges}
                     disabled={isGenerating}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate Your First Challenges
+                    {isGenerating ? (
+                      <>
+                        <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2 inline-block" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate Your First Challenges
+                      </>
+                    )}
                   </Button>
                 </Card>
               )}

@@ -214,7 +214,11 @@ export default function ArcadeHub() {
                     <Card
                       key={game.id}
                       className="bg-black/60 border-purple-500/30 hover:border-purple-500/60 transition-all cursor-pointer overflow-hidden group"
-                      onClick={() => navigate(`/ArcadeGame/${game.game_id}`)}
+                      onClick={() => {
+                        if (game.game_id) {
+                          navigate(`/ArcadeGame/${game.game_id}`);
+                        }
+                      }}
                     >
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">

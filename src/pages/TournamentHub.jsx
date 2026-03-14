@@ -352,9 +352,12 @@ export default function TournamentHub() {
                         {tournament.status === 'open' && !isJoined && (
                           <Button 
                             size="sm" 
-                            onClick={() => handleJoinTournament(tournament)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleJoinTournament(tournament);
+                            }}
                             disabled={joining === tournament.id}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-600 hover:bg-green-700 cursor-pointer"
                           >
                             {joining === tournament.id ? 'Joining...' : 'Join Tournament'}
                           </Button>
@@ -365,10 +368,11 @@ export default function TournamentHub() {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => {
-                            console.log('[Tournament] View bracket:', tournament.id);
+                          onClick={(e) => {
+                            e.stopPropagation();
                             navigate(`/TournamentBracket/${tournament.id}`);
                           }}
+                          className="cursor-pointer hover:bg-purple-900/30"
                         >
                           View Bracket
                         </Button>
