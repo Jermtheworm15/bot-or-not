@@ -55,7 +55,10 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
 
   // Check if current page is in a section
   const isPageInSection = (section) => {
-    return section.items.some(item => item.path.includes(currentPageName));
+    return section.items.some(item => {
+      const pagePath = item.path.replace('/', '');
+      return pagePath === currentPageName || item.path === `/${currentPageName}`;
+    });
   };
 
   return (
@@ -88,13 +91,14 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
               <div className="ml-4 mt-1 space-y-1 border-l-2 border-purple-500/20 pl-2">
                 {section.items.map((item) => {
                   const ItemIcon = item.icon;
-                  const isItemActive = item.path.includes(currentPageName);
+                  const pagePath = item.path.replace('/', '');
+                  const isItemActive = pagePath === currentPageName || item.path === `/${currentPageName}`;
 
                   return (
                     <SheetClose key={item.path} asChild>
                       <Link
                         to={item.path}
-                        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all ${
+                        className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all cursor-pointer ${
                           isItemActive
                             ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
                             : 'text-green-400 hover:bg-purple-900/20 hover:text-white'

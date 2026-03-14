@@ -17,7 +17,7 @@ import FriendButton from '@/components/social/FriendButton';
 import FriendsList from '@/components/messaging/FriendsList';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Trash2, Edit, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 
 export default function Profile() {
@@ -254,7 +254,7 @@ export default function Profile() {
                   </div>
                   <div className="text-right">
                     <p className="text-zinc-400 text-sm mb-1">Top {((stats.rank / (stats.rank + 100)) * 100).toFixed(0)}%</p>
-                    <a href="/UserLeaderboard" className="text-purple-400 text-sm hover:underline">View Leaderboard →</a>
+                    <Link to="/UserLeaderboard" className="text-purple-400 text-sm hover:underline cursor-pointer">View Leaderboard →</Link>
                   </div>
                 </div>
                 {!isOwnProfile && currentUser && user && (
