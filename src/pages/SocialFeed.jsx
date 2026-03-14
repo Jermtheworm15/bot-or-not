@@ -146,18 +146,24 @@ export default function SocialFeed() {
                         onClick={() => handleLike(item.id)}
                         className={`flex items-center gap-1 ${
                           item.userLiked ? 'text-red-400' : 'text-green-500/60'
-                        } hover:text-red-400 transition-colors`}
+                        } hover:text-red-400 transition-colors cursor-pointer`}
                       >
                         <Heart className={`w-4 h-4 ${item.userLiked ? 'fill-current' : ''}`} />
                         <span className="text-sm">{item.likes.length}</span>
                       </button>
 
-                      <button className="flex items-center gap-1 text-green-500/60 hover:text-blue-400 transition-colors">
+                      <button className="flex items-center gap-1 text-green-500/60 hover:text-blue-400 transition-colors cursor-pointer">
                         <MessageCircle className="w-4 h-4" />
                         <span className="text-sm">{item.comments.length}</span>
                       </button>
 
-                      <button className="flex items-center gap-1 text-green-500/60 hover:text-purple-400 transition-colors">
+                      <button 
+                        onClick={() => {
+                          const shareUrl = window.location.origin;
+                          navigator.share?.({ url: shareUrl, title: item.title }) || toast.info('Share link copied');
+                        }}
+                        className="flex items-center gap-1 text-green-500/60 hover:text-purple-400 transition-colors cursor-pointer"
+                      >
                         <Share2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -188,6 +194,7 @@ export default function SocialFeed() {
                         size="sm"
                         onClick={() => handleComment(item.id)}
                         disabled={!commentText[item.id]?.trim()}
+                        className="cursor-pointer disabled:cursor-not-allowed"
                       >
                         Post
                       </Button>

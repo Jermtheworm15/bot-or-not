@@ -162,9 +162,10 @@ export default function DailyRewards() {
               <p className="text-green-500/60 mb-4">Day {currentDay} reward is ready!</p>
               <Button
                 onClick={handleClaim}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white px-8"
+                disabled={claiming}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 cursor-pointer disabled:cursor-not-allowed"
               >
-                Claim Reward
+                {claiming ? 'Claiming...' : 'Claim Reward'}
               </Button>
             </div>
           )}
