@@ -123,7 +123,7 @@ export default function Onboarding() {
   };
 
   const completeOnboarding = () => {
-    window.location.href = createPageUrl('Home');
+    window.location.href = '/Home';
   };
 
   return (

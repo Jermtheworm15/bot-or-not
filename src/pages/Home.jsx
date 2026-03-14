@@ -21,7 +21,7 @@ import ImageComments from '@/components/comments/ImageComments';
 import DifficultyRating from '@/components/voting/DifficultyRating';
 import RewardNotification from '@/components/rewards/RewardNotification';
 
-import { createPageUrl } from '@/utils';
+
 
 
 export default function Home() {

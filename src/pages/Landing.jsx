@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Zap, Eye, Trophy, Users, Gamepad2, ArrowRight } from 'lucide-react';
-import { createPageUrl } from '@/utils';
+import { useEffect } from 'react';
 
 export default function Landing() {
   const [isLoading, setIsLoading] = useState(false);
