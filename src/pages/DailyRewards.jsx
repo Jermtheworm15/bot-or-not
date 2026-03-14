@@ -12,6 +12,7 @@ export default function DailyRewards() {
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(null);
   const [claimed, setClaimed] = useState(false);
+  const [claiming, setClaiming] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function DailyRewards() {
   };
 
   const handleClaim = async () => {
+    setClaiming(true);
     try {
       const result = await base44.functions.invoke('claimDailyReward', {});
       
@@ -61,6 +63,8 @@ export default function DailyRewards() {
     } catch (error) {
       console.error('[Daily Rewards] Claim error:', error);
       toast.error(error.response?.data?.error || 'Failed to claim reward');
+    } finally {
+      setClaiming(false);
     }
   };
 
