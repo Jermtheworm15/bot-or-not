@@ -280,7 +280,7 @@ export default function BlitzMode() {
           <Button
             variant="ghost"
             onClick={() => navigate('/Home')}
-            className="text-green-400 hover:text-white"
+            className="text-green-400 hover:text-white cursor-pointer"
           >
             <ChevronLeft className="w-5 h-5 mr-1" />
             Exit
@@ -323,7 +323,7 @@ export default function BlitzMode() {
               {Object.entries(DIFFICULTY_SETTINGS).map(([key, settings]) => (
                 <Card
                   key={key}
-                  className={`p-6 bg-black/60 border-${settings.color}-500/30 hover:border-${settings.color}-500/60 transition-all cursor-pointer`}
+                  className={`p-6 bg-black/60 border-${settings.color}-500/30 hover:border-${settings.color}-500/60 transition-all cursor-pointer hover:scale-[1.02]`}
                   onClick={() => startGame(key)}
                 >
                   <div className="flex items-center justify-between">
