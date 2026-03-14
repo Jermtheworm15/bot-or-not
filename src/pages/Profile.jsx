@@ -355,6 +355,46 @@ export default function Profile() {
           </CardContent>
         </Card>
         
+        {/* Arcade Stats */}
+        {profile?.arcade_stats && (
+          <Card className="bg-zinc-900 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="w-6 h-6 text-purple-400" />
+                Arcade Statistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-white">{profile.arcade_stats.total_games_played || 0}</p>
+                  <p className="text-xs text-zinc-400">Games Played</p>
+                </div>
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-green-400">{profile.arcade_stats.total_wins || 0}</p>
+                  <p className="text-xs text-zinc-400">Wins</p>
+                </div>
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-red-400">{profile.arcade_stats.total_losses || 0}</p>
+                  <p className="text-xs text-zinc-400">Losses</p>
+                </div>
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-yellow-400">{profile.arcade_stats.total_tokens_earned || 0}</p>
+                  <p className="text-xs text-zinc-400">Tokens Earned</p>
+                </div>
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-purple-400">{profile.arcade_stats.highest_level_reached_overall || 1}</p>
+                  <p className="text-xs text-zinc-400">Highest Level</p>
+                </div>
+                <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-bold text-orange-400">{profile.arcade_stats.best_game_score || 0}</p>
+                  <p className="text-xs text-zinc-400">Best Score</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Bio */}
         {isOwnProfile ? (
           <BioEditor bio={profile?.bio} onSave={handleBioSave} />

@@ -109,9 +109,19 @@ export default function ArcadeHub() {
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Gamepad2 className="w-10 h-10 text-purple-400" />
-            <h1 className="text-4xl font-black text-white">Retro Arcade</h1>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Gamepad2 className="w-10 h-10 text-purple-400" />
+              <h1 className="text-4xl font-black text-white">Retro Arcade</h1>
+            </div>
+            <Button
+              onClick={() => navigate('/ProfileSearch')}
+              variant="outline"
+              className="border-purple-500/30 text-purple-400 hover:bg-purple-900/30 cursor-pointer"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Find Players
+            </Button>
           </div>
           <p className="text-green-500/80">Play {games.length} addictive retro games • Earn tokens • Climb leaderboards</p>
         </div>
@@ -407,6 +417,8 @@ export default function ArcadeHub() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <ArcadeChat />
     </div>
   );
 }
