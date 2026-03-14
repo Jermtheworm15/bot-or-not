@@ -113,7 +113,7 @@ export default function ArcadeHub() {
             <Gamepad2 className="w-10 h-10 text-purple-400" />
             <h1 className="text-4xl font-black text-white">Retro Arcade</h1>
           </div>
-          <p className="text-green-500/80">Play games, earn tokens, compete with friends</p>
+          <p className="text-green-500/80">Play {games.length} addictive retro games • Earn tokens • Climb leaderboards</p>
         </div>
 
         {/* Arcade Master Card */}
