@@ -225,11 +225,61 @@ export default function ArcadeHub() {
           </Card>
         )}
 
+        {/* Trending Games Carousel */}
+        {trending.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Flame className="w-6 h-6 text-orange-400" />
+              Trending Now
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {trending.map(game => (
+                <Card
+                  key={game.id}
+                  className="bg-black/60 border-purple-500/30 hover:border-orange-500/60 transition-all cursor-pointer overflow-hidden group"
+                  onClick={() => navigate(`/ArcadeGame/${game.game_id}`)}
+                >
+                  <div className="p-4 text-center">
+                    <div className="text-4xl mb-2">{game.icon || '🎮'}</div>
+                    <h3 className="font-bold text-white text-sm mb-1">{game.name}</h3>
+                    <Badge className="bg-orange-600 text-xs">{game.trendingScore} plays</Badge>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Featured Games */}
+        {featured.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Star className="w-6 h-6 text-yellow-400" />
+              Featured Games
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {featured.map(game => (
+                <Card
+                  key={game.id}
+                  className="bg-black/60 border-purple-500/30 hover:border-yellow-500/60 transition-all cursor-pointer overflow-hidden group"
+                  onClick={() => navigate(`/ArcadeGame/${game.game_id}`)}
+                >
+                  <div className="p-4 text-center">
+                    <div className="text-4xl mb-2">{game.icon || '🎮'}</div>
+                    <h3 className="font-bold text-white text-sm mb-1">{game.name}</h3>
+                    <Badge className="bg-yellow-600 text-xs">+{game.reward_config?.base_tokens || 0} 🪙</Badge>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Tabs defaultValue="games" className="space-y-6">
           <TabsList className="bg-black/60 border border-purple-500/30">
             <TabsTrigger value="games">
               <Gamepad2 className="w-4 h-4 mr-2" />
-              Games
+              All Games
             </TabsTrigger>
             <TabsTrigger value="leaderboard">
               <Trophy className="w-4 h-4 mr-2" />
