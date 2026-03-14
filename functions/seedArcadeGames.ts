@@ -9,21 +9,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Check if games already exist
-    const existing = await base44.asServiceRole.entities.ArcadeGame.list();
-    const existingIds = existing.map(g => g.game_id);
-    
-    // Filter out already seeded games
-    const gamesToSeed = games.filter(g => !existingIds.includes(g.game_id));
-    
-    if (gamesToSeed.length === 0) {
-      return Response.json({ 
-        success: true, 
-        message: 'All games already seeded',
-        count: existing.length 
-      });
-    }
-
     const games = [
       {
         game_id: 'reaction-test',
@@ -179,6 +164,21 @@ Deno.serve(async (req) => {
         total_plays: 0
       }
     ];
+
+    // Check if games already exist
+    const existing = await base44.asServiceRole.entities.ArcadeGame.list();
+    const existingIds = existing.map(g => g.game_id);
+    
+    // Filter out already seeded games
+    const gamesToSeed = games.filter(g => !existingIds.includes(g.game_id));
+    
+    if (gamesToSeed.length === 0) {
+      return Response.json({ 
+        success: true, 
+        message: 'All games already seeded',
+        count: existing.length 
+      });
+    }
 
     for (const game of gamesToSeed) {
       await base44.asServiceRole.entities.ArcadeGame.create(game);
