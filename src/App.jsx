@@ -24,6 +24,7 @@ import BlitzMode from './pages/BlitzMode';
 import ArcadeHub from './pages/ArcadeHub';
 import ArcadeGame from './pages/ArcadeGame';
 import ArcadeChallenges from './pages/ArcadeChallenges';
+import ProfileSearch from './pages/ProfileSearch';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -91,6 +92,7 @@ const AuthenticatedApp = () => {
       <Route path="/ArcadeHub" element={<LayoutWrapper currentPageName="ArcadeHub"><ArcadeHub /></LayoutWrapper>} />
       <Route path="/ArcadeGame/:gameId" element={<LayoutWrapper currentPageName="ArcadeGame"><ArcadeGame /></LayoutWrapper>} />
       <Route path="/ArcadeChallenges" element={<LayoutWrapper currentPageName="ArcadeChallenges"><ArcadeChallenges /></LayoutWrapper>} />
+      <Route path="/ProfileSearch" element={<LayoutWrapper currentPageName="ProfileSearch"><ProfileSearch /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

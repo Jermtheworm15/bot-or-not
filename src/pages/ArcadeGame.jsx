@@ -16,6 +16,9 @@ import TypingGame from '@/components/arcade/TypingGame';
 import PatternGame from '@/components/arcade/PatternGame';
 import SnakeGame from '@/components/arcade/SnakeGame';
 import InviteFriends from '@/components/social/InviteFriends';
+import ProgressionSystem from '@/components/arcade/ProgressionSystem';
+import ArcadeChat from '@/components/arcade/ArcadeChat';
+import ArcadeSocialShare from '@/components/arcade/ArcadeSocialShare';
 
 export default function ArcadeGame() {
   const { gameId } = useParams();
@@ -33,6 +36,7 @@ export default function ArcadeGame() {
   const [rewardData, setRewardData] = useState(null);
   const [aiScore, setAiScore] = useState(null);
   const [challenge, setChallenge] = useState(null);
+  const [currentLevel, setCurrentLevel] = useState(1);
 
   useEffect(() => {
     loadGame();
@@ -59,6 +63,7 @@ export default function ArcadeGame() {
       });
 
       setStats(userStats[0] || null);
+      setCurrentLevel(userStats[0]?.current_level || 1);
 
       // Load challenge if present
       if (challengeId) {
@@ -77,6 +82,10 @@ export default function ArcadeGame() {
 
   const handleGameComplete = async (finalScore, metadata = {}) => {
     setScore(finalScore);
+    
+    // Calculate level-based difficulty multiplier (1x to 5x)
+    const difficultyMultiplier = 1 + (currentLevel - 1) * 0.04;
+    const adjustedScore = Math.round(finalScore * difficultyMultiplier);
     
     // Simulate AI opponent if applicable
     if (vsArcadeMaster || challenge) {
@@ -128,19 +137,24 @@ export default function ArcadeGame() {
         });
       }
 
+      // Determine if level is passed (score threshold scales with level)
+      const levelThreshold = 500 + (currentLevel * 50);
+      const levelPassed = adjustedScore >= levelThreshold;
+      const newLevel = levelPassed ? currentLevel + 1 : currentLevel;
+      
       // Save score
-      const isPersonalBest = !stats || finalScore > (stats.best_score || 0);
-      const isGlobalBest = finalScore > (game.high_score || 0);
+      const isPersonalBest = !stats || adjustedScore > (stats.best_score || 0);
+      const isGlobalBest = adjustedScore > (game.high_score || 0);
 
       await base44.entities.ArcadeScore.create({
         user_email: user.email,
         game_id: gameId,
-        score: finalScore,
+        score: adjustedScore,
         duration: metadata.duration || 0,
         tokens_earned: tokensEarned,
         is_personal_best: isPersonalBest,
         is_global_best: isGlobalBest,
-        metadata
+        metadata: { ...metadata, level: currentLevel, difficulty_multiplier: difficultyMultiplier }
       });
 
       // Update stats
@@ -151,24 +165,48 @@ export default function ArcadeGame() {
       if (stats) {
         await base44.entities.ArcadeStats.update(stats.id, {
           games_played: (stats.games_played || 0) + 1,
-          best_score: Math.max(stats.best_score || 0, finalScore),
+          best_score: Math.max(stats.best_score || 0, adjustedScore),
           total_tokens_earned: (stats.total_tokens_earned || 0) + tokensEarned,
           current_streak: newStreak,
           best_streak: Math.max(stats.best_streak || 0, newStreak),
           last_played_date: today,
-          plays_today: playsToday + 1
+          plays_today: playsToday + 1,
+          current_level: Math.min(newLevel, 100),
+          highest_level_reached: Math.max(stats.highest_level_reached || 1, newLevel),
+          wins: (stats.wins || 0) + (levelPassed ? 1 : 0),
+          losses: (stats.losses || 0) + (levelPassed ? 0 : 1)
         });
       } else {
         await base44.entities.ArcadeStats.create({
           user_email: user.email,
           game_id: gameId,
           games_played: 1,
-          best_score: finalScore,
+          best_score: adjustedScore,
           total_tokens_earned: tokensEarned,
           current_streak: 1,
           best_streak: 1,
           last_played_date: today,
-          plays_today: 1
+          plays_today: 1,
+          current_level: Math.min(newLevel, 100),
+          highest_level_reached: Math.min(newLevel, 100),
+          wins: levelPassed ? 1 : 0,
+          losses: levelPassed ? 0 : 1
+        });
+      }
+      
+      // Update user profile arcade stats
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      if (profiles[0]) {
+        const arcadeStats = profiles[0].arcade_stats || {};
+        await base44.entities.UserProfile.update(profiles[0].id, {
+          arcade_stats: {
+            total_games_played: (arcadeStats.total_games_played || 0) + 1,
+            total_wins: (arcadeStats.total_wins || 0) + (levelPassed ? 1 : 0),
+            total_losses: (arcadeStats.total_losses || 0) + (levelPassed ? 0 : 1),
+            total_tokens_earned: (arcadeStats.total_tokens_earned || 0) + tokensEarned,
+            highest_level_reached_overall: Math.max(arcadeStats.highest_level_reached_overall || 1, newLevel),
+            best_game_score: Math.max(arcadeStats.best_game_score || 0, adjustedScore)
+          }
         });
       }
 
@@ -255,9 +293,16 @@ export default function ArcadeGame() {
         isPersonalBest,
         isGlobalBest,
         hitLimit: playsToday >= dailyLimit,
-        challengeResult: challenge ? (finalScore > challenge.challenger_score ? 'won' : 'lost') : null,
-        arcadeMasterResult: vsArcadeMaster && aiScore !== null ? (finalScore > aiScore ? 'won' : 'lost') : null
+        challengeResult: challenge ? (adjustedScore > challenge.challenger_score ? 'won' : 'lost') : null,
+        arcadeMasterResult: vsArcadeMaster && aiScore !== null ? (adjustedScore > aiScore ? 'won' : 'lost') : null,
+        levelPassed,
+        newLevel,
+        adjustedScore
       });
+      
+      if (levelPassed && newLevel <= 100) {
+        setCurrentLevel(newLevel);
+      }
 
       await loadGame();
 
@@ -337,13 +382,19 @@ export default function ArcadeGame() {
         {/* Game Area */}
         <div className="flex-1 flex items-center justify-center p-4">
           {gameState === 'menu' && (
-            <Card className="bg-black/80 border-purple-500/30 p-8 max-w-2xl w-full">
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-4">{game.icon}</div>
-                <h2 className="text-3xl font-bold text-white mb-2">{game.name}</h2>
-                <p className="text-green-500/80 mb-4">{game.description}</p>
-                <Badge className="bg-purple-600">{game.category}</Badge>
-              </div>
+            <div className="space-y-4 w-full max-w-2xl">
+              <ProgressionSystem 
+                currentLevel={currentLevel}
+                stats={stats}
+              />
+              
+              <Card className="bg-black/80 border-purple-500/30 p-8">
+                <div className="text-center mb-6">
+                  <div className="text-6xl mb-4">{game.icon}</div>
+                  <h2 className="text-3xl font-bold text-white mb-2">{game.name}</h2>
+                  <p className="text-green-500/80 mb-4">{game.description}</p>
+                  <Badge className="bg-purple-600">{game.category}</Badge>
+                </div>
 
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-black/60 rounded p-4 text-center">
@@ -363,13 +414,14 @@ export default function ArcadeGame() {
                 </div>
               </div>
 
-              <Button
-                onClick={startGame}
-                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
-              >
-                Start Game
-              </Button>
-            </Card>
+                <Button
+                  onClick={startGame}
+                  className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
+                >
+                  Start Level {currentLevel}
+                </Button>
+              </Card>
+            </div>
           )}
 
           {gameState === 'playing' && (
@@ -380,8 +432,19 @@ export default function ArcadeGame() {
             <Card className="bg-black/80 border-purple-500/30 p-8 max-w-2xl w-full">
               <div className="text-center mb-6">
                 <Trophy className="w-20 h-20 mx-auto mb-4 text-yellow-400" />
-                <h2 className="text-4xl font-bold text-white mb-2">Game Over!</h2>
-                <div className="text-5xl font-black text-yellow-400 mb-4">{score}</div>
+                <h2 className="text-4xl font-bold text-white mb-2">
+                  {rewardData.levelPassed ? '🎉 Level Complete!' : 'Game Over!'}
+                </h2>
+                <div className="text-5xl font-black text-yellow-400 mb-2">{rewardData.adjustedScore || score}</div>
+                <div className="text-sm text-green-500/60 mb-4">
+                  Level {currentLevel} • {(1 + (currentLevel - 1) * 0.04).toFixed(2)}x Multiplier
+                </div>
+                
+                {rewardData.levelPassed && rewardData.newLevel <= 100 && (
+                  <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-lg px-4 py-2 mb-2">
+                    🎮 Level {rewardData.newLevel} Unlocked!
+                  </Badge>
+                )}
                 
                 {rewardData.arcadeMasterResult && (
                   <Badge className={`text-lg px-4 py-2 mb-2 ${
@@ -449,13 +512,21 @@ export default function ArcadeGame() {
                 )}
               </div>
 
+              <div className="mb-6">
+                <ArcadeSocialShare 
+                  score={rewardData.adjustedScore || score}
+                  gameName={game.name}
+                  level={currentLevel}
+                />
+              </div>
+
               <div className="flex gap-3 mb-4">
                 <InviteFriends />
                 <Button
                   onClick={startGame}
                   className="flex-1 h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
                 >
-                  Play Again
+                  {rewardData.levelPassed ? `Play Level ${rewardData.newLevel}` : 'Retry Level'}
                 </Button>
                 <Button
                   onClick={() => navigate('/ArcadeHub')}
@@ -469,6 +540,8 @@ export default function ArcadeGame() {
           )}
         </div>
       </div>
+      
+      <ArcadeChat gameId={gameId} />
     </div>
   );
 }
