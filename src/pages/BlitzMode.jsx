@@ -113,6 +113,11 @@ export default function BlitzMode() {
   };
 
   const startRound = () => {
+    if (!difficulty || !DIFFICULTY_SETTINGS[difficulty]) {
+      console.error('Invalid difficulty setting');
+      return;
+    }
+    
     setGameState('playing');
     setImageVisible(true);
     setTimeProgress(100);
