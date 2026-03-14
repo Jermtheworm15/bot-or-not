@@ -70,6 +70,108 @@ Deno.serve(async (req) => {
         },
         high_score: 0,
         total_plays: 0
+      },
+      {
+        game_id: 'dodge-master',
+        name: 'Dodge Master',
+        description: 'Move to avoid falling obstacles and survive!',
+        category: 'dodge',
+        difficulty: 'medium',
+        icon: '🎯',
+        is_active: true,
+        reward_config: {
+          base_tokens: 15,
+          score_multiplier: 0.03,
+          streak_bonus: 10,
+          daily_limit: 8
+        },
+        high_score: 0,
+        total_plays: 0
+      },
+      {
+        game_id: 'speed-clicker',
+        name: 'Speed Clicker',
+        description: 'Click as many targets as possible in 30 seconds!',
+        category: 'reaction',
+        difficulty: 'easy',
+        icon: '👆',
+        is_active: true,
+        reward_config: {
+          base_tokens: 12,
+          score_multiplier: 0.015,
+          streak_bonus: 8,
+          daily_limit: 10
+        },
+        high_score: 0,
+        total_plays: 0
+      },
+      {
+        game_id: 'color-match',
+        name: 'Color Match',
+        description: 'Match the color with the word as fast as you can!',
+        category: 'puzzle',
+        difficulty: 'hard',
+        icon: '🎨',
+        is_active: true,
+        reward_config: {
+          base_tokens: 25,
+          score_multiplier: 0.04,
+          streak_bonus: 20,
+          daily_limit: 6
+        },
+        high_score: 0,
+        total_plays: 0
+      },
+      {
+        game_id: 'type-racer',
+        name: 'Type Racer',
+        description: 'Type words as fast as you can in 60 seconds!',
+        category: 'timing',
+        difficulty: 'medium',
+        icon: '⌨️',
+        is_active: true,
+        reward_config: {
+          base_tokens: 18,
+          score_multiplier: 0.025,
+          streak_bonus: 12,
+          daily_limit: 7
+        },
+        high_score: 0,
+        total_plays: 0
+      },
+      {
+        game_id: 'pattern-memory',
+        name: 'Pattern Memory',
+        description: 'Remember and repeat the color sequence!',
+        category: 'memory',
+        difficulty: 'hard',
+        icon: '🔷',
+        is_active: true,
+        reward_config: {
+          base_tokens: 22,
+          score_multiplier: 0.035,
+          streak_bonus: 18,
+          daily_limit: 6
+        },
+        high_score: 0,
+        total_plays: 0
+      },
+      {
+        game_id: 'pixel-snake',
+        name: 'Pixel Snake',
+        description: 'Classic snake game - eat food and grow!',
+        category: 'arcade',
+        difficulty: 'medium',
+        icon: '🐍',
+        is_active: true,
+        reward_config: {
+          base_tokens: 20,
+          score_multiplier: 0.05,
+          streak_bonus: 15,
+          daily_limit: 7
+        },
+        high_score: 0,
+        total_plays: 0
       }
     ];
 

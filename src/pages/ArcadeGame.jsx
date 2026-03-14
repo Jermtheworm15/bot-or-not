@@ -9,6 +9,12 @@ import { toast } from 'sonner';
 import ReactionGame from '@/components/arcade/ReactionGame';
 import MemoryGame from '@/components/arcade/MemoryGame';
 import RunnerGame from '@/components/arcade/RunnerGame';
+import DodgeGame from '@/components/arcade/DodgeGame';
+import ClickerGame from '@/components/arcade/ClickerGame';
+import ColorMatchGame from '@/components/arcade/ColorMatchGame';
+import TypingGame from '@/components/arcade/TypingGame';
+import PatternGame from '@/components/arcade/PatternGame';
+import SnakeGame from '@/components/arcade/SnakeGame';
 import InviteFriends from '@/components/social/InviteFriends';
 
 export default function ArcadeGame() {
@@ -270,7 +276,13 @@ export default function ArcadeGame() {
   const GameComponent = {
     'reaction-test': ReactionGame,
     'memory-match': MemoryGame,
-    'pixel-runner': RunnerGame
+    'pixel-runner': RunnerGame,
+    'dodge-master': DodgeGame,
+    'speed-clicker': ClickerGame,
+    'color-match': ColorMatchGame,
+    'type-racer': TypingGame,
+    'pattern-memory': PatternGame,
+    'pixel-snake': SnakeGame
   }[gameId] || null;
 
   if (loading) {
