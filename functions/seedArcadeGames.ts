@@ -11,10 +11,15 @@ Deno.serve(async (req) => {
 
     // Check if games already exist
     const existing = await base44.asServiceRole.entities.ArcadeGame.list();
-    if (existing.length > 0) {
+    const existingIds = existing.map(g => g.game_id);
+    
+    // Filter out already seeded games
+    const gamesToSeed = games.filter(g => !existingIds.includes(g.game_id));
+    
+    if (gamesToSeed.length === 0) {
       return Response.json({ 
         success: true, 
-        message: 'Games already seeded',
+        message: 'All games already seeded',
         count: existing.length 
       });
     }
@@ -175,14 +180,15 @@ Deno.serve(async (req) => {
       }
     ];
 
-    for (const game of games) {
+    for (const game of gamesToSeed) {
       await base44.asServiceRole.entities.ArcadeGame.create(game);
     }
 
     return Response.json({
       success: true,
-      message: 'Arcade games seeded successfully',
-      count: games.length
+      message: `Seeded ${gamesToSeed.length} new games`,
+      count: gamesToSeed.length,
+      total: existing.length + gamesToSeed.length
     });
 
   } catch (error) {
