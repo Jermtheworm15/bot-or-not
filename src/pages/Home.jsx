@@ -162,6 +162,10 @@ export default function Home() {
 
     try {
       const user = await base44.auth.me();
+      if (!user) {
+        loadingGuard.current = false;
+        return;
+      }
 
       // Load images and user's votes in parallel - INCREASED POOL SIZE
       const [rawData, userVotes] = await Promise.all([

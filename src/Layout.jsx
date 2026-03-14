@@ -53,7 +53,7 @@ export default function Layout({ children, currentPageName }) {
 
   // If not authenticated, redirect to Landing (except if already on Landing)
   React.useEffect(() => {
-    if (isAuthenticated === false && currentPageName !== 'Landing') {
+    if (isAuthenticated === false && currentPageName !== 'Landing' && currentPageName !== 'Onboarding') {
       navigate('/Landing');
     }
   }, [isAuthenticated, currentPageName, navigate]);

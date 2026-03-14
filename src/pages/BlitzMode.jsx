@@ -65,6 +65,12 @@ export default function BlitzMode() {
     try {
       const rawData = await base44.entities.Image.list('-created_date', 200);
       
+      if (!rawData || rawData.length === 0) {
+        toast.error('No images available. Upload some images first!');
+        navigate('/Home');
+        return;
+      }
+      
       const validData = rawData
         .map(item => ({
           id: item.id,
