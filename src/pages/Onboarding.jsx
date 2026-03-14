@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Target, Trophy, ArrowRight, Upload, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createPageUrl } from '@/utils';
+
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
