@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SkipForward, RefreshCw, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { playSound } from '@/components/audio/SoundEffects';
+import { Button } from '@/components/ui/button';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
