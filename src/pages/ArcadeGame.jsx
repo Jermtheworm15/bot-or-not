@@ -15,6 +15,9 @@ import ColorMatchGame from '@/components/arcade/ColorMatchGame';
 import TypingGame from '@/components/arcade/TypingGame';
 import PatternGame from '@/components/arcade/PatternGame';
 import SnakeGame from '@/components/arcade/SnakeGame';
+import FlappyGame from '@/components/arcade/FlappyGame';
+import BreakoutGame from '@/components/arcade/BreakoutGame';
+import Match3Game from '@/components/arcade/Match3Game';
 import InviteFriends from '@/components/social/InviteFriends';
 import ProgressionSystem from '@/components/arcade/ProgressionSystem';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
@@ -327,7 +330,25 @@ export default function ArcadeGame() {
     'color-match': ColorMatchGame,
     'type-racer': TypingGame,
     'pattern-memory': PatternGame,
-    'pixel-snake': SnakeGame
+    'pixel-snake': SnakeGame,
+    'snake-retro': SnakeGame,
+    'flappy-bird': FlappyGame,
+    'breakout-arcade': BreakoutGame,
+    'brick-breaker-retro': BreakoutGame,
+    'match3-gems': Match3Game,
+    'gem-matcher': Match3Game,
+    'endless-runner': RunnerGame,
+    'subway-surfer': RunnerGame,
+    'jetpack-fly': RunnerGame,
+    'parkour-jump': RunnerGame,
+    'whack-mole': ReactionGame,
+    'fruit-ninja': ReactionGame,
+    'bubble-pop': ReactionGame,
+    'target-shooter': ReactionGame,
+    'quick-click': ClickerGame,
+    'simon-says': PatternGame,
+    'card-flip': MemoryGame,
+    'sequence-recall': PatternGame
   }[gameId] || null;
 
   if (loading) {
@@ -338,11 +359,73 @@ export default function ArcadeGame() {
     );
   }
 
-  if (!game || !GameComponent) {
+  if (!game) {
     return (
       <div className="min-h-screen bg-black text-green-400 flex items-center justify-center">
         <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
-          <p className="text-xl mb-4">Game not available</p>
+          <p className="text-xl mb-4">Game not found</p>
+          <Button onClick={() => navigate('/ArcadeHub')}>
+            Back to Arcade
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!GameComponent) {
+    // Handle iframe/embed games
+    if (game.embed_type === 'iframe' && game.embed_url) {
+      return (
+        <div className="min-h-screen bg-black text-white">
+          <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
+          
+          <div className="relative z-10 min-h-screen flex flex-col">
+            <div className="p-4 flex items-center justify-between bg-black/60 backdrop-blur-md border-b border-purple-500/30">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/ArcadeHub')}
+                className="text-green-400 hover:text-white"
+              >
+                <ChevronLeft className="w-5 h-5 mr-1" />
+                Arcade
+              </Button>
+              
+              <div className="text-center">
+                <h1 className="text-xl font-bold text-white">{game.name}</h1>
+              </div>
+
+              <div className="w-20" />
+            </div>
+
+            <div className="flex-1 p-4">
+              <Card className="bg-black/80 border-purple-500/30 p-4 max-w-5xl mx-auto">
+                <iframe
+                  src={game.embed_url}
+                  className="w-full h-[600px] rounded-lg"
+                  frameBorder="0"
+                  allowFullScreen
+                  title={game.name}
+                />
+                <div className="mt-4 text-center text-green-500/60 text-sm">
+                  {game.description}
+                </div>
+              </Card>
+            </div>
+          </div>
+          
+          <ArcadeChat gameId={gameId} />
+        </div>
+      );
+    }
+
+    // Game not implemented yet
+    return (
+      <div className="min-h-screen bg-black text-green-400 flex items-center justify-center">
+        <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
+          <div className="text-6xl mb-4">{game.icon || '🎮'}</div>
+          <p className="text-xl mb-2">{game.name}</p>
+          <p className="text-sm text-green-500/60 mb-6">{game.description}</p>
+          <p className="text-sm text-yellow-400 mb-6">Coming Soon!</p>
           <Button onClick={() => navigate('/ArcadeHub')}>
             Back to Arcade
           </Button>
