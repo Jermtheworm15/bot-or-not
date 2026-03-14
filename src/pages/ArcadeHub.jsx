@@ -17,6 +17,8 @@ export default function ArcadeHub() {
   const [challenges, setChallenges] = useState([]);
   const [user, setUser] = useState(null);
   const [arcadeMaster, setArcadeMaster] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [difficultyFilter, setDifficultyFilter] = useState('all');
 
   useEffect(() => {
     loadData();
@@ -187,6 +189,35 @@ export default function ArcadeHub() {
 
           {/* Games Grid */}
           <TabsContent value="games">
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
+              >
+                <option value="all">All Categories</option>
+                <option value="reaction">⚡ Reaction</option>
+                <option value="memory">🧠 Memory</option>
+                <option value="runner">🏃 Runner</option>
+                <option value="dodge">🎯 Dodge</option>
+                <option value="puzzle">🎨 Puzzle</option>
+                <option value="timing">⌨️ Timing</option>
+                <option value="arcade">🎮 Arcade</option>
+              </select>
+
+              <select
+                value={difficultyFilter}
+                onChange={(e) => setDifficultyFilter(e.target.value)}
+                className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
+              >
+                <option value="all">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+
             {games.length === 0 ? (
               <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
                 <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-purple-400/30" />
@@ -208,7 +239,10 @@ export default function ArcadeHub() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {games.map(game => {
+                {games
+                  .filter(game => categoryFilter === 'all' || game.category === categoryFilter)
+                  .filter(game => difficultyFilter === 'all' || game.difficulty === difficultyFilter)
+                  .map(game => {
                   const stats = getGameStats(game.game_id);
                   return (
                     <Card
