@@ -158,7 +158,7 @@ export default function ArcadeChallenges() {
             <Button
               variant="ghost"
               onClick={() => navigate('/ArcadeHub')}
-              className="text-green-400 hover:text-white mb-4"
+              className="text-green-400 hover:text-white mb-4 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5 mr-1" />
               Back to Arcade
@@ -173,7 +173,7 @@ export default function ArcadeChallenges() {
             <InviteFriends />
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500">
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 cursor-pointer">
                   <Target className="w-5 h-5 mr-2" />
                   New Challenge
                 </Button>
@@ -191,7 +191,7 @@ export default function ArcadeChallenges() {
                         <Card
                           key={game.id}
                           onClick={() => setSelectedGame(game)}
-                          className={`p-3 cursor-pointer transition-all ${
+                          className={`p-3 cursor-pointer transition-all hover:scale-[1.02] ${
                             selectedGame?.id === game.id
                               ? 'bg-purple-900/30 border-purple-500'
                               : 'bg-black/60 border-purple-500/30 hover:border-purple-500/60'
@@ -217,7 +217,7 @@ export default function ArcadeChallenges() {
                   <Button
                     onClick={handleCreateChallenge}
                     disabled={!selectedGame || !selectedUser}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 cursor-pointer disabled:cursor-not-allowed"
                   >
                     Send Challenge
                   </Button>
@@ -276,7 +276,7 @@ export default function ArcadeChallenges() {
                       <div className="flex gap-2">
                         <Button
                           onClick={() => handleAcceptChallenge(challenge)}
-                          className="bg-green-600 hover:bg-green-700"
+                          className="bg-green-600 hover:bg-green-700 cursor-pointer"
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
                           Accept
@@ -284,7 +284,7 @@ export default function ArcadeChallenges() {
                         <Button
                           onClick={() => handleDeclineChallenge(challenge)}
                           variant="outline"
-                          className="border-red-500/30 text-red-400 hover:bg-red-900/30"
+                          className="border-red-500/30 text-red-400 hover:bg-red-900/30 cursor-pointer"
                         >
                           <XCircle className="w-4 h-4 mr-2" />
                           Decline
