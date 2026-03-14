@@ -419,13 +419,15 @@ export default function BlitzMode() {
               >
                 <Button
                   onClick={() => handleAnswer(true)}
-                  className="h-20 text-xl font-bold bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600"
+                  disabled={hasAnswered}
+                  className="h-20 text-xl font-bold bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 cursor-pointer disabled:cursor-not-allowed"
                 >
                   🤖 Bot
                 </Button>
                 <Button
                   onClick={() => handleAnswer(false)}
-                  className="h-20 text-xl font-bold bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
+                  disabled={hasAnswered}
+                  className="h-20 text-xl font-bold bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 cursor-pointer disabled:cursor-not-allowed"
                 >
                   👤 Human
                 </Button>
@@ -499,14 +501,14 @@ export default function BlitzMode() {
             <div className="flex gap-4">
               <Button
                 onClick={restartGame}
-                className="flex-1 h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
+                className="flex-1 h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 cursor-pointer"
               >
                 Play Again
               </Button>
               <Button
                 onClick={() => navigate('/Home')}
                 variant="outline"
-                className="h-14 px-8 border-green-500/30 text-green-400 hover:bg-green-900/30"
+                className="h-14 px-8 border-green-500/30 text-green-400 hover:bg-green-900/30 cursor-pointer"
               >
                 Exit
               </Button>
