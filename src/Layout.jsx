@@ -185,6 +185,11 @@ export default function Layout({ children, currentPageName }) {
                             </Link>
                           </SheetClose>
                           <SheetClose asChild>
+                            <Link to="/ArcadeHub" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
+                              <Gamepad2 className="w-5 h-5" /> Arcade
+                            </Link>
+                          </SheetClose>
+                          <SheetClose asChild>
                             <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
                               <Trophy className="w-5 h-5" /> Achievements
                             </Link>

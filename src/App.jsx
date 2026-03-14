@@ -20,6 +20,8 @@ import RewardHistory from './pages/RewardHistory';
 import SocialFeed from './pages/SocialFeed';
 import DailyRewards from './pages/DailyRewards';
 import BlitzMode from './pages/BlitzMode';
+import ArcadeHub from './pages/ArcadeHub';
+import ArcadeGame from './pages/ArcadeGame';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -84,6 +86,8 @@ const AuthenticatedApp = () => {
       <Route path="/SocialFeed" element={<LayoutWrapper currentPageName="SocialFeed"><SocialFeed /></LayoutWrapper>} />
       <Route path="/DailyRewards" element={<LayoutWrapper currentPageName="DailyRewards"><DailyRewards /></LayoutWrapper>} />
       <Route path="/BlitzMode" element={<LayoutWrapper currentPageName="BlitzMode"><BlitzMode /></LayoutWrapper>} />
+      <Route path="/ArcadeHub" element={<LayoutWrapper currentPageName="ArcadeHub"><ArcadeHub /></LayoutWrapper>} />
+      <Route path="/ArcadeGame/:gameId" element={<LayoutWrapper currentPageName="ArcadeGame"><ArcadeGame /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
