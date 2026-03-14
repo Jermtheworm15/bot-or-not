@@ -728,7 +728,7 @@ export default function Home() {
             <div className="absolute top-4 left-4 z-20">
               <Button
                 onClick={() => navigate('/BlitzMode')}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg cursor-pointer"
               >
                 <Zap className="w-5 h-5 mr-2" />
                 Blitz Mode
@@ -755,7 +755,7 @@ export default function Home() {
           <button
             onClick={handleSkip}
             disabled={isLoading || hasVoted}
-            className="fixed top-20 right-4 z-50 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-purple-500/30 text-green-400 hover:bg-purple-900/30 hover:text-white flex items-center justify-center shadow-lg transition-all disabled:opacity-50"
+            className="fixed top-20 right-4 z-50 w-12 h-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-purple-500/30 text-green-400 hover:bg-purple-900/30 hover:text-white flex items-center justify-center shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <SkipForward className="w-5 h-5" />
           </button>
