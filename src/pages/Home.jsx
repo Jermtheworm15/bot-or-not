@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SkipForward, RefreshCw } from 'lucide-react';
+import { SkipForward, RefreshCw, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { playSound } from '@/components/audio/SoundEffects';
 import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
@@ -23,6 +24,7 @@ import { createPageUrl } from '@/utils';
 
 
 export default function Home() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasVoted, setHasVoted] = useState(false);
@@ -714,9 +716,20 @@ export default function Home() {
         
         {/* Compact bottom controls - Desktop only */}
         {!isMobile && (
-          <div className="absolute top-4 right-4 z-20">
-            <InviteFriends />
-          </div>
+          <>
+            <div className="absolute top-4 right-4 z-20">
+              <InviteFriends />
+            </div>
+            <div className="absolute top-4 left-4 z-20">
+              <Button
+                onClick={() => navigate('/BlitzMode')}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg"
+              >
+                <Zap className="w-5 h-5 mr-2" />
+                Blitz Mode
+              </Button>
+            </div>
+          </>
         )}
 
         {/* Stats bar - positioned to not overlap on mobile */}
