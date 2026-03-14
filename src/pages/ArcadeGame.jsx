@@ -22,6 +22,8 @@ import InviteFriends from '@/components/social/InviteFriends';
 import ProgressionSystem from '@/components/arcade/ProgressionSystem';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
 import ArcadeSocialShare from '@/components/arcade/ArcadeSocialShare';
+import GameErrorBoundary from '@/components/arcade/GameErrorBoundary';
+import LoadingState from '@/components/arcade/LoadingState';
 
 export default function ArcadeGame() {
   const { gameId } = useParams();
@@ -87,8 +89,10 @@ export default function ArcadeGame() {
     setScore(finalScore);
     
     // Calculate level-based difficulty multiplier (1x to 5x)
-    const difficultyMultiplier = 1 + (currentLevel - 1) * 0.04;
-    const adjustedScore = Math.round(finalScore * difficultyMultiplier);
+    const difficultyMultiplier = 1 + ((currentLevel || 1) - 1) * 0.04;
+    const adjustedScore = Math.round((finalScore || 0) * difficultyMultiplier);
+
+    console.log('[ArcadeGame] Score:', finalScore, 'Level:', currentLevel, 'Multiplier:', difficultyMultiplier.toFixed(2), 'Adjusted:', adjustedScore);
     
     // Simulate AI opponent if applicable
     if (vsArcadeMaster || challenge) {
@@ -114,6 +118,8 @@ export default function ArcadeGame() {
       const today = new Date().toISOString().split('T')[0];
       const playsToday = stats?.last_played_date === today ? (stats.plays_today || 0) : 0;
       const dailyLimit = game.reward_config?.daily_limit || 10;
+      
+      console.log('[ArcadeGame] Daily plays:', playsToday, '/', dailyLimit);
 
       let tokensEarned = 0;
       if (playsToday < dailyLimit) {
@@ -141,9 +147,12 @@ export default function ArcadeGame() {
       }
 
       // Determine if level is passed (score threshold scales with level)
-      const levelThreshold = 500 + (currentLevel * 50);
+      const safeLevel = currentLevel || 1;
+      const levelThreshold = 500 + (safeLevel * 50);
       const levelPassed = adjustedScore >= levelThreshold;
-      const newLevel = levelPassed ? currentLevel + 1 : currentLevel;
+      const newLevel = levelPassed ? safeLevel + 1 : safeLevel;
+      
+      console.log('[ArcadeGame] Level check: Threshold:', levelThreshold, 'Passed:', levelPassed, 'New level:', newLevel);
       
       // Save score
       const isPersonalBest = !stats || adjustedScore > (stats.best_score || 0);
@@ -296,7 +305,7 @@ export default function ArcadeGame() {
         isPersonalBest,
         isGlobalBest,
         hitLimit: playsToday >= dailyLimit,
-        challengeResult: challenge ? (adjustedScore > challenge.challenger_score ? 'won' : 'lost') : null,
+        challengeResult: challenge ? (adjustedScore > (challenge.challenger_score || 0) ? 'won' : 'lost') : null,
         arcadeMasterResult: vsArcadeMaster && aiScore !== null ? (adjustedScore > aiScore ? 'won' : 'lost') : null,
         levelPassed,
         newLevel,
@@ -306,7 +315,8 @@ export default function ArcadeGame() {
       if (levelPassed && newLevel <= 100) {
         setCurrentLevel(newLevel);
       }
-
+      
+      console.log('[ArcadeGame] Reward data set, refreshing stats...');
       await loadGame();
 
     } catch (error) {
@@ -352,11 +362,7 @@ export default function ArcadeGame() {
   }[gameId] || null;
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-green-400 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full" />
-      </div>
-    );
+    return <LoadingState message="Loading game..." />;
   }
 
   if (!game) {
@@ -435,6 +441,7 @@ export default function ArcadeGame() {
   }
 
   return (
+    <GameErrorBoundary>
     <div className="min-h-screen bg-black text-white overflow-hidden">
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/30 via-zinc-950 to-emerald-950/20 pointer-events-none" />
       
@@ -626,5 +633,6 @@ export default function ArcadeGame() {
       
       <ArcadeChat gameId={gameId} />
     </div>
+    </GameErrorBoundary>
   );
 }
