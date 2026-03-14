@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp } from 'lucide-react';
+import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -16,6 +16,7 @@ export default function ArcadeHub() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [challenges, setChallenges] = useState([]);
   const [user, setUser] = useState(null);
+  const [arcadeMaster, setArcadeMaster] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -27,19 +28,21 @@ export default function ArcadeHub() {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
 
-      const [gamesData, statsData, scoresData, challengesData] = await Promise.all([
+      const [gamesData, statsData, scoresData, challengesData, masterData] = await Promise.all([
         base44.entities.ArcadeGame.filter({ is_active: true }),
         base44.entities.ArcadeStats.filter({ user_email: currentUser.email }),
         base44.entities.ArcadeScore.list('-score', 100),
         base44.entities.ArcadeChallenge.filter({ 
           challenged_email: currentUser.email, 
           status: 'pending' 
-        })
+        }),
+        base44.entities.ArcadeMaster.filter({ user_email: currentUser.email })
       ]);
 
       setGames(gamesData);
       setMyStats(statsData);
       setChallenges(challengesData);
+      setArcadeMaster(masterData.length > 0 ? masterData[0] : null);
 
       // Build leaderboard
       const userScores = {};
@@ -107,6 +110,38 @@ export default function ArcadeHub() {
           </div>
           <p className="text-green-500/80">Play games, earn tokens, compete with friends</p>
         </div>
+
+        {/* Arcade Master Card */}
+        {arcadeMaster?.unlocked && (
+          <Card className="bg-gradient-to-br from-yellow-900/30 to-orange-900/20 border-yellow-500/50 p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Crown className="w-12 h-12 text-yellow-400" />
+                <div>
+                  <div className="text-2xl font-black text-white mb-1">
+                    👑 Arcade Master
+                  </div>
+                  <div className="text-sm text-yellow-300 mb-2">
+                    The ultimate challenge awaits
+                  </div>
+                  <div className="flex gap-4 text-xs text-green-500/80">
+                    <span>Record: {arcadeMaster.wins}W - {arcadeMaster.losses}L</span>
+                    {arcadeMaster.best_victory_score && (
+                      <span>Best Victory: {arcadeMaster.best_victory_score}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button
+                onClick={() => navigate('/ArcadeGame/reaction-test?arcadeMaster=true')}
+                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500"
+              >
+                <Swords className="w-5 h-5 mr-2" />
+                Challenge
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Pending Challenges */}
         {challenges.length > 0 && (

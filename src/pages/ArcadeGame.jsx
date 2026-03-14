@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, Trophy, Coins, Users, Share2 } from 'lucide-react';
+import { ChevronLeft, Trophy, Coins, Users, Share2, Swords, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactionGame from '@/components/arcade/ReactionGame';
 import MemoryGame from '@/components/arcade/MemoryGame';
 import RunnerGame from '@/components/arcade/RunnerGame';
+import InviteFriends from '@/components/social/InviteFriends';
 
 export default function ArcadeGame() {
   const { gameId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const challengeId = searchParams.get('challengeId');
+  const vsArcadeMaster = searchParams.get('arcadeMaster') === 'true';
+  
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
   const [gameState, setGameState] = useState('menu'); // menu, playing, result
@@ -20,10 +25,12 @@ export default function ArcadeGame() {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [rewardData, setRewardData] = useState(null);
+  const [aiScore, setAiScore] = useState(null);
+  const [challenge, setChallenge] = useState(null);
 
   useEffect(() => {
     loadGame();
-  }, [gameId]);
+  }, [gameId, challengeId]);
 
   const loadGame = async () => {
     setLoading(true);
@@ -47,6 +54,14 @@ export default function ArcadeGame() {
 
       setStats(userStats[0] || null);
 
+      // Load challenge if present
+      if (challengeId) {
+        const challenges = await base44.entities.ArcadeChallenge.filter({ id: challengeId });
+        if (challenges.length > 0) {
+          setChallenge(challenges[0]);
+        }
+      }
+
     } catch (error) {
       console.error('[Arcade] Load error:', error);
       toast.error('Failed to load game');
@@ -56,6 +71,24 @@ export default function ArcadeGame() {
 
   const handleGameComplete = async (finalScore, metadata = {}) => {
     setScore(finalScore);
+    
+    // Simulate AI opponent if applicable
+    if (vsArcadeMaster || challenge) {
+      try {
+        const aiResult = await base44.functions.invoke('simulateAIOpponent', {
+          game_id: gameId,
+          difficulty: 'hard',
+          is_arcade_master: vsArcadeMaster
+        });
+        
+        if (aiResult.data?.success) {
+          setAiScore(aiResult.data.ai_score);
+        }
+      } catch (error) {
+        console.error('[AI] Simulation error:', error);
+      }
+    }
+    
     setGameState('result');
 
     try {
@@ -145,6 +178,51 @@ export default function ArcadeGame() {
         });
       }
 
+      // Handle challenge completion
+      if (challenge && challenge.status === 'accepted') {
+        const won = finalScore > challenge.challenger_score;
+        
+        await base44.entities.ArcadeChallenge.update(challenge.id, {
+          challenged_score: finalScore,
+          status: 'completed',
+          winner_email: won ? user.email : challenge.challenger_email
+        });
+
+        // Notify challenger
+        await base44.entities.Notification.create({
+          user_email: challenge.challenger_email,
+          type: 'arcade_challenge',
+          title: 'Challenge Completed!',
+          message: `${user.email.split('@')[0]} ${won ? 'beat' : 'lost to'} your challenge in ${game.name}`
+        });
+      }
+
+      // Handle Arcade Master battle
+      if (vsArcadeMaster && aiScore !== null) {
+        const won = finalScore > aiScore;
+        
+        const masterStats = await base44.entities.ArcadeMaster.filter({ user_email: user.email });
+        if (masterStats.length > 0) {
+          await base44.entities.ArcadeMaster.update(masterStats[0].id, {
+            games_played: (masterStats[0].games_played || 0) + 1,
+            wins: (masterStats[0].wins || 0) + (won ? 1 : 0),
+            losses: (masterStats[0].losses || 0) + (won ? 0 : 1),
+            last_played_date: new Date().toISOString(),
+            best_victory_score: won ? Math.max(masterStats[0].best_victory_score || 0, finalScore) : masterStats[0].best_victory_score
+          });
+        }
+
+        if (won) {
+          await base44.entities.SocialFeed.create({
+            user_email: user.email,
+            activity_type: 'achievement',
+            title: '👑 Defeated Arcade Master!',
+            description: `Beat the legendary Arcade Master in ${game.name} with ${finalScore} points`,
+            is_featured: true
+          });
+        }
+      }
+
       // Create social feed entry for high scores
       if (isPersonalBest && finalScore >= 1000) {
         await base44.entities.SocialFeed.create({
@@ -156,11 +234,23 @@ export default function ArcadeGame() {
         });
       }
 
+      // Check for Arcade Master unlock
+      try {
+        const unlockResult = await base44.functions.invoke('checkArcadeMasterUnlock', {});
+        if (unlockResult.data?.just_unlocked) {
+          toast.success('🏆 Arcade Master Unlocked!');
+        }
+      } catch (error) {
+        console.error('[Unlock] Check error:', error);
+      }
+
       setRewardData({
         tokensEarned,
         isPersonalBest,
         isGlobalBest,
-        hitLimit: playsToday >= dailyLimit
+        hitLimit: playsToday >= dailyLimit,
+        challengeResult: challenge ? (finalScore > challenge.challenger_score ? 'won' : 'lost') : null,
+        arcadeMasterResult: vsArcadeMaster && aiScore !== null ? (finalScore > aiScore ? 'won' : 'lost') : null
       });
 
       await loadGame();
@@ -281,6 +371,26 @@ export default function ArcadeGame() {
                 <h2 className="text-4xl font-bold text-white mb-2">Game Over!</h2>
                 <div className="text-5xl font-black text-yellow-400 mb-4">{score}</div>
                 
+                {rewardData.arcadeMasterResult && (
+                  <Badge className={`text-lg px-4 py-2 mb-2 ${
+                    rewardData.arcadeMasterResult === 'won'
+                      ? 'bg-gradient-to-r from-yellow-600 to-orange-600'
+                      : 'bg-gradient-to-r from-red-600 to-red-700'
+                  }`}>
+                    {rewardData.arcadeMasterResult === 'won' ? '👑 DEFEATED ARCADE MASTER!' : '😔 Arcade Master Wins'}
+                  </Badge>
+                )}
+                
+                {rewardData.challengeResult && (
+                  <Badge className={`text-lg px-4 py-2 mb-2 ${
+                    rewardData.challengeResult === 'won'
+                      ? 'bg-gradient-to-r from-green-600 to-green-700'
+                      : 'bg-gradient-to-r from-red-600 to-red-700'
+                  }`}>
+                    {rewardData.challengeResult === 'won' ? '🎯 Challenge Won!' : '😔 Challenge Lost'}
+                  </Badge>
+                )}
+                
                 {rewardData.isGlobalBest && (
                   <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-lg px-4 py-2 mb-2">
                     🏆 NEW GLOBAL RECORD!
@@ -292,6 +402,26 @@ export default function ArcadeGame() {
                   </Badge>
                 )}
               </div>
+
+              {(aiScore !== null || challenge) && (
+                <div className="bg-black/60 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-center flex-1">
+                      <div className="text-sm text-green-400 mb-1">Your Score</div>
+                      <div className="text-3xl font-bold text-white">{score}</div>
+                    </div>
+                    <div className="text-2xl px-4">VS</div>
+                    <div className="text-center flex-1">
+                      <div className="text-sm text-green-400 mb-1">
+                        {vsArcadeMaster ? '👑 Arcade Master' : 'Opponent'}
+                      </div>
+                      <div className="text-3xl font-bold text-white">
+                        {aiScore || challenge?.challenger_score}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="bg-black/60 rounded-lg p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
@@ -307,7 +437,8 @@ export default function ArcadeGame() {
                 )}
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3 mb-4">
+                <InviteFriends />
                 <Button
                   onClick={startGame}
                   className="flex-1 h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
