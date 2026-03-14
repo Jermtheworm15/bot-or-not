@@ -24,7 +24,7 @@ export default function CompactBottomNav({ currentPageName }) {
             <Link
               key={item.path}
               to={item.path}
-              className="flex flex-col items-center justify-center flex-1 h-full transition-all text-green-400 hover:text-white active:scale-95"
+              className="flex flex-col items-center justify-center flex-1 h-full transition-all text-green-400 hover:text-white active:scale-95 cursor-pointer"
             >
               <Icon className="w-5 h-5 mb-1" />
               <span className="text-xs">{item.label}</span>
@@ -35,7 +35,7 @@ export default function CompactBottomNav({ currentPageName }) {
         {/* Full Menu Toggle */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <button className="flex flex-col items-center justify-center flex-1 h-full transition-all text-purple-400 hover:text-white active:scale-95">
+            <button className="flex flex-col items-center justify-center flex-1 h-full transition-all text-purple-400 hover:text-white active:scale-95 cursor-pointer">
               <Menu className="w-5 h-5 mb-1" />
               <span className="text-xs">Menu</span>
             </button>

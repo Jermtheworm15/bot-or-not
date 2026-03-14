@@ -73,7 +73,7 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
             {/* Section Header */}
             <button
               onClick={() => toggleSection(section.title)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all cursor-pointer ${
                 isActive 
                   ? 'bg-purple-900/40 text-white' 
                   : 'text-green-400 hover:bg-purple-900/20 hover:text-white'

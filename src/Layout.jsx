@@ -137,7 +137,10 @@ export default function Layout({ children, currentPageName }) {
       {/* Top Bar with Logo */}
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-                  <Link to={createPageUrl('Home')} className="flex items-center gap-2 text-white font-bold text-lg neon-text">
+                  <Link 
+                    to={createPageUrl('Home')} 
+                    className="flex items-center gap-2 text-white font-bold text-lg neon-text cursor-pointer hover:opacity-90 transition-opacity"
+                  >
                     <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-lg shadow-purple-500/50">
                       <img 
                         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/60edcef10_d5e77535-5a3b-4139-8a3f-6489d39444dc.jpg" 
@@ -148,12 +151,12 @@ export default function Layout({ children, currentPageName }) {
                     <span className="tracking-wider uppercase">Bot or Not</span>
                   </Link>
                   <div className="flex items-center gap-3">
-                    <Link to={createPageUrl('Profile')} className="text-green-400 hover:text-white transition-colors">
+                    <Link to={createPageUrl('Profile')} className="text-green-400 hover:text-white transition-colors cursor-pointer">
                       <Settings className="w-5 h-5" />
                     </Link>
                     <Sheet>
                       <SheetTrigger asChild>
-                        <button className="text-green-400 hover:text-white transition-colors">
+                        <button className="text-green-400 hover:text-white transition-colors cursor-pointer">
                           <Menu className="w-6 h-6" />
                         </button>
                       </SheetTrigger>
@@ -166,14 +169,14 @@ export default function Layout({ children, currentPageName }) {
                       </SheetContent>
                     </Sheet>
                             {currentUser && <NotificationBell />}
-                            <Link to={createPageUrl('Messages')} className="hidden md:block">
-                              <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors cursor-pointer" />
+                            <Link to={createPageUrl('Messages')} className="hidden md:block cursor-pointer">
+                              <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors" />
                             </Link>
                             <button
                               onClick={() => {
                                 base44.auth.logout(createPageUrl('Landing'));
                               }}
-                              className="text-green-400 hover:text-white transition-colors"
+                              className="text-green-400 hover:text-white transition-colors cursor-pointer"
                               title="Logout"
                             >
                               <LogOut className="w-5 h-5" />
