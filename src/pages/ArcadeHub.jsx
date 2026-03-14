@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords, Search } from 'lucide-react';
+import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords, Search, Settings } from 'lucide-react';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -115,14 +115,26 @@ export default function ArcadeHub() {
               <Gamepad2 className="w-10 h-10 text-purple-400" />
               <h1 className="text-4xl font-black text-white">Retro Arcade</h1>
             </div>
-            <Button
-              onClick={() => navigate('/ProfileSearch')}
-              variant="outline"
-              className="border-purple-500/30 text-purple-400 hover:bg-purple-900/30 cursor-pointer"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Find Players
-            </Button>
+            <div className="flex gap-2">
+              {user?.role === 'admin' && (
+                <Button
+                  onClick={() => navigate('/ArcadeAdmin')}
+                  variant="outline"
+                  className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-900/30 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              )}
+              <Button
+                onClick={() => navigate('/ProfileSearch')}
+                variant="outline"
+                className="border-purple-500/30 text-purple-400 hover:bg-purple-900/30 cursor-pointer"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Find Players
+              </Button>
+            </div>
           </div>
           <p className="text-green-500/80">Play {games.length} addictive retro games • Earn tokens • Climb leaderboards</p>
         </div>
@@ -207,14 +219,13 @@ export default function ArcadeHub() {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
               >
-                <option value="all">All Categories</option>
-                <option value="reaction">⚡ Reaction</option>
-                <option value="memory">🧠 Memory</option>
-                <option value="runner">🏃 Runner</option>
-                <option value="dodge">🎯 Dodge</option>
-                <option value="puzzle">🎨 Puzzle</option>
-                <option value="timing">⌨️ Timing</option>
-                <option value="arcade">🎮 Arcade</option>
+                <option value="all">All Categories ({games.length})</option>
+                <option value="arcade">🎮 Arcade ({games.filter(g => g.category === 'arcade').length})</option>
+                <option value="puzzle">🧩 Puzzle ({games.filter(g => g.category === 'puzzle').length})</option>
+                <option value="reaction">⚡ Reaction ({games.filter(g => g.category === 'reaction').length})</option>
+                <option value="memory">🧠 Memory ({games.filter(g => g.category === 'memory').length})</option>
+                <option value="timing">⏱️ Timing ({games.filter(g => g.category === 'timing').length})</option>
+                <option value="runner">🏃 Runner ({games.filter(g => g.category === 'runner').length})</option>
               </select>
 
               <select
@@ -227,6 +238,15 @@ export default function ArcadeHub() {
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
               </select>
+              
+              <div className="flex-1" />
+              
+              <div className="text-sm text-green-500/60 flex items-center">
+                Showing {games.filter(game => 
+                  (categoryFilter === 'all' || game.category === categoryFilter) &&
+                  (difficultyFilter === 'all' || game.difficulty === difficultyFilter)
+                ).length} games
+              </div>
             </div>
 
             {games.length === 0 ? (
