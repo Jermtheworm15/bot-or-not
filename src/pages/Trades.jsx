@@ -109,7 +109,11 @@ export default function Trades() {
             ) : (
               <div className="space-y-3">
                 {receivedOffers.map((offer) => (
-                  <Card key={offer.id} className="bg-black/60 border-purple-500/30 p-4 cursor-pointer hover:border-purple-500/50 transition-colors" onClick={() => setSelectedOffer(offer)}>
+                  <Card 
+                    key={offer.id} 
+                    className="bg-black/60 border-purple-500/30 p-4 cursor-pointer hover:border-purple-500/50 transition-colors" 
+                    onClick={() => setSelectedOffer(offer)}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium">From: {offer.initiator_email}</div>
                       <Badge className={
@@ -161,7 +165,15 @@ export default function Trades() {
                         {new Date(offer.created_date).toLocaleDateString()}
                       </div>
                       {offer.status === 'pending' && (
-                        <Button size="sm" variant="outline" onClick={() => handleCancelTrade(offer.id)}>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCancelTrade(offer.id);
+                          }}
+                          className="cursor-pointer"
+                        >
                           Cancel
                         </Button>
                       )}
@@ -207,11 +219,18 @@ export default function Trades() {
                 )}
                 {selectedOffer.status === 'pending' && (
                   <div className="flex gap-3">
-                    <Button onClick={() => handleAcceptTrade(selectedOffer.id)} className="flex-1 bg-green-600 hover:bg-green-700">
+                    <Button 
+                      onClick={() => handleAcceptTrade(selectedOffer.id)} 
+                      className="flex-1 bg-green-600 hover:bg-green-700 cursor-pointer"
+                    >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Accept
                     </Button>
-                    <Button onClick={() => handleDeclineTrade(selectedOffer.id)} variant="outline" className="flex-1">
+                    <Button 
+                      onClick={() => handleDeclineTrade(selectedOffer.id)} 
+                      variant="outline" 
+                      className="flex-1 cursor-pointer"
+                    >
                       <XCircle className="w-4 h-4 mr-2" />
                       Decline
                     </Button>
