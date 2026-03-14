@@ -2,17 +2,17 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Upload, Flame, Eye, User, Users, Gamepad2, Wand2, Sparkles, Menu, X, ChevronLeft, MessageCircle, Home, Settings, LogOut, Gauge, ShoppingCart, Package, Wallet as WalletIcon, Repeat, Swords, BarChart3, Coins, Activity, Gift, Zap } from 'lucide-react';
+import { Menu, MessageCircle, Settings, LogOut } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
 import MatrixRain from './components/MatrixRain';
 import HieroglyphicRain from './components/HieroglyphicRain';
 import LiveActivityFeed from './components/LiveActivityFeed';
 import PendingChallenges from './components/challenges/PendingChallenges';
 import ChatbotWindow from './components/chatbot/ChatbotWindow';
-import BottomTabBar from './components/mobile/BottomTabBar';
+import CompactBottomNav from './components/navigation/CompactBottomNav';
 import NotificationBell from './components/notifications/NotificationBell';
-import LoginForm from './components/auth/LoginForm';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import SectionalMenu from './components/navigation/SectionalMenu';
 
 export default function Layout({ children, currentPageName }) {
   const [currentUser, setCurrentUser] = React.useState(null);
@@ -157,110 +157,11 @@ export default function Layout({ children, currentPageName }) {
                           <Menu className="w-6 h-6" />
                         </button>
                       </SheetTrigger>
-                      <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-64 overflow-y-auto">
-                        <div className="mt-8 space-y-2 pb-8">
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Home')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Eye className="w-5 h-5" /> Vote
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('UserLeaderboard')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Trophy className="w-5 h-5" /> Leaderboard
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Upload')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Upload className="w-5 h-5" /> Upload
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('AIChallenge')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Gamepad2 className="w-5 h-5" /> AI Battle
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/BlitzMode" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Zap className="w-5 h-5" /> Blitz Mode
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/ArcadeHub" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Gamepad2 className="w-5 h-5" /> Arcade
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Trophy className="w-5 h-5" /> Achievements
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Community')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Users className="w-5 h-5" /> Community
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Messages')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <MessageCircle className="w-5 h-5" /> Messages
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to={createPageUrl('Profile')} className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <User className="w-5 h-5" /> Profile
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/RewardHistory" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Coins className="w-5 h-5" /> Rewards
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/SocialFeed" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Activity className="w-5 h-5" /> Social Feed
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/DailyRewards" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Gift className="w-5 h-5" /> Daily Rewards
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/DifficultyRanking" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Gauge className="w-5 h-5" /> Difficulty Ranks
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/Marketplace" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <ShoppingCart className="w-5 h-5" /> Marketplace
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/Collection" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Package className="w-5 h-5" /> My Collection
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/Wallet" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <WalletIcon className="w-5 h-5" /> Wallet
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/Trades" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Repeat className="w-5 h-5" /> Trades
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/TournamentHub" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <Swords className="w-5 h-5" /> Tournaments
-                            </Link>
-                          </SheetClose>
-                          <SheetClose asChild>
-                            <Link to="/CollectionAnalytics" className="flex items-center gap-3 px-4 py-3 rounded-lg text-green-400 hover:bg-purple-900/30 hover:text-white transition-all">
-                              <BarChart3 className="w-5 h-5" /> Analytics
-                            </Link>
-                          </SheetClose>
+                      <SheetContent side="left" className="bg-black/95 border-purple-500/30 w-72 overflow-y-auto">
+                        <div className="mt-6">
+                          <h2 className="text-xl font-bold text-white mb-4 px-4">Navigation</h2>
+                          <SectionalMenu currentPageName={currentPageName} />
                         </div>
-                        {/* Bottom safe area for scrolling */}
                         <div className="h-20"></div>
                       </SheetContent>
                     </Sheet>
@@ -284,27 +185,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Top Showcase */}
       <TopShowcase />
 
-      {/* Bottom Navigation - Desktop */}
-        {!isMobile && (
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-t-2 border-purple-500/30 neon-glow"
-               style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 0px)' }}>
-            <div className="w-full px-2 py-3">
-              <div className="flex w-full">
-              <Link to="/Home" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Home' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Eye className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Vote</span></Link>
-              <Link to="/Upload" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Upload' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Upload className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Upload</span></Link>
-              <Link to="/Marketplace" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Marketplace' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><ShoppingCart className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Market</span></Link>
-              <Link to="/Collection" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Collection' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Package className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Items</span></Link>
-              <Link to="/TournamentHub" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'TournamentHub' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><Swords className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Battle</span></Link>
-              <Link to="/Profile" className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 font-medium transition-all ${currentPageName === 'Profile' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50' : 'text-green-400 hover:text-white hover:bg-purple-900/30'}`}><User className="w-5 h-5" /><span className="text-xs uppercase tracking-wide">Profile</span></Link>
-            </div>
-          </div>
-        </nav>
-      )}
-
-      {/* Mobile Bottom Tab Bar */}
-      {isMobile && (
-        <BottomTabBar currentPageName={currentPageName} />
-      )}
+      {/* Compact Bottom Navigation */}
+      <CompactBottomNav currentPageName={currentPageName} />
       <div className="relative z-10 pb-20 md:pb-0" style={{ paddingBottom: 'max(calc(5rem + env(safe-area-inset-bottom, 0px)), 5rem)' }}>
         {children}
       </div>
