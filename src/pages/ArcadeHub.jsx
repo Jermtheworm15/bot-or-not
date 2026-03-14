@@ -330,8 +330,22 @@ export default function ArcadeHub() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {games
-                  .filter(game => categoryFilter === 'all' || game.category === categoryFilter)
-                  .filter(game => difficultyFilter === 'all' || game.difficulty === difficultyFilter)
+                  .filter(game => {
+                    const matchesCategory = categoryFilter === 'all' || game.category === categoryFilter;
+                    const matchesDifficulty = difficultyFilter === 'all' || game.difficulty === difficultyFilter;
+                    const matchesSearch = !searchQuery || game.name.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchesCategory && matchesDifficulty && matchesSearch;
+                  })
+                  .sort((a, b) => {
+                    if (sortBy === 'name') return a.name.localeCompare(b.name);
+                    if (sortBy === 'popular') return (b.total_plays || 0) - (a.total_plays || 0);
+                    if (sortBy === 'newest') return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+                    if (sortBy === 'difficulty') {
+                      const diffOrder = { easy: 1, medium: 2, hard: 3 };
+                      return diffOrder[a.difficulty] - diffOrder[b.difficulty];
+                    }
+                    return 0;
+                  })
                   .map(game => {
                   const stats = getGameStats(game.game_id);
                   return (
