@@ -138,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
                   <Link 
-                    to={createPageUrl('Home')} 
+                    to="/Home" 
                     className="flex items-center gap-2 text-white font-bold text-lg neon-text cursor-pointer hover:opacity-90 transition-opacity"
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center shadow-lg shadow-purple-500/50">
@@ -151,7 +151,7 @@ export default function Layout({ children, currentPageName }) {
                     <span className="tracking-wider uppercase">Bot or Not</span>
                   </Link>
                   <div className="flex items-center gap-3">
-                    <Link to={createPageUrl('Profile')} className="text-green-400 hover:text-white transition-colors cursor-pointer">
+                    <Link to="/Profile" className="text-green-400 hover:text-white transition-colors cursor-pointer">
                       <Settings className="w-5 h-5" />
                     </Link>
                     <Sheet>
@@ -169,12 +169,12 @@ export default function Layout({ children, currentPageName }) {
                       </SheetContent>
                     </Sheet>
                             {currentUser && <NotificationBell />}
-                            <Link to={createPageUrl('Messages')} className="hidden md:block cursor-pointer">
+                            <Link to="/Messages" className="hidden md:block cursor-pointer">
                               <MessageCircle className="w-5 h-5 text-green-400 hover:text-white transition-colors" />
                             </Link>
                             <button
                               onClick={() => {
-                                base44.auth.logout(createPageUrl('Landing'));
+                                base44.auth.logout('/Landing');
                               }}
                               className="text-green-400 hover:text-white transition-colors cursor-pointer"
                               title="Logout"

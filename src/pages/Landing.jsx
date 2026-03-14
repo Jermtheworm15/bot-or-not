@@ -13,7 +13,7 @@ export default function Landing() {
       try {
         const user = await base44.auth.me();
         if (user) {
-          window.location.href = createPageUrl('Home');
+          window.location.href = '/Home';
         }
       } catch (err) {
         // Not authenticated, stay on landing
@@ -24,7 +24,7 @@ export default function Landing() {
 
   const handleSignIn = async () => {
     setIsLoading(true);
-    const nextUrl = window.location.origin + createPageUrl('Home');
+    const nextUrl = window.location.origin + '/Home';
     base44.auth.redirectToLogin(nextUrl);
   };
 

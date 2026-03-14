@@ -75,20 +75,20 @@ export default function Home() {
     try {
       const user = await base44.auth.me();
       if (!user) {
-        window.location.href = createPageUrl('Landing');
+        window.location.href = '/Landing';
         return;
       }
 
       // Check if user has completed onboarding (username, password, profile)
       const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
       if (profiles.length === 0) {
-        window.location.href = createPageUrl('Onboarding');
+        window.location.href = '/Onboarding';
         return;
       }
 
       // Check if user has set username
       if (!user.full_name) {
-        window.location.href = createPageUrl('Onboarding');
+        window.location.href = '/Onboarding';
         return;
       }
 
@@ -103,7 +103,7 @@ export default function Home() {
       loadUserProfile();
     } catch (err) {
       console.log('Auth check error:', err);
-      window.location.href = createPageUrl('Landing');
+      window.location.href = '/Landing';
     }
   };
   
