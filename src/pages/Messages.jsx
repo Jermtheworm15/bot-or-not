@@ -139,12 +139,14 @@ export default function Messages() {
 
       // Create notification for recipient
       await base44.entities.Notification.create({
-        recipient_email: selectedConversation,
-        sender_email: currentUser.email,
-        sender_name: currentUser.full_name || currentUser.email,
+        user_email: selectedConversation,
         type: 'message',
-        content: 'sent you a message',
-        link: '/messages'
+        title: 'New Message',
+        message: `${currentUser.full_name || currentUser.email} sent you a message`,
+        metadata: {
+          sender_email: currentUser.email,
+          link: '/Messages'
+        }
       });
 
       toast.success('Message sent!');
