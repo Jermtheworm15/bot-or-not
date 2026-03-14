@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search } from 'lucide-react';
+import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon } from 'lucide-react';
 import { SheetClose } from '@/components/ui/sheet';
 
 const menuSections = [
   {
+    title: 'Core',
+    icon: Gamepad2,
+    items: [
+      { label: 'Home', path: '/Home', icon: Gamepad2 },
+      { label: 'Upload Image', path: '/Upload', icon: UploadIcon },
+    ]
+  },
+  {
     title: 'Games',
     icon: Gamepad2,
     items: [
+      { label: 'Arcade Hub', path: '/ArcadeHub', icon: Gamepad2 },
       { label: 'Blitz Mode', path: '/BlitzMode', icon: Zap },
       { label: 'Tournaments', path: '/TournamentHub', icon: Swords },
       { label: 'AI Battle', path: '/AIChallenge', icon: Target },
-      { label: 'Arcade', path: '/ArcadeHub', icon: Gamepad2 },
     ]
   },
   {
