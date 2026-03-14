@@ -106,7 +106,7 @@ export default function Upload() {
       // Grant upload reward
       try {
         await base44.functions.invoke('grantReward', {
-          reward_type: 'upload_accepted',
+          transaction_type: 'reward_upload',
           amount: 100,
           metadata: {
             upload_number: uploadNum,
