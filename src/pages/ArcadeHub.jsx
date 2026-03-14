@@ -29,7 +29,7 @@ export default function ArcadeHub() {
       setUser(currentUser);
 
       const [gamesData, statsData, scoresData, challengesData, masterData] = await Promise.all([
-        base44.entities.ArcadeGame.filter({ is_active: true }),
+        base44.entities.ArcadeGame.list(),
         base44.entities.ArcadeStats.filter({ user_email: currentUser.email }),
         base44.entities.ArcadeScore.list('-score', 100),
         base44.entities.ArcadeChallenge.filter({ 
@@ -39,7 +39,10 @@ export default function ArcadeHub() {
         base44.entities.ArcadeMaster.filter({ user_email: currentUser.email })
       ]);
 
-      setGames(gamesData);
+      // Filter active games on client side
+      const activeGames = gamesData.filter(g => g.is_active !== false);
+      
+      setGames(activeGames);
       setMyStats(statsData);
       setChallenges(challengesData);
       setArcadeMaster(masterData.length > 0 ? masterData[0] : null);
@@ -187,7 +190,21 @@ export default function ArcadeHub() {
             {games.length === 0 ? (
               <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
                 <Gamepad2 className="w-16 h-16 mx-auto mb-4 text-purple-400/30" />
-                <p className="text-green-500/60">No games available yet</p>
+                <p className="text-green-500/60 mb-4">No games available yet</p>
+                <Button
+                  onClick={async () => {
+                    try {
+                      await base44.functions.invoke('seedArcadeGames', {});
+                      toast.success('Games seeded! Refreshing...');
+                      await loadData();
+                    } catch (error) {
+                      toast.error('Failed to seed games');
+                    }
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  Initialize Arcade Games
+                </Button>
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
