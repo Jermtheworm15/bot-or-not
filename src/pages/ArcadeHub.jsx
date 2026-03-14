@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords, Search, Settings } from 'lucide-react';
+import { Gamepad2, Trophy, Flame, Target, Users, Star, Play, TrendingUp, Crown, Swords, Search, Settings, Filter, SortAsc, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -20,6 +21,8 @@ export default function ArcadeHub() {
   const [arcadeMaster, setArcadeMaster] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -212,42 +215,98 @@ export default function ArcadeHub() {
 
           {/* Games Grid */}
           <TabsContent value="games">
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
-              >
-                <option value="all">All Categories ({games.length})</option>
-                <option value="arcade">🎮 Arcade ({games.filter(g => g.category === 'arcade').length})</option>
-                <option value="puzzle">🧩 Puzzle ({games.filter(g => g.category === 'puzzle').length})</option>
-                <option value="reaction">⚡ Reaction ({games.filter(g => g.category === 'reaction').length})</option>
-                <option value="memory">🧠 Memory ({games.filter(g => g.category === 'memory').length})</option>
-                <option value="timing">⏱️ Timing ({games.filter(g => g.category === 'timing').length})</option>
-                <option value="runner">🏃 Runner ({games.filter(g => g.category === 'runner').length})</option>
-              </select>
+            {/* Search and Filters */}
+            <Card className="bg-black/60 border-purple-500/30 p-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-500/60" />
+                  <Input
+                    placeholder="Search games by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-black/40 border-purple-500/20 text-green-400 placeholder:text-green-500/40"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500/60 hover:text-green-400"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
+                >
+                  <option value="all">All Categories ({games.length})</option>
+                  <option value="action">⚡ Action ({games.filter(g => g.category === 'action').length})</option>
+                  <option value="arcade">🎮 Arcade ({games.filter(g => g.category === 'arcade').length})</option>
+                  <option value="puzzle">🧩 Puzzle ({games.filter(g => g.category === 'puzzle').length})</option>
+                  <option value="racing">🏎️ Racing ({games.filter(g => g.category === 'racing').length})</option>
+                  <option value="sports">⚽ Sports ({games.filter(g => g.category === 'sports').length})</option>
+                  <option value="adventure">🗺️ Adventure ({games.filter(g => g.category === 'adventure').length})</option>
+                  <option value="shooting">🎯 Shooting ({games.filter(g => g.category === 'shooting').length})</option>
+                  <option value="strategy">🧠 Strategy ({games.filter(g => g.category === 'strategy').length})</option>
+                  <option value="casual">🎨 Casual ({games.filter(g => g.category === 'casual').length})</option>
+                  <option value="multiplayer">👥 Multiplayer ({games.filter(g => g.category === 'multiplayer').length})</option>
+                  <option value="reaction">⚡ Reaction ({games.filter(g => g.category === 'reaction').length})</option>
+                  <option value="memory">🧠 Memory ({games.filter(g => g.category === 'memory').length})</option>
+                  <option value="timing">⏱️ Timing ({games.filter(g => g.category === 'timing').length})</option>
+                  <option value="runner">🏃 Runner ({games.filter(g => g.category === 'runner').length})</option>
+                </select>
 
-              <select
-                value={difficultyFilter}
-                onChange={(e) => setDifficultyFilter(e.target.value)}
-                className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
-              >
-                <option value="all">All Difficulties</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-              
-              <div className="flex-1" />
-              
-              <div className="text-sm text-green-500/60 flex items-center">
-                Showing {games.filter(game => 
-                  (categoryFilter === 'all' || game.category === categoryFilter) &&
-                  (difficultyFilter === 'all' || game.difficulty === difficultyFilter)
-                ).length} games
+                <select
+                  value={difficultyFilter}
+                  onChange={(e) => setDifficultyFilter(e.target.value)}
+                  className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
+                >
+                  <option value="all">All Difficulties</option>
+                  <option value="easy">Easy</option>
+                  <option value="medium">Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+                
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="popular">Most Popular</option>
+                  <option value="newest">Newest First</option>
+                  <option value="difficulty">Difficulty</option>
+                </select>
               </div>
-            </div>
+              
+              <div className="mt-3 flex items-center justify-between text-sm">
+                <div className="text-green-500/60">
+                  Showing {games.filter(game => {
+                    const matchesCategory = categoryFilter === 'all' || game.category === categoryFilter;
+                    const matchesDifficulty = difficultyFilter === 'all' || game.difficulty === difficultyFilter;
+                    const matchesSearch = !searchQuery || game.name.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchesCategory && matchesDifficulty && matchesSearch;
+                  }).length} of {games.length} games
+                </div>
+                {(categoryFilter !== 'all' || difficultyFilter !== 'all' || searchQuery) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setCategoryFilter('all');
+                      setDifficultyFilter('all');
+                      setSearchQuery('');
+                    }}
+                    className="text-green-500/60 hover:text-green-400 h-auto p-1"
+                  >
+                    <X className="w-3 h-3 mr-1" />
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </Card>
 
             {games.length === 0 ? (
               <Card className="bg-black/60 border-purple-500/30 p-12 text-center">
