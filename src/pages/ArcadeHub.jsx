@@ -23,6 +23,8 @@ export default function ArcadeHub() {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [searchQuery, setSearchQuery] = useState('');
+  const [trending, setTrending] = useState([]);
+  const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -74,6 +76,32 @@ export default function ArcadeHub() {
         .slice(0, 20);
 
       setLeaderboard(leaderboardData);
+
+      // Get trending games (most played recently)
+      const recentScores = scoresData.slice(0, 100);
+      const trendingCounts = {};
+      recentScores.forEach(score => {
+        trendingCounts[score.game_id] = (trendingCounts[score.game_id] || 0) + 1;
+      });
+
+      const trendingGames = Object.entries(trendingCounts)
+        .map(([game_id, count]) => {
+          const game = activeGames.find(g => g.game_id === game_id);
+          return game ? { ...game, trendingScore: count } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.trendingScore - a.trendingScore)
+        .slice(0, 6);
+
+      setTrending(trendingGames);
+
+      // Featured games (mix of categories with high rewards)
+      const featuredGames = activeGames
+        .filter(g => g.reward_config?.base_tokens >= 15)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 6);
+
+      setFeatured(featuredGames);
 
     } catch (error) {
       console.error('[Arcade] Load error:', error);
