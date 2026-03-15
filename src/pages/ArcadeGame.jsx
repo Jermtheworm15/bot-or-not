@@ -24,6 +24,7 @@ import ArcadeChat from '@/components/arcade/ArcadeChat';
 import ArcadeSocialShare from '@/components/arcade/ArcadeSocialShare';
 import GameErrorBoundary from '@/components/arcade/GameErrorBoundary';
 import LoadingState from '@/components/arcade/LoadingState';
+import AIOpponentSelector from '@/components/arcade/AIOpponentSelector';
 
 export default function ArcadeGame() {
   const { gameId } = useParams();
@@ -42,6 +43,8 @@ export default function ArcadeGame() {
   const [aiScore, setAiScore] = useState(null);
   const [challenge, setChallenge] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [gameMode, setGameMode] = useState(null); // null, 'solo', 'ai'
+  const [aiDifficulty, setAiDifficulty] = useState('medium');
 
   useEffect(() => {
     loadGame();
@@ -95,16 +98,17 @@ export default function ArcadeGame() {
     console.log('[ArcadeGame] Score:', finalScore, 'Level:', currentLevel, 'Multiplier:', difficultyMultiplier.toFixed(2), 'Adjusted:', adjustedScore);
     
     // Simulate AI opponent if applicable
-    if (vsArcadeMaster || challenge) {
+    if (vsArcadeMaster || challenge || gameMode === 'ai') {
       try {
         const aiResult = await base44.functions.invoke('simulateAIOpponent', {
           game_id: gameId,
-          difficulty: 'hard',
+          difficulty: vsArcadeMaster ? 'hard' : aiDifficulty,
           is_arcade_master: vsArcadeMaster
         });
         
         if (aiResult.data?.success) {
           setAiScore(aiResult.data.ai_score);
+          console.log('[AI] Generated score:', aiResult.data.ai_score, 'Difficulty:', aiDifficulty);
         }
       } catch (error) {
         console.error('[AI] Simulation error:', error);
@@ -278,6 +282,25 @@ export default function ArcadeGame() {
           });
         }
       }
+      
+      // Handle regular AI opponent battles
+      if (gameMode === 'ai' && aiScore !== null && !vsArcadeMaster) {
+        const won = finalScore > aiScore;
+        
+        // Update profile with AI battle stats
+        const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+        if (profiles[0]) {
+          const arcadeStats = profiles[0].arcade_stats || {};
+          await base44.entities.UserProfile.update(profiles[0].id, {
+            arcade_stats: {
+              ...arcadeStats,
+              ai_battles_played: (arcadeStats.ai_battles_played || 0) + 1,
+              ai_battles_won: (arcadeStats.ai_battles_won || 0) + (won ? 1 : 0),
+              ai_battles_lost: (arcadeStats.ai_battles_lost || 0) + (won ? 0 : 1)
+            }
+          });
+        }
+      }
 
       // Create social feed entry for high scores
       if (isPersonalBest && finalScore >= 1000) {
@@ -307,6 +330,7 @@ export default function ArcadeGame() {
         hitLimit: playsToday >= dailyLimit,
         challengeResult: challenge ? (adjustedScore > (challenge.challenger_score || 0) ? 'won' : 'lost') : null,
         arcadeMasterResult: vsArcadeMaster && aiScore !== null ? (adjustedScore > aiScore ? 'won' : 'lost') : null,
+        aiResult: gameMode === 'ai' && aiScore !== null && !vsArcadeMaster ? (adjustedScore > aiScore ? 'won' : 'lost') : null,
         levelPassed,
         newLevel,
         adjustedScore
@@ -329,6 +353,14 @@ export default function ArcadeGame() {
     setGameState('playing');
     setScore(0);
     setRewardData(null);
+    setAiScore(null);
+  };
+  
+  const handleModeSelect = ({ mode, difficulty }) => {
+    setGameMode(mode);
+    if (difficulty) {
+      setAiDifficulty(difficulty);
+    }
   };
 
   const GameComponent = {
@@ -471,7 +503,7 @@ export default function ArcadeGame() {
 
         {/* Game Area */}
         <div className="flex-1 flex items-center justify-center p-4">
-          {gameState === 'menu' && (
+          {gameState === 'menu' && !gameMode && (
             <div className="space-y-4 w-full max-w-2xl">
               <ProgressionSystem 
                 currentLevel={currentLevel}
@@ -504,11 +536,33 @@ export default function ArcadeGame() {
                 </div>
               </div>
 
+                <AIOpponentSelector onSelect={handleModeSelect} />
+              </Card>
+            </div>
+          )}
+          
+          {gameState === 'menu' && gameMode && (
+            <div className="space-y-4 w-full max-w-2xl">
+              <Card className="bg-black/80 border-purple-500/30 p-8 text-center">
+                <div className="text-6xl mb-4">{game.icon}</div>
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  {gameMode === 'ai' ? `VS AI (${aiDifficulty})` : 'Solo Play'}
+                </h2>
+                <p className="text-green-500/80 mb-6">Level {currentLevel}</p>
+                
                 <Button
                   onClick={startGame}
-                  className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
+                  className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 mb-3"
                 >
-                  Start Level {currentLevel}
+                  Start Game
+                </Button>
+                
+                <Button
+                  onClick={() => setGameMode(null)}
+                  variant="outline"
+                  className="w-full border-green-500/30 text-green-400"
+                >
+                  Change Mode
                 </Button>
               </Card>
             </div>
@@ -546,6 +600,16 @@ export default function ArcadeGame() {
                   </Badge>
                 )}
                 
+                {rewardData.aiResult && (
+                  <Badge className={`text-lg px-4 py-2 mb-2 ${
+                    rewardData.aiResult === 'won'
+                      ? 'bg-gradient-to-r from-green-600 to-green-700'
+                      : 'bg-gradient-to-r from-red-600 to-red-700'
+                  }`}>
+                    {rewardData.aiResult === 'won' ? '🤖 AI Defeated!' : '🤖 AI Wins'}
+                  </Badge>
+                )}
+                
                 {rewardData.challengeResult && (
                   <Badge className={`text-lg px-4 py-2 mb-2 ${
                     rewardData.challengeResult === 'won'
@@ -578,7 +642,7 @@ export default function ArcadeGame() {
                     <div className="text-2xl px-4">VS</div>
                     <div className="text-center flex-1">
                       <div className="text-sm text-green-400 mb-1">
-                        {vsArcadeMaster ? '👑 Arcade Master' : 'Opponent'}
+                        {vsArcadeMaster ? '👑 Arcade Master' : gameMode === 'ai' ? `🤖 AI (${aiDifficulty})` : 'Opponent'}
                       </div>
                       <div className="text-3xl font-bold text-white">
                         {aiScore || challenge?.challenger_score}
@@ -613,10 +677,21 @@ export default function ArcadeGame() {
               <div className="flex gap-3 mb-4">
                 <InviteFriends />
                 <Button
+                  onClick={() => {
+                    setGameState('menu');
+                    setGameMode(null);
+                    setAiScore(null);
+                  }}
+                  variant="outline"
+                  className="h-12 px-6 border-yellow-500/30 text-yellow-400 hover:bg-yellow-900/30"
+                >
+                  Change Mode
+                </Button>
+                <Button
                   onClick={startGame}
                   className="flex-1 h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500"
                 >
-                  {rewardData.levelPassed ? `Play Level ${rewardData.newLevel}` : 'Retry Level'}
+                  {rewardData.levelPassed ? `Play Level ${rewardData.newLevel}` : 'Retry'}
                 </Button>
                 <Button
                   onClick={() => navigate('/ArcadeHub')}
