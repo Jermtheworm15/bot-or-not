@@ -66,7 +66,11 @@ export default function VideoVoting() {
     setLoading(true);
     try {
       const viewed = JSON.parse(sessionStorage.getItem('viewedVideos') || '[]');
-      const allVideos = await base44.entities.Video.list('-created_date', 100);
+      const allVideos = await base44.entities.Video.filter(
+        { is_active: { $ne: false } },
+        '-created_date',
+        200
+      );
       
       const unviewed = allVideos.filter(v => !viewed.includes(v.id));
       const shuffled = unviewed.sort(() => Math.random() - 0.5);
@@ -74,7 +78,16 @@ export default function VideoVoting() {
       setVideos(shuffled);
       if (shuffled.length > 0) {
         setCurrentVideo(shuffled[0]);
-        sessionStorage.setItem('viewedVideos', JSON.stringify([...viewed, shuffled[0].id].slice(-50)));
+        sessionStorage.setItem('viewedVideos', JSON.stringify([...viewed, shuffled[0].id].slice(-100)));
+        
+        // Increment view count
+        try {
+          await base44.entities.Video.update(shuffled[0].id, {
+            views: (shuffled[0].views || 0) + 1
+          });
+        } catch (error) {
+          console.error('View count error:', error);
+        }
       } else {
         sessionStorage.setItem('viewedVideos', JSON.stringify([]));
         loadVideos();
@@ -243,11 +256,20 @@ export default function VideoVoting() {
               )}
             </div>
 
-            {currentVideo.description && (
-              <div className="p-4 border-t border-purple-500/30">
-                <p className="text-sm text-green-400">{currentVideo.description}</p>
+            <div className="p-4 border-t border-purple-500/30">
+              {currentVideo.title && (
+                <h3 className="font-bold text-white mb-1">{currentVideo.title}</h3>
+              )}
+              {currentVideo.description && (
+                <p className="text-sm text-green-400 mb-2">{currentVideo.description}</p>
+              )}
+              <div className="flex items-center gap-3 text-xs text-green-500/60">
+                {currentVideo.source && <span>📹 {currentVideo.source}</span>}
+                {currentVideo.creator && <span>👤 {currentVideo.creator}</span>}
+                {currentVideo.duration && <span>⏱️ {Math.round(currentVideo.duration)}s</span>}
+                {currentVideo.views > 0 && <span>👁️ {currentVideo.views} views</span>}
               </div>
-            )}
+            </div>
           </Card>
         )}
 
