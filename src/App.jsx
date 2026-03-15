@@ -27,6 +27,7 @@ import ArcadeChallenges from './pages/ArcadeChallenges';
 import ProfileSearch from './pages/ProfileSearch';
 import ArcadeAdmin from './pages/ArcadeAdmin';
 import SystemHealth from './pages/SystemHealth';
+import VideoVoting from './pages/VideoVoting';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -97,6 +98,7 @@ const AuthenticatedApp = () => {
       <Route path="/ProfileSearch" element={<LayoutWrapper currentPageName="ProfileSearch"><ProfileSearch /></LayoutWrapper>} />
       <Route path="/ArcadeAdmin" element={<LayoutWrapper currentPageName="ArcadeAdmin"><ArcadeAdmin /></LayoutWrapper>} />
       <Route path="/SystemHealth" element={<LayoutWrapper currentPageName="SystemHealth"><SystemHealth /></LayoutWrapper>} />
+      <Route path="/VideoVoting" element={<LayoutWrapper currentPageName="VideoVoting"><VideoVoting /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
