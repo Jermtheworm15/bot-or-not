@@ -9,16 +9,16 @@ export default function RunnerGame({ onComplete }) {
   const [playerY, setPlayerY] = useState(50);
   const [obstacles, setObstacles] = useState([]);
   const [velocity, setVelocity] = useState(0);
+  const [speed, setSpeed] = useState(5);
+  const [obstaclesPassed, setObstaclesPassed] = useState(0);
   
   const animationRef = useRef();
   const startTimeRef = useRef();
 
   const GRAVITY = 0.8;
   const JUMP_FORCE = -15;
-  const OBSTACLE_SPEED = 5;
   const PLAYER_SIZE = 40;
   const OBSTACLE_WIDTH = 30;
-  const OBSTACLE_HEIGHT = 50;
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
@@ -34,16 +34,28 @@ export default function RunnerGame({ onComplete }) {
     setVelocity(newY === playerY ? 0 : newVelocity);
     setPlayerY(newY);
 
+    // Progressive difficulty
+    const currentSpeed = 5 + Math.floor(obstaclesPassed / 5) * 0.5;
+    setSpeed(currentSpeed);
+
     // Update obstacles
     const updatedObstacles = obstacles
-      .map(obs => ({ ...obs, x: obs.x - OBSTACLE_SPEED }))
-      .filter(obs => obs.x > -OBSTACLE_WIDTH);
+      .map(obs => ({ ...obs, x: obs.x - currentSpeed }))
+      .filter(obs => {
+        if (obs.x < -OBSTACLE_WIDTH && !obs.passed) {
+          setObstaclesPassed(prev => prev + 1);
+          return false;
+        }
+        return obs.x > -OBSTACLE_WIDTH;
+      });
 
-    // Add new obstacles
-    if (updatedObstacles.length === 0 || updatedObstacles[updatedObstacles.length - 1].x < 70) {
+    // Add new obstacles with varying gaps
+    const minGap = Math.max(40, 60 - Math.floor(obstaclesPassed / 10) * 5);
+    if (updatedObstacles.length === 0 || updatedObstacles[updatedObstacles.length - 1].x < minGap) {
       updatedObstacles.push({
         x: 100,
-        height: 40 + Math.random() * 30
+        height: 35 + Math.random() * 40,
+        passed: false
       });
     }
 
@@ -74,7 +86,9 @@ export default function RunnerGame({ onComplete }) {
 
     // Update score
     const duration = (Date.now() - startTimeRef.current) / 1000;
-    setScore(Math.round(duration * 10));
+    const distanceScore = Math.round(duration * 10);
+    const obstacleBonus = obstaclesPassed * 50;
+    setScore(distanceScore + obstacleBonus);
 
     animationRef.current = requestAnimationFrame(gameLoop);
   };
@@ -105,6 +119,7 @@ export default function RunnerGame({ onComplete }) {
         <Play className="w-12 h-12 mx-auto mb-2 text-green-400" />
         <h3 className="text-2xl font-bold text-white">Pixel Runner</h3>
         <div className="text-3xl font-bold text-yellow-400">{score}</div>
+        {gameStarted && <div className="text-sm text-green-500/60">Passed: {obstaclesPassed} • Speed: {speed.toFixed(1)}x</div>}
         {!gameStarted && (
           <div className="text-green-400 text-sm mt-2">Tap anywhere to jump!</div>
         )}

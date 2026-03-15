@@ -4,9 +4,12 @@ import { MousePointer2 } from 'lucide-react';
 
 export default function ClickerGame({ onComplete }) {
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(45);
   const [targets, setTargets] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
+  const [clicks, setClicks] = useState(0);
+  const [accuracy, setAccuracy] = useState(100);
+  const [missedClicks, setMissedClicks] = useState(0);
   
   const intervalRef = useRef();
 
@@ -18,7 +21,8 @@ export default function ClickerGame({ onComplete }) {
 
       return () => clearInterval(intervalRef.current);
     } else if (timeLeft === 0) {
-      onComplete(score, { clicks: score, duration: 30 });
+      const bonusScore = Math.round(score * (accuracy / 100));
+      onComplete(score + bonusScore, { clicks, accuracy, duration: 45 });
     }
   }, [gameStarted, timeLeft]);
 
@@ -29,14 +33,17 @@ export default function ClickerGame({ onComplete }) {
           const newTargets = prev.filter(t => t.lifetime > 0)
             .map(t => ({ ...t, lifetime: t.lifetime - 100 }));
           
-          if (newTargets.length < 5 && Math.random() < 0.5) {
+          const maxTargets = 3 + Math.floor((45 - timeLeft) / 10);
+          if (newTargets.length < maxTargets && Math.random() < 0.6) {
+            const fastTarget = Math.random() < 0.3;
             newTargets.push({
               id: Date.now(),
               x: Math.random() * 85,
               y: Math.random() * 85,
-              size: 8 + Math.random() * 8,
-              points: Math.round(50 + Math.random() * 50),
-              lifetime: 2000
+              size: fastTarget ? 6 + Math.random() * 6 : 8 + Math.random() * 8,
+              points: fastTarget ? Math.round(100 + Math.random() * 100) : Math.round(50 + Math.random() * 50),
+              lifetime: fastTarget ? 1500 : 2500,
+              isFast: fastTarget
             });
           }
           
@@ -51,12 +58,29 @@ export default function ClickerGame({ onComplete }) {
   const handleStart = () => {
     setGameStarted(true);
     setScore(0);
-    setTimeLeft(30);
+    setTimeLeft(45);
+    setClicks(0);
+    setMissedClicks(0);
+    setAccuracy(100);
   };
 
-  const handleTargetClick = (target) => {
+  const handleTargetClick = (e, target) => {
+    e.stopPropagation();
     setScore(prev => prev + target.points);
     setTargets(prev => prev.filter(t => t.id !== target.id));
+    setClicks(prev => prev + 1);
+    updateAccuracy(clicks + 1, missedClicks);
+  };
+  
+  const handleMiss = () => {
+    setMissedClicks(prev => prev + 1);
+    updateAccuracy(clicks, missedClicks + 1);
+  };
+  
+  const updateAccuracy = (totalClicks, missed) => {
+    if (totalClicks + missed > 0) {
+      setAccuracy(Math.round((totalClicks / (totalClicks + missed)) * 100));
+    }
   };
 
   return (
@@ -68,6 +92,9 @@ export default function ClickerGame({ onComplete }) {
           <div className="text-2xl font-bold text-yellow-400">{score}</div>
           <div className="text-2xl font-bold text-green-400">{timeLeft}s</div>
         </div>
+        {gameStarted && (
+          <div className="text-sm text-green-500/60">Accuracy: {accuracy}% • Clicks: {clicks}</div>
+        )}
       </div>
 
       {!gameStarted ? (
@@ -77,22 +104,30 @@ export default function ClickerGame({ onComplete }) {
         >
           <div className="text-center">
             <div className="text-2xl font-bold text-white mb-2">Click to Start!</div>
-            <div className="text-green-400">Click as many targets as you can in 30 seconds</div>
+            <div className="text-green-400">Click as many targets as you can in 45 seconds</div>
+            <div className="text-sm text-green-500/60 mt-2">⚡ Fast targets = More points!</div>
           </div>
         </div>
       ) : (
-        <div className="relative w-full h-96 bg-zinc-900 rounded-lg overflow-hidden">
+        <div 
+          className="relative w-full h-96 bg-zinc-900 rounded-lg overflow-hidden"
+          onClick={handleMiss}
+        >
           {targets.map(target => (
             <div
               key={target.id}
-              onClick={() => handleTargetClick(target)}
-              className="absolute bg-gradient-to-br from-blue-500 to-purple-600 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center font-bold text-white"
+              onClick={(e) => handleTargetClick(e, target)}
+              className={`absolute rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center font-bold text-white ${
+                target.isFast 
+                  ? 'bg-gradient-to-br from-orange-500 to-red-600 animate-pulse' 
+                  : 'bg-gradient-to-br from-blue-500 to-purple-600'
+              }`}
               style={{
                 left: `${target.x}%`,
                 top: `${target.y}%`,
                 width: `${target.size}%`,
                 height: `${target.size}%`,
-                opacity: target.lifetime / 2000
+                opacity: target.lifetime / (target.isFast ? 1500 : 2500)
               }}
             >
               <span className="text-xs">{target.points}</span>
@@ -103,7 +138,8 @@ export default function ClickerGame({ onComplete }) {
             <div className="absolute inset-0 flex items-center justify-center bg-black/80">
               <div className="text-center">
                 <div className="text-4xl font-bold text-green-400 mb-2">Time's Up!</div>
-                <div className="text-2xl text-yellow-400">Score: {score}</div>
+                <div className="text-2xl text-yellow-400 mb-2">Score: {score}</div>
+                <div className="text-sm text-green-500/60">Accuracy: {accuracy}% • Clicks: {clicks}</div>
               </div>
             </div>
           )}
