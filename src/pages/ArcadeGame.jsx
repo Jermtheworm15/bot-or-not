@@ -18,6 +18,10 @@ import SnakeGame from '@/components/arcade/SnakeGame';
 import FlappyGame from '@/components/arcade/FlappyGame';
 import BreakoutGame from '@/components/arcade/BreakoutGame';
 import Match3Game from '@/components/arcade/Match3Game';
+import PlatformerGame from '@/components/arcade/PlatformerGame';
+import MazeAdventureGame from '@/components/arcade/MazeAdventureGame';
+import SpaceShooterGame from '@/components/arcade/SpaceShooterGame';
+import RacingGame from '@/components/arcade/RacingGame';
 import InviteFriends from '@/components/social/InviteFriends';
 import ProgressionSystem from '@/components/arcade/ProgressionSystem';
 import ArcadeChat from '@/components/arcade/ArcadeChat';
@@ -390,7 +394,31 @@ export default function ArcadeGame() {
     'quick-click': ClickerGame,
     'simon-says': PatternGame,
     'card-flip': MemoryGame,
-    'sequence-recall': PatternGame
+    'sequence-recall': PatternGame,
+    // Retro platformers
+    'pixel-jumper': PlatformerGame,
+    'sky-climber': PlatformerGame,
+    'cave-explorer': PlatformerGame,
+    // Adventure
+    'maze-quest': MazeAdventureGame,
+    'dungeon-crawler': MazeAdventureGame,
+    'temple-run-retro': MazeAdventureGame,
+    // Racing
+    'retro-racer': RacingGame,
+    'speed-demon': RacingGame,
+    'drift-master': RacingGame,
+    // Shooters
+    'space-invaders-retro': SpaceShooterGame,
+    'galactic-defender': SpaceShooterGame,
+    'laser-blast': SpaceShooterGame,
+    // Runners
+    'endless-dash': RunnerGame,
+    'sky-runner': RunnerGame,
+    'neon-dash': RunnerGame,
+    // Puzzle
+    'block-drop': Match3Game,
+    'gem-swap': Match3Game,
+    'color-chain': ColorMatchGame
   }[gameId] || null;
 
   if (loading) {
