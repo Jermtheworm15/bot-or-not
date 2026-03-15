@@ -382,20 +382,22 @@ export default function ArcadeHub() {
                   className="bg-black/60 border border-purple-500/30 text-green-400 rounded px-3 py-2 cursor-pointer"
                 >
                   <option value="all">All Categories ({games.length})</option>
-                  <option value="action">⚡ Action ({games.filter(g => g.category === 'action').length})</option>
-                  <option value="arcade">🎮 Arcade ({games.filter(g => g.category === 'arcade').length})</option>
-                  <option value="puzzle">🧩 Puzzle ({games.filter(g => g.category === 'puzzle').length})</option>
-                  <option value="racing">🏎️ Racing ({games.filter(g => g.category === 'racing').length})</option>
-                  <option value="sports">⚽ Sports ({games.filter(g => g.category === 'sports').length})</option>
+                  <option value="platformer">🏃 Platformer ({games.filter(g => g.category === 'platformer').length})</option>
                   <option value="adventure">🗺️ Adventure ({games.filter(g => g.category === 'adventure').length})</option>
+                  <option value="racing">🏎️ Racing ({games.filter(g => g.category === 'racing').length})</option>
+                  <option value="shooter">👾 Shooter ({games.filter(g => g.category === 'shooter').length})</option>
+                  <option value="runner">🏃 Runner ({games.filter(g => g.category === 'runner').length})</option>
+                  <option value="puzzle">🧩 Puzzle ({games.filter(g => g.category === 'puzzle').length})</option>
+                  <option value="reaction">⚡ Reaction ({games.filter(g => g.category === 'reaction').length})</option>
+                  <option value="memory">🧠 Memory ({games.filter(g => g.category === 'memory').length})</option>
+                  <option value="timing">⏱️ Timing ({games.filter(g => g.category === 'timing').length})</option>
+                  <option value="arcade">🎮 Arcade ({games.filter(g => g.category === 'arcade').length})</option>
+                  <option value="action">⚡ Action ({games.filter(g => g.category === 'action').length})</option>
+                  <option value="sports">⚽ Sports ({games.filter(g => g.category === 'sports').length})</option>
                   <option value="shooting">🎯 Shooting ({games.filter(g => g.category === 'shooting').length})</option>
                   <option value="strategy">🧠 Strategy ({games.filter(g => g.category === 'strategy').length})</option>
                   <option value="casual">🎨 Casual ({games.filter(g => g.category === 'casual').length})</option>
                   <option value="multiplayer">👥 Multiplayer ({games.filter(g => g.category === 'multiplayer').length})</option>
-                  <option value="reaction">⚡ Reaction ({games.filter(g => g.category === 'reaction').length})</option>
-                  <option value="memory">🧠 Memory ({games.filter(g => g.category === 'memory').length})</option>
-                  <option value="timing">⏱️ Timing ({games.filter(g => g.category === 'timing').length})</option>
-                  <option value="runner">🏃 Runner ({games.filter(g => g.category === 'runner').length})</option>
                 </select>
 
                 <select
