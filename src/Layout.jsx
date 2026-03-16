@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Menu, MessageCircle, Settings, LogOut } from 'lucide-react';
 import TopShowcase from './components/TopShowcase';
@@ -15,25 +15,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SectionalMenu from './components/navigation/SectionalMenu';
 
 export default function Layout({ children, currentPageName }) {
-  const [currentUser, setCurrentUser] = React.useState(null);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(null);
+  const { user: currentUser, isAuthenticated } = useAuth();
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const user = await base44.auth.me();
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-      } catch (err) {
-        console.log('Auth error:', err);
-        setIsAuthenticated(false);
-      }
-    };
-    checkAuth();
-  }, []);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -57,15 +42,6 @@ export default function Layout({ children, currentPageName }) {
       navigate('/Landing');
     }
   }, [isAuthenticated, currentPageName, navigate]);
-
-  // Show loading state while checking auth
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-green-400">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden pb-20">
