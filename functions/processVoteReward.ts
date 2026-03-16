@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 const BASE_REWARD = 10;
+// Keep in sync with REWARDS in grantReward.js
 const STREAK_REWARDS = {
   3: 30,
   5: 75,

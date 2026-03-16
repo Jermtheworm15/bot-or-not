@@ -1,12 +1,14 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
-// Reward configuration
+// Reward configuration — single source of truth for all reward amounts
+// Keep in sync with STREAK_REWARDS in processVoteReward.js
 const REWARDS = {
   correct_vote: 10,
   vote_streak_3: 30,
   vote_streak_5: 75,
   vote_streak_10: 200,
   vote_streak_25: 750,
+  vote_streak_50: 2000,
   tournament_entry: 50,
   tournament_win: 1000,
   tournament_place_2: 500,

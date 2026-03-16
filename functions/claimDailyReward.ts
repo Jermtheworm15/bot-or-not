@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
             streak_type: 'login'
         });
 
-        const dayNumber = loginStreaks.length > 0 
+        const dayNumber = loginStreaks.length > 0 && loginStreaks[0].current_streak > 0
             ? (loginStreaks[0].current_streak % 7) || 7
             : 1;
 

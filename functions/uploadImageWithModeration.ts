@@ -12,9 +12,9 @@ Deno.serve(async (req) => {
         console.log('[Upload] Starting upload for user:', user.email);
 
         const payload = await req.json();
-        const { file_url, uploaderName, isBot } = payload;
+        const { file_url, uploaderName } = payload;
 
-        console.log('[Upload] Received data - URL:', file_url, 'Name:', uploaderName, 'IsBot:', isBot);
+        console.log('[Upload] Received data - URL:', file_url, 'Name:', uploaderName);
 
         if (!file_url) {
             console.error('[Upload] No file URL provided');
@@ -83,6 +83,10 @@ Respond with: is_appropriate (boolean), reason (string explaining why it passed 
         });
 
         console.log('[Upload] AI analysis complete');
+
+        // Determine isBot server-side from AI analysis (never trust client)
+        // TODO: Enhance AI analysis prompt to explicitly detect AI-generated images
+        const isBot = aiAnalysis?.is_ai_generated === true;
 
         // Atomically get next upload sequence number
         console.log('[Upload] Getting upload sequence number...');
