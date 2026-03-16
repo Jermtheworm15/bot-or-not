@@ -15,7 +15,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SectionalMenu from './components/navigation/SectionalMenu';
 
 export default function Layout({ children, currentPageName }) {
-  const { user: currentUser, isAuthenticated } = useAuth();
+  const { user: currentUser, isLoadingAuth } = useAuth();
+  const isAuthenticated = !isLoadingAuth && !!currentUser;
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
