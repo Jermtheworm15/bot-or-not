@@ -474,54 +474,42 @@ export default function Home() {
       user_email: user.email
     });
 
-    // Process vote reward if correct
-    if (correct) {
-      try {
-        const rewardResult = await base44.functions.invoke('processVoteReward', {
-          vote_id: vote.id,
-          was_correct: correct,
-          image_id: votedItem.id
-        });
+    // Process vote reward (handles streak tracking + token grants server-side)
+    try {
+      const rewardResult = await base44.functions.invoke('processVoteReward', {
+        vote_id: vote.id,
+        was_correct: correct,
+        image_id: votedItem.id
+      });
 
-        if (rewardResult.data?.success) {
-          const rewardData = rewardResult.data;
-          let message = `Correct vote!`;
-          if (rewardData.streak_bonus > 0) {
-            message = rewardData.streak_message || `${rewardData.current_streak}-vote streak!`;
-          }
-
-          setRewardNotification({
-            amount: rewardData.reward_amount,
-            message: message,
-            streak: rewardData.current_streak
-          });
+      if (correct && rewardResult.data?.success) {
+        const rewardData = rewardResult.data;
+        let message = `Correct vote!`;
+        if (rewardData.streak_bonus > 0) {
+          message = rewardData.streak_message || `${rewardData.current_streak}-vote streak!`;
         }
-      } catch (error) {
-        console.error('[Reward] Error processing vote reward:', error);
+        setRewardNotification({
+          amount: rewardData.reward_amount,
+          message: message,
+          streak: rewardData.current_streak
+        });
       }
+    } catch (error) {
+      console.error('[Reward] Error processing vote reward:', error);
+    }
 
-      // Update voting streak
+    // Create social feed activity for milestones
+    if (correct && newStreak % 10 === 0 && newStreak > 0) {
       try {
-        await base44.functions.invoke('updateStreak', {
-          streak_type: 'voting'
+        await base44.entities.SocialFeed.create({
+          user_email: user.email,
+          activity_type: 'vote_milestone',
+          title: `${newStreak} Correct Votes!`,
+          description: `Achieved ${newStreak} correct votes in a row`,
+          metadata: { streak: newStreak }
         });
       } catch (error) {
-        console.error('[Streak] Error updating voting streak:', error);
-      }
-
-      // Create social feed activity for milestones
-      if (newStreak % 10 === 0 && newStreak > 0) {
-        try {
-          await base44.entities.SocialFeed.create({
-            user_email: user.email,
-            activity_type: 'vote_milestone',
-            title: `${newStreak} Correct Votes!`,
-            description: `Achieved ${newStreak} correct votes in a row`,
-            metadata: { streak: newStreak }
-          });
-        } catch (error) {
-          console.error('[Feed] Error creating feed item:', error);
-        }
+        console.error('[Feed] Error creating feed item:', error);
       }
     }
 
