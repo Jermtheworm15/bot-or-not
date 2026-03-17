@@ -5,6 +5,7 @@ import ShareButton from '@/components/social/ShareButton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
+import AchievementsDisplay from '@/components/achievements/AchievementsDisplay';
 import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart, Bot, User } from 'lucide-react';
 import FollowButton from '@/components/community/FollowButton';
 import DemographicsForm from '@/components/community/DemographicsForm';
