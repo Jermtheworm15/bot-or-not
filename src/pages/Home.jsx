@@ -388,14 +388,26 @@ export default function Home() {
         playSound.achievement();
       }
 
+      const newPoints = (userProfile.points || 0) + totalPoints;
+      const oldLevel = userProfile.level || 1;
+      const newLevel = getLevel(newPoints);
+      const newTier = getTier(newLevel);
+
       const updatedProfile = await base44.entities.UserProfile.update(userProfile.id, {
-        points: (userProfile.points || 0) + totalPoints,
+        points: newPoints,
+        level: newLevel,
+        tier: newTier,
         daily_votes: (userProfile.daily_votes || 0) + 1,
         weekly_votes: (userProfile.weekly_votes || 0) + 1,
         perfect_streak: Math.max(userProfile.perfect_streak || 0, newStreak),
         badges: newBadges,
         last_vote_date: new Date().toISOString()
       });
+
+      // Trigger level-up celebration if level crossed
+      if (newLevel > oldLevel) {
+        setLevelUpData({ newLevel, newTier });
+      }
 
       // Create activity for real-time feed
       await base44.entities.Activity.create({
