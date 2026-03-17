@@ -661,6 +661,15 @@ export default function Home() {
           onComplete={() => setRewardNotification(null)}
         />
       )}
+
+      {/* Level Up Celebration */}
+      {levelUpData && (
+        <LevelUpCelebration
+          newLevel={levelUpData.newLevel}
+          newTier={levelUpData.newTier}
+          onComplete={() => setLevelUpData(null)}
+        />
+      )}
       
       <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-center h-screen overflow-hidden pt-16 pb-24' : 'justify-center min-h-screen py-8'} px-4`}>
         {/* Content Display - Main Focal Point */}
