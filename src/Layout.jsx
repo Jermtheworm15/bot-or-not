@@ -172,6 +172,9 @@ export default function Layout({ children, currentPageName }) {
                             </div>
                             </div>
 
+      {/* B.O.T. Guide */}
+      {isAuthenticated && <BOTGuide totalVotes={totalVotes} />}
+
       {/* Top Showcase */}
       <TopShowcase />
 
