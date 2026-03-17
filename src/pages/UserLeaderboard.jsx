@@ -124,6 +124,10 @@ export default function UserLeaderboard() {
           accuracy: accuracy,
           perfectStreak: profile.perfect_streak || 0,
           tier: profile.tier || 'bronze',
+          botAccuracy: profile.bot_accuracy || 0,
+          humanAccuracy: profile.human_accuracy || 0,
+          botVotesCount: profile.bot_votes_count || 0,
+          humanVotesCount: profile.human_votes_count || 0,
           latitude: profile.latitude,
           longitude: profile.longitude,
           zip_code: profile.zip_code
@@ -158,6 +162,10 @@ export default function UserLeaderboard() {
         sorted = leaderboardData.sort((a, b) => b.accuracy - a.accuracy);
       } else if (sortBy === 'streak') {
         sorted = leaderboardData.sort((a, b) => b.perfectStreak - a.perfectStreak);
+      } else if (sortBy === 'bot_accuracy') {
+        sorted = leaderboardData.filter(u => u.botVotesCount >= 5).sort((a, b) => b.botAccuracy - a.botAccuracy);
+      } else if (sortBy === 'human_accuracy') {
+        sorted = leaderboardData.filter(u => u.humanVotesCount >= 5).sort((a, b) => b.humanAccuracy - a.humanAccuracy);
       } else {
         sorted = leaderboardData.sort((a, b) => b.correctVotes - a.correctVotes);
       }
@@ -271,15 +279,21 @@ export default function UserLeaderboard() {
                 </span>
               </div>
               
-              <div className="flex gap-4 text-sm">
+              <div className="flex flex-wrap gap-3 text-sm">
                 <div className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-yellow-400" />
                   <span className="text-white font-semibold">{user.points}</span>
                   <span className="text-zinc-500">pts</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Target className="w-4 h-4 text-green-400" />
-                  <span className="text-white">{user.accuracy.toFixed(0)}%</span>
+                  <Bot className="w-4 h-4 text-red-400" />
+                  <span className="text-red-400 font-semibold">{user.botAccuracy.toFixed(0)}%</span>
+                  <span className="text-zinc-500 text-xs">bot</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <User className="w-4 h-4 text-green-400" />
+                  <span className="text-green-400 font-semibold">{user.humanAccuracy.toFixed(0)}%</span>
+                  <span className="text-zinc-500 text-xs">human</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Trophy className="w-4 h-4 text-orange-400" />
@@ -359,7 +373,9 @@ export default function UserLeaderboard() {
           onViewModeChange={setViewMode}
           sortOptions={[
             { value: 'points', label: 'Points', icon: Star },
-            { value: 'accuracy', label: 'Accuracy', icon: Target },
+            { value: 'bot_accuracy', label: 'Bot Accuracy', icon: Bot },
+            { value: 'human_accuracy', label: 'Human Accuracy', icon: User },
+            { value: 'accuracy', label: 'Overall Accuracy', icon: Target },
             { value: 'streak', label: 'Streak', icon: Trophy },
             { value: 'correct', label: 'Correct', icon: TrendingUp }
           ]}
