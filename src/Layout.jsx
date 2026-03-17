@@ -176,6 +176,9 @@ export default function Layout({ children, currentPageName }) {
       {/* B.O.T. Guide */}
       {isAuthenticated && <BOTGuide totalVotes={totalVotes} />}
 
+      {/* Achievement Unlock Popup */}
+      <AchievementUnlockPopup />
+
       {/* Top Showcase */}
       <TopShowcase />
 
