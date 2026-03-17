@@ -193,7 +193,7 @@ export default function Onboarding() {
                 
                 <input
                   type="text"
-                  placeholder="Enter your zip code..."
+                  placeholder="Zip code (optional)..."
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
                   maxLength="5"
@@ -230,7 +230,7 @@ export default function Onboarding() {
                             Upload Profile Photo
                           </p>
                           <p className="text-sm text-zinc-500 mt-1">
-                            PNG, JPG up to 10MB
+                            Optional — PNG, JPG up to 10MB
                           </p>
                         </div>
                       </div>
@@ -240,7 +240,7 @@ export default function Onboarding() {
                 
                 <Button
                   onClick={handleUsernameSubmit}
-                  disabled={!username.trim() || !zipCode.trim() || !profileImage || isUploading}
+                  disabled={!username.trim() || isUploading}
                   className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-bold"
                 >
                   {isUploading ? 'Uploading...' : 'Start Playing'} <ArrowRight className="ml-2 w-5 h-5" />
