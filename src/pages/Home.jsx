@@ -777,6 +777,8 @@ export default function Home() {
             totalVotes={stats.total}
             correctVotes={stats.correct}
             streak={stats.streak}
+            botAccuracy={userProfile?.bot_accuracy}
+            humanAccuracy={userProfile?.human_accuracy}
           />
         </div>
 

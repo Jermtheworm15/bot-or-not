@@ -5,7 +5,7 @@ import ShareButton from '@/components/social/ShareButton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
-import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart } from 'lucide-react';
+import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart, Bot, User } from 'lucide-react';
 import FollowButton from '@/components/community/FollowButton';
 import DemographicsForm from '@/components/community/DemographicsForm';
 import BioEditor from '@/components/profile/BioEditor';
@@ -327,17 +327,33 @@ export default function Profile() {
               <Progress value={levelProgress} className="h-3" />
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div className="bg-red-950/40 border border-red-500/30 rounded-lg p-3 text-center">
+                <Bot className="w-6 h-6 text-red-400 mx-auto mb-1" />
+                <p className="text-2xl font-bold text-red-400">{(profile?.bot_accuracy || 0).toFixed(0)}%</p>
+                <p className="text-xs text-zinc-400">Bot Detection</p>
+                <p className="text-xs text-zinc-500">{profile?.bot_votes_count || 0} votes</p>
+              </div>
+              
+              <div className="bg-green-950/40 border border-green-500/30 rounded-lg p-3 text-center">
+                <User className="w-6 h-6 text-green-400 mx-auto mb-1" />
+                <p className="text-2xl font-bold text-green-400">{(profile?.human_accuracy || 0).toFixed(0)}%</p>
+                <p className="text-xs text-zinc-400">Human Detection</p>
+                <p className="text-xs text-zinc-500">{profile?.human_votes_count || 0} votes</p>
+              </div>
+
+              <div className="bg-zinc-800 rounded-lg p-3 text-center">
+                <TrendingUp className="w-6 h-6 text-green-400 mx-auto mb-1" />
+                <p className="text-2xl font-bold text-white">{stats.accuracy.toFixed(0)}%</p>
+                <p className="text-xs text-zinc-400">Overall Accuracy</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="bg-zinc-800 rounded-lg p-3 text-center">
                 <Target className="w-6 h-6 text-purple-400 mx-auto mb-1" />
                 <p className="text-2xl font-bold text-white">{stats.total}</p>
                 <p className="text-xs text-zinc-400">Total Votes</p>
-              </div>
-              
-              <div className="bg-zinc-800 rounded-lg p-3 text-center">
-                <TrendingUp className="w-6 h-6 text-green-400 mx-auto mb-1" />
-                <p className="text-2xl font-bold text-white">{stats.accuracy.toFixed(0)}%</p>
-                <p className="text-xs text-zinc-400">Accuracy</p>
               </div>
               
               <div className="bg-zinc-800 rounded-lg p-3 text-center">

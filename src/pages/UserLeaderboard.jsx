@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight, Users, MapPin } from 'lucide-react';
+import { Trophy, Star, Target, TrendingUp, Crown, ChevronLeft, ChevronRight, Users, MapPin, Bot, User } from 'lucide-react';
 import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
 import ClickableUsername from '@/components/community/ClickableUsername';
 
