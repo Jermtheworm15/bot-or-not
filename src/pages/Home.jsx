@@ -11,6 +11,8 @@ import VotingButtons from '@/components/voting/VotingButtons';
 import StatsBar from '@/components/voting/StatsBar';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
+import ReferralBanner from '@/components/social/ReferralBanner';
+import ReferralNudge from '@/components/social/ReferralNudge';
 import SuccessExplosion from '@/components/gamification/SuccessExplosion';
 import ComboCounter from '@/components/gamification/ComboCounter';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
