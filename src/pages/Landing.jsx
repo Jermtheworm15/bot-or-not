@@ -37,8 +37,10 @@ export default function Landing() {
     base44.auth.redirectToLogin(nextUrl);
   };
 
+  if (showSplash) return <SplashScreen onComplete={handleSplashComplete} />;
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 text-white overflow-hidden flex flex-col">
       {/* Animated Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/40 via-zinc-950 to-emerald-950/30 pointer-events-none" />
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
