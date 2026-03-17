@@ -159,6 +159,7 @@ export default function Landing() {
           </div>
         </motion.div>
       </div>
+      <AppFooter />
     </div>
   );
 }
