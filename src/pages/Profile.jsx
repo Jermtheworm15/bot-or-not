@@ -443,6 +443,9 @@ export default function Profile() {
           <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
         )}
 
+        {/* Referral Section */}
+        <ProfileReferralSection userEmail={user?.email} isOwnProfile={isOwnProfile} />
+
         {/* Achievements */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
