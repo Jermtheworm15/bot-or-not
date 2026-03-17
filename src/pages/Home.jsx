@@ -20,6 +20,8 @@ import MobileNav from '@/components/mobile/MobileNav';
 import ImageComments from '@/components/comments/ImageComments';
 import DifficultyRating from '@/components/voting/DifficultyRating';
 import RewardNotification from '@/components/rewards/RewardNotification';
+import LevelUpCelebration from '@/components/gamification/LevelUpCelebration';
+import { getLevel, getTier } from '@/lib/progressionUtils';
 
 
 
@@ -47,6 +49,7 @@ export default function Home() {
   const pullRef = useRef(null);
   const loadingGuard = useRef(false);
   const [rewardNotification, setRewardNotification] = useState(null);
+  const [levelUpData, setLevelUpData] = useState(null);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
