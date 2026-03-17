@@ -643,6 +643,9 @@ export default function Home() {
         />
       )}
 
+      {/* Referral Nudge */}
+      <ReferralNudge show={showReferralNudge} onDismiss={() => setShowReferralNudge(false)} />
+
       {/* Level Up Celebration */}
       {levelUpData && (
         <LevelUpCelebration
@@ -652,6 +655,9 @@ export default function Home() {
         />
       )}
       
+      {/* Invite Banner — mobile only, shown above content */}
+      {isMobile && <div className="relative z-10"><ReferralBanner /></div>}
+
       <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-center h-screen overflow-hidden pt-16 pb-24' : 'justify-center min-h-screen py-8'} px-4`}>
         {/* Content Display - Main Focal Point */}
         <div className={`w-full ${isMobile ? 'max-w-xs mb-1' : 'max-w-3xl mb-6'} space-y-1`}>
@@ -715,7 +721,8 @@ export default function Home() {
         {/* Compact bottom controls - Desktop only */}
         {!isMobile && (
           <>
-            <div className="absolute top-4 right-4 z-20">
+            <div className="absolute top-4 right-4 z-20 flex gap-2 items-center">
+              <ReferralBanner />
               <InviteFriends />
             </div>
             <div className="absolute top-4 left-4 z-20">
