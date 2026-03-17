@@ -12,6 +12,7 @@ import ChatbotWindow from './components/chatbot/ChatbotWindow';
 import CompactBottomNav from './components/navigation/CompactBottomNav';
 import NotificationBell from './components/notifications/NotificationBell';
 import BOTGuide from './components/bot/BOTGuide';
+import AchievementUnlockPopup from './components/achievements/AchievementUnlockPopup';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SectionalMenu from './components/navigation/SectionalMenu';
 

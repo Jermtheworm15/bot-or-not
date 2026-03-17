@@ -442,16 +442,16 @@ export default function Profile() {
           <DemographicsForm profile={profile} onSave={handleDemographicsSave} />
         )}
 
-        {/* Badges */}
+        {/* Achievements */}
         <Card className="bg-zinc-900 border-purple-500/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="w-6 h-6 text-amber-400" />
-              Badges & Achievements
+              Achievements
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <BadgeDisplay badges={profile?.badges || []} size="lg" />
+            <AchievementsDisplay userEmail={user?.email} />
           </CardContent>
         </Card>
 
