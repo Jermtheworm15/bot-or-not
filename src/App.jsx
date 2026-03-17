@@ -21,7 +21,7 @@ import RewardHistory from './pages/RewardHistory';
 import SocialFeed from './pages/SocialFeed';
 import DailyRewards from './pages/DailyRewards';
 import BlitzMode from './pages/BlitzMode';
-import ArcadeHub from './pages/ArcadeHub';
+import ArcadeHub from './pages/ArcadeHub.jsx';
 import ArcadeGame from './pages/ArcadeGame';
 import ArcadeChallenges from './pages/ArcadeChallenges';
 import ProfileSearch from './pages/ProfileSearch';
