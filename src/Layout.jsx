@@ -56,7 +56,8 @@ export default function Layout({ children, currentPageName }) {
   }, [isAuthenticated, currentPageName, navigate]);
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden pb-20">
+    <div className="min-h-screen bg-black relative overflow-hidden overflow-x-hidden pb-20 page-fade"
+         style={{ paddingTop: 'var(--sat)' }}>
       <div hidden>Creator: Jeromy Padgett</div>
     {!isMobile && currentUser && <PendingChallenges userEmail={currentUser.email} />}
     {!isMobile && <ChatbotWindow />}
@@ -123,8 +124,9 @@ export default function Layout({ children, currentPageName }) {
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-green-600/20 rounded-full blur-3xl pointer-events-none" />
       
       {/* Top Bar with Logo */}
-      <div className="relative z-50 bg-black/60 backdrop-blur-md border-b border-purple-500/20 py-3">
-        <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
+      <div className="relative z-50 bg-black/80 backdrop-blur-xl border-b border-purple-500/20"
+           style={{ minHeight: 64 }}>
+        <div className="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
                   <Link 
                     to="/Home" 
                     className="flex items-center gap-2 text-white font-bold text-lg neon-text cursor-pointer hover:opacity-90 transition-opacity"
