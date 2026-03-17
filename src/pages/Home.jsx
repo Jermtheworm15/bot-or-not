@@ -656,6 +656,9 @@ export default function Home() {
         />
       )}
       
+      {/* Trust Signals — mobile only */}
+      {isMobile && <div className="relative z-10"><TrustSignals /></div>}
+
       {/* Invite Banner — mobile only, shown above content */}
       {isMobile && <div className="relative z-10"><ReferralBanner /></div>}
 
@@ -722,6 +725,9 @@ export default function Home() {
         {/* Compact bottom controls - Desktop only */}
         {!isMobile && (
           <>
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20">
+              <TrustSignals />
+            </div>
             <div className="absolute top-4 right-4 z-20 flex gap-2 items-center">
               <ReferralBanner />
               <InviteFriends />

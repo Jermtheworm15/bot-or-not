@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import BadgeDisplay from '@/components/gamification/BadgeDisplay';
 import AchievementsDisplay from '@/components/achievements/AchievementsDisplay';
 import ProfileReferralSection from '@/components/social/ProfileReferralSection';
+import AppFooter from '@/components/common/AppFooter';
 import { Trophy, Star, Zap, Target, TrendingUp, Users, Heart, Bot, User } from 'lucide-react';
 import FollowButton from '@/components/community/FollowButton';
 import DemographicsForm from '@/components/community/DemographicsForm';
