@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Trophy, Crown, Sparkles, Zap, Shield } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export default function LevelUpCelebration({ newLevel, newTier, onComplete }) {
   const config = TIER_CONFIGS[newTier] || TIER_CONFIGS.bronze;
   const Icon = config.icon;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(onComplete, 3500);
     return () => clearTimeout(timer);
   }, [onComplete]);
