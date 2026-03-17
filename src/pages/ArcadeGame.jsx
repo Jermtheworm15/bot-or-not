@@ -421,7 +421,11 @@ export default function ArcadeGame() {
     // Puzzle
     'block-drop': Match3Game,
     'gem-swap': Match3Game,
-    'color-chain': ColorMatchGame
+    'color-chain': ColorMatchGame,
+    // AI Games
+    'spot-the-bot-blitz': SpotTheBotGame,
+    'deepfake-or-nah': DeepfakeOrNahGame,
+    'ai-artist-challenge': AIArtistGame,
   }[gameId] || null;
 
   if (loading) {
