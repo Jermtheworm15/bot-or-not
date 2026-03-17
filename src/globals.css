@@ -13,6 +13,10 @@ html, body {
   overscroll-behavior: none;
 }
 
+button, [role="button"] {
+  min-height: 44px;
+}
+
 button, [role="button"], a, nav, .mobile-nav, [class*="nav-item"], [class*="icon"] {
   user-select: none;
   -webkit-user-select: none;
