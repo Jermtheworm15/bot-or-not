@@ -52,6 +52,7 @@ export default function Home() {
   const loadingGuard = useRef(false);
   const [rewardNotification, setRewardNotification] = useState(null);
   const [levelUpData, setLevelUpData] = useState(null);
+  const [showReferralNudge, setShowReferralNudge] = useState(false);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -420,64 +421,20 @@ export default function Home() {
         metadata: { streak: newStreak, correct }
       });
       
-      // Check and complete referrals on first vote
-        if (stats.total === 0) {
-          try {
-            const referrals = await base44.entities.Referral.filter({ 
-              referred_email: user.email,
-              completed: false 
-            });
-
-            for (const ref of referrals) {
-              await base44.entities.Referral.update(ref.id, { 
-                completed: true,
-                completed_date: new Date().toISOString()
-              });
-
-              const referrerProfiles = await base44.entities.UserProfile.filter({ 
-                user_email: ref.referrer_email 
-              });
-              if (referrerProfiles.length > 0) {
-                const refProfile = referrerProfiles[0];
-                const newRefCount = (refProfile.referral_count || 0) + 1;
-                
-                // Calculate referral bonus points
-                let bonusPoints = 0;
-                if (newRefCount === 1) bonusPoints = 100;
-                else if (newRefCount === 2) bonusPoints = 250;
-                else if (newRefCount === 3) bonusPoints = 500;
-                else bonusPoints = 50; // Bonus for 4th+ referral
-                
-                // Add referral badge for 1st referral
-                const newBadges = [...(refProfile.badges || [])];
-                if (newRefCount === 1 && !newBadges.includes('referrer')) {
-                  newBadges.push('referrer');
-                }
-                if (newRefCount === 3 && !newBadges.includes('super_referrer')) {
-                  newBadges.push('super_referrer');
-                }
-                
-                await base44.entities.UserProfile.update(refProfile.id, {
-                  referral_count: newRefCount,
-                  is_premium: newRefCount >= 3,
-                  points: (refProfile.points || 0) + bonusPoints,
-                  badges: newBadges
-                });
-
-                // Create activity for referrer
-                await base44.entities.Activity.create({
-                  user_email: ref.referrer_email,
-                  username: ref.referrer_email.split('@')[0],
-                  action_type: 'badge_earned',
-                  description: `Earned ${bonusPoints} points from referral!`,
-                  metadata: { referralCount: newRefCount, bonusPoints }
-                });
-              }
-            }
-          } catch (err) {
-            console.log('Referral completion error:', err);
-          }
+      // Complete referral on first vote — awards 100 tokens to both users
+      if (stats.total === 0) {
+        try {
+          await base44.functions.invoke('processReferralReward', { action_type: 'first_vote' });
+        } catch (err) {
+          console.log('Referral first_vote error:', err);
         }
+      }
+
+      // Show referral nudge every 5th correct vote
+      const newCorrectTotal = stats.correct + (correct ? 1 : 0);
+      if (correct && newCorrectTotal > 0 && newCorrectTotal % 5 === 0) {
+        setShowReferralNudge(true);
+      }
       
       await loadUserProfile();
     }
