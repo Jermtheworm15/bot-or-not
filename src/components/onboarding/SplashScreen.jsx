@@ -6,7 +6,7 @@ const SLIDES = [
   {
     emoji: '🤖',
     title: 'Can YOU Spot the Fake?',
-    body: 'Every image is either a real human — or AI-generated. Can you tell the difference? Millions can't.',
+    body: "Every image is either a real human — or AI-generated. Can you tell the difference? Millions can't.",
     accent: 'from-purple-500 to-violet-500',
     bg: 'from-violet-950/60 to-black',
   },
