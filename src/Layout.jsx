@@ -20,7 +20,16 @@ export default function Layout({ children, currentPageName }) {
   const isAuthenticated = !isLoadingAuth && !!currentUser;
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [totalVotes, setTotalVotes] = React.useState(null);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (currentUser?.email) {
+      base44.entities.Vote.filter({ user_email: currentUser.email })
+        .then(votes => setTotalVotes(votes.length))
+        .catch(() => setTotalVotes(0));
+    }
+  }, [currentUser?.email]);
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
