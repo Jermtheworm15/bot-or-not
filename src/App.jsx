@@ -28,6 +28,7 @@ import ProfileSearch from './pages/ProfileSearch';
 import ArcadeAdmin from './pages/ArcadeAdmin';
 import SystemHealth from './pages/SystemHealth';
 import VideoVoting from './pages/VideoVoting';
+import AdminDashboard from './pages/AdminDashboard';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
