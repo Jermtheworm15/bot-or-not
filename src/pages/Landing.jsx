@@ -2,9 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Zap, Eye, Trophy, Users, Gamepad2, ArrowRight } from 'lucide-react';
+import SplashScreen from '@/components/onboarding/SplashScreen';
+import AppFooter from '@/components/common/AppFooter';
+
+const SPLASH_KEY = 'splash_seen_v1';
 
 export default function Landing() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => !localStorage.getItem(SPLASH_KEY));
+
+  const handleSplashComplete = () => {
+    localStorage.setItem(SPLASH_KEY, '1');
+    setShowSplash(false);
+  };
 
   // Check if already logged in
   useEffect(() => {
