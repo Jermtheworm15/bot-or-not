@@ -591,6 +591,7 @@ export default function Profile() {
             </CardContent>
           </Card>
         </motion.div>
+        <AppFooter className="mt-8" />
         </div>
         </div>
         );
