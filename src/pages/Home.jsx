@@ -9,6 +9,7 @@ import ImageCard from '@/components/voting/ImageCard';
 import VotingButtons from '@/components/voting/VotingButtons';
 
 import StatsBar from '@/components/voting/StatsBar';
+import TrustSignals from '@/components/home/TrustSignals';
 import ShareButton from '@/components/social/ShareButton';
 import InviteFriends from '@/components/social/InviteFriends';
 import ReferralBanner from '@/components/social/ReferralBanner';
