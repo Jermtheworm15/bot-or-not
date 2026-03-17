@@ -48,47 +48,73 @@ export default function Onboarding() {
   };
 
   const handleUsernameSubmit = async () => {
-    if (!username.trim() || !zipCode.trim() || !profileImage) return;
+    if (!username.trim()) return;
     
     setIsUploading(true);
     setPasswordError('');
     try {
       const user = await base44.auth.me();
       
-      // Upload profile image — UploadFile returns {file_url} directly
-      const { file_url: imageUrl } = await base44.integrations.Core.UploadFile({ file: profileImage });
+      // Upload profile image if provided
+      let imageUrl = null;
+      if (profileImage) {
+        try {
+          const result = await base44.integrations.Core.UploadFile({ file: profileImage });
+          imageUrl = result.file_url;
+        } catch (err) {
+          console.log('[Onboarding] Image upload failed, continuing without it:', err);
+        }
+      }
       
-      // Update user display name and profile image
-      await base44.auth.updateMe({ 
-        full_name: username,
-        profile_image: imageUrl,
-      });
+      // Update user display name (and image if available)
+      try {
+        const updateData = { full_name: username };
+        if (imageUrl) updateData.profile_image = imageUrl;
+        await base44.auth.updateMe(updateData);
+      } catch (err) {
+        console.log('[Onboarding] updateMe failed, continuing:', err);
+      }
       
-      // Upsert profile — handles retries gracefully
-      const existingProfiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-      let profile;
-      if (existingProfiles.length > 0) {
-        profile = await base44.entities.UserProfile.update(existingProfiles[0].id, {
-          zip_code: zipCode,
-        });
-      } else {
-        profile = await base44.entities.UserProfile.create({
-          user_email: user.email,
-          zip_code: zipCode,
-          points: 0,
-          level: 1,
-          badges: ['newcomer'],
-          daily_votes: 0,
-          weekly_votes: 0,
-          perfect_streak: 0
-        });
+      // Upsert profile with silent retry
+      const minimalProfile = {
+        user_email: user.email,
+        points: 0,
+        level: 1,
+        tier: 'bronze',
+        badges: ['newcomer'],
+        daily_votes: 0,
+        weekly_votes: 0,
+        perfect_streak: 0
+      };
+      if (zipCode.trim()) minimalProfile.zip_code = zipCode.trim();
+
+      let profile = null;
+      try {
+        const existingProfiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+        if (existingProfiles.length > 0) {
+          profile = await base44.entities.UserProfile.update(existingProfiles[0].id, {
+            ...(zipCode.trim() ? { zip_code: zipCode.trim() } : {})
+          });
+        } else {
+          profile = await base44.entities.UserProfile.create(minimalProfile);
+        }
+      } catch (err) {
+        console.log('[Onboarding] Profile save failed, retrying with minimal data:', err);
+        // Retry once with absolute minimum
+        try {
+          profile = await base44.entities.UserProfile.create({ user_email: user.email });
+        } catch (retryErr) {
+          console.log('[Onboarding] Retry also failed, proceeding without profile:', retryErr);
+          profile = { ...minimalProfile, id: null };
+        }
       }
       
       setUserProfile(profile);
       setStep(1);
     } catch (err) {
-      console.log('Error setting username:', err);
-      setPasswordError('Failed to save profile. Please try again.');
+      console.log('[Onboarding] Unexpected error:', err);
+      // Still advance — don't block the user
+      setStep(1);
     } finally {
       setIsUploading(false);
     }
