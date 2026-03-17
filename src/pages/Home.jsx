@@ -489,6 +489,28 @@ export default function Home() {
       user_email: user.email
     });
 
+    // Update bot/human accuracy on UserProfile
+    if (userProfile) {
+      const isBot = votedItem.is_bot;
+      if (isBot) {
+        const newBotTotal = (userProfile.bot_votes_count || 0) + 1;
+        const newBotCorrect = correct ? (userProfile.bot_accuracy / 100 * (userProfile.bot_votes_count || 0)) + 1 : (userProfile.bot_accuracy / 100 * (userProfile.bot_votes_count || 0));
+        const newBotAccuracy = (newBotCorrect / newBotTotal) * 100;
+        await base44.entities.UserProfile.update(userProfile.id, {
+          bot_votes_count: newBotTotal,
+          bot_accuracy: Math.round(newBotAccuracy * 10) / 10
+        });
+      } else {
+        const newHumanTotal = (userProfile.human_votes_count || 0) + 1;
+        const newHumanCorrect = correct ? (userProfile.human_accuracy / 100 * (userProfile.human_votes_count || 0)) + 1 : (userProfile.human_accuracy / 100 * (userProfile.human_votes_count || 0));
+        const newHumanAccuracy = (newHumanCorrect / newHumanTotal) * 100;
+        await base44.entities.UserProfile.update(userProfile.id, {
+          human_votes_count: newHumanTotal,
+          human_accuracy: Math.round(newHumanAccuracy * 10) / 10
+        });
+      }
+    }
+
     // Process vote reward (handles streak tracking + token grants server-side)
     try {
       const rewardResult = await base44.functions.invoke('processVoteReward', {
