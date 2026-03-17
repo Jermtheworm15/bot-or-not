@@ -1,34 +1,138 @@
-css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  overflow-x: hidden;
+/* ── Safe area & base reset ── */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+
+  /* Brand palette */
+  --color-primary: #7c3aed;      /* violet-600 */
+  --color-primary-light: #8b5cf6;
+  --color-secondary: #22c55e;    /* green-500  */
+  --color-accent: #f59e0b;       /* amber-500  */
+  --color-success: #10b981;      /* emerald-500 */
+  --color-danger: #ef4444;       /* red-500    */
+  --color-surface: #18181b;      /* zinc-900   */
+  --color-border: rgba(124,58,237,0.25);
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 html, body {
   overflow-x: hidden;
   width: 100%;
+  max-width: 100vw;
   overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* ── Global overflow guard ── */
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Never overflow horizontally on ANY element */
+img, video, canvas, svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Touch targets ── */
 button, [role="button"] {
   min-height: 44px;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
-button, [role="button"], a, nav, .mobile-nav, [class*="nav-item"], [class*="icon"] {
+/* Pressed micro-animation */
+button:active, [role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* ── No user-select on interactive chrome ── */
+button, [role="button"], a, nav,
+.mobile-nav, [class*="nav-item"], [class*="icon"] {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
 
+/* ── Input zoom prevention on iOS ── */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* ── Smooth page/section transitions ── */
+.page-fade {
+  animation: pageFadeIn 0.2s ease both;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ── Correct/Wrong vote feedback ── */
+@keyframes correctFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+  50%  { box-shadow: 0 0 0 20px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);   }
+}
+
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.vote-correct { animation: correctFlash 0.6s ease; }
+.vote-wrong   { animation: wrongShake  0.4s ease; }
+
+/* ── Scrollbar hide ── */
 @layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 }
+
+/* ── Bottom nav safe-area padding ── */
+.bottom-nav-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+/* ── Card base ── */
+.card-base {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* ── Responsive max-width containers ── */
+.content-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: max(16px, var(--sal));
+  padding-right: max(16px, var(--sar));
+}
+
+/* ── Skeleton pulse ── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.7; }
+}
+.skeleton-pulse { animation: skeletonPulse 1.4s ease-in-out infinite; }
