@@ -638,8 +638,7 @@ export default function Home() {
         />
       )}
 
-      {/* Referral Nudge */}
-      <ReferralNudge show={showReferralNudge} onDismiss={() => setShowReferralNudge(false)} />
+
 
       {/* Level Up Celebration */}
       {levelUpData && (
@@ -652,9 +651,6 @@ export default function Home() {
       
       {/* Trust Signals — mobile only */}
       {isMobile && <div className="relative z-10"><TrustSignals /></div>}
-
-      {/* Invite Banner — mobile only, shown above content */}
-      {isMobile && <div className="relative z-10"><ReferralBanner /></div>}
 
       <div className={`relative z-10 flex flex-col items-center ${isMobile ? 'justify-start min-h-screen pt-16 pb-28' : 'justify-center min-h-screen py-8'} px-4`}
            style={isMobile ? { paddingBottom: 'max(calc(7rem + env(safe-area-inset-bottom, 0px)), 7rem)' } : {}}>
