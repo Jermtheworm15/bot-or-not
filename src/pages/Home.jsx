@@ -51,7 +51,7 @@ export default function Home() {
   const loadingGuard = useRef(false);
   const [rewardNotification, setRewardNotification] = useState(null);
   const [levelUpData, setLevelUpData] = useState(null);
-  const [showReferralNudge, setShowReferralNudge] = useState(false);
+
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
