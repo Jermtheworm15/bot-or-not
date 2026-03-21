@@ -429,11 +429,7 @@ export default function Home() {
         }
       }
 
-      // Show referral nudge every 5th correct vote
-      const newCorrectTotal = stats.correct + (correct ? 1 : 0);
-      if (correct && newCorrectTotal > 0 && newCorrectTotal % 5 === 0) {
-        setShowReferralNudge(true);
-      }
+
       
       await loadUserProfile();
     }
