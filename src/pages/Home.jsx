@@ -720,9 +720,8 @@ export default function Home() {
               <TrustSignals />
             </div>
             <div className="absolute top-4 right-4 z-20 flex gap-2 items-center">
-              <ReferralBanner />
-              <InviteFriends />
-            </div>
+                <InviteFriends />
+              </div>
             <div className="absolute top-4 left-4 z-20">
               <Button
                 onClick={() => navigate('/BlitzMode')}
