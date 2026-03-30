@@ -15,6 +15,7 @@ import BOTGuide from './components/bot/BOTGuide';
 import AchievementUnlockPopup from './components/achievements/AchievementUnlockPopup';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SectionalMenu from './components/navigation/SectionalMenu';
+import NewsTickerBar from './components/news/NewsTickerBar';
 
 export default function Layout({ children, currentPageName }) {
   const { user: currentUser, isLoadingAuth } = useAuth();
@@ -109,20 +110,14 @@ export default function Layout({ children, currentPageName }) {
       }
     `}</style>
       
-      {/* Matrix Rain Effect */}
-      <MatrixRain />
+      {/* News Ticker */}
+      <div className="relative z-50">
+        <NewsTickerBar />
+      </div>
 
-      {/* Hieroglyphic Rain Effect */}
-      <HieroglyphicRain />
-      
-      {/* Cyberpunk animated grid background */}
-      <div className="fixed inset-0 cyberpunk-grid opacity-30 pointer-events-none top-0 left-0 w-screen h-screen" style={{ zIndex: 3 }} />
-      
-      {/* Gradient overlays */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-950/40 via-black to-green-950/40 pointer-events-none" />
-      <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-green-600/20 rounded-full blur-3xl pointer-events-none" />
-      
+      {/* Matrix Rain Effect */}
+
+
       {/* Top Bar with Logo */}
       <div className="relative z-50 bg-black/80 backdrop-blur-xl border-b border-purple-500/20"
            style={{ minHeight: 64 }}>
