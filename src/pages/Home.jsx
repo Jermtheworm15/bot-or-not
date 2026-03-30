@@ -21,6 +21,7 @@ import MobileNav from '@/components/mobile/MobileNav';
 import ImageComments from '@/components/comments/ImageComments';
 import DifficultyRating from '@/components/voting/DifficultyRating';
 import RewardNotification from '@/components/rewards/RewardNotification';
+import LiveVoteResult from '@/components/home/LiveVoteResult';
 import LevelUpCelebration from '@/components/gamification/LevelUpCelebration';
 import { getLevel, getTier } from '@/lib/progressionUtils';
 
@@ -667,6 +668,7 @@ export default function Home() {
           />
           {hasVoted && currentItem && !isMobile && (
             <>
+              <LiveVoteResult imageId={currentItem.id} isBot={currentItem.is_bot} isVisible={hasVoted} />
               <DifficultyRating imageId={currentItem.id} onRated={moveToNextImage} onSkip={moveToNextImage} />
               <ImageAnalysis image={currentItem} />
               <ImageComments imageId={currentItem.id} isRevealed={hasVoted} />

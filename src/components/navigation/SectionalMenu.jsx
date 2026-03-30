@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles, Info } from 'lucide-react';
+import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles, Info, Brain, FlameIcon } from 'lucide-react';
 import { SheetClose } from '@/components/ui/sheet';
 
 const menuSections = [
@@ -20,6 +20,8 @@ const menuSections = [
     icon: Gamepad2,
     items: [
       { label: 'Blitz Mode', path: '/BlitzMode', icon: Zap },
+      { label: 'Prediction Arena', path: '/PredictionArena', icon: FlameIcon },
+      { label: 'Hive Mind', path: '/HiveMind', icon: Brain },
       { label: 'Tournaments', path: '/TournamentHub', icon: Swords },
       { label: 'AI Battle', path: '/AIChallenge', icon: Target },
     ]

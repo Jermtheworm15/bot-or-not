@@ -27,6 +27,8 @@ import SystemHealth from './pages/SystemHealth';
 import ProfileSearch from './pages/ProfileSearch';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import PredictionArena from './pages/PredictionArena';
+import HiveMind from './pages/HiveMind';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -97,6 +99,8 @@ const AuthenticatedApp = () => {
       <Route path="/ProfileSearch" element={<LayoutWrapper currentPageName="ProfileSearch"><ProfileSearch /></LayoutWrapper>} />
       <Route path="/About" element={<LayoutWrapper currentPageName="About"><About /></LayoutWrapper>} />
       <Route path="/admin" element={<LayoutWrapper currentPageName="admin"><AdminDashboard /></LayoutWrapper>} />
+      <Route path="/PredictionArena" element={<LayoutWrapper currentPageName="PredictionArena"><PredictionArena /></LayoutWrapper>} />
+      <Route path="/HiveMind" element={<LayoutWrapper currentPageName="HiveMind"><HiveMind /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
