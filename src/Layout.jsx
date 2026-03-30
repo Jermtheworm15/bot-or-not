@@ -183,6 +183,9 @@ export default function Layout({ children, currentPageName }) {
       <CompactBottomNav currentPageName={currentPageName} />
       <div className="relative z-10 pb-20 md:pb-0" style={{ paddingBottom: 'max(calc(5rem + env(safe-area-inset-bottom, 0px)), 5rem)' }}>
         {children}
+        <div className="text-center py-4 text-[10px] text-zinc-600 tracking-widest uppercase">
+          Created by: Jeromy Padgett
+        </div>
       </div>
     </div>
   );
