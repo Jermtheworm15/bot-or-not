@@ -1,0 +1,61 @@
+{
+  "name": "UserBehavior",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "feed_interactions": {
+      "type": "number",
+      "default": 0
+    },
+    "news_dwell_time": {
+      "type": "number",
+      "default": 0,
+      "description": "Seconds spent on news cards"
+    },
+    "prediction_dwell_time": {
+      "type": "number",
+      "default": 0
+    },
+    "categories_engaged": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "topics_clicked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "preferred_difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium"
+    },
+    "avg_session_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "retention_score": {
+      "type": "number",
+      "default": 50,
+      "description": "0-100 engagement score"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

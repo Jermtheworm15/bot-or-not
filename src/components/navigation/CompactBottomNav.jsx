@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Sparkles, Trophy, User, Menu } from 'lucide-react';
+import { Home, Sparkles, Trophy, User, Menu, Rss } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SectionalMenu from './SectionalMenu';
 
 const NAV_ITEMS = [
   { path: '/Home',            icon: Home,     label: 'Home'    },
-  { path: '/CheckOutMyAI',    icon: Sparkles, label: 'My AI'   },
+  { path: '/AIFeed',          icon: Rss,      label: 'AI Feed' },
   { path: '/UserLeaderboard', icon: Trophy,   label: 'Ranks'   },
   { path: '/Profile',         icon: User,     label: 'Profile' },
 ];
