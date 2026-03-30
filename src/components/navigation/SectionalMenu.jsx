@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles, Info, Brain, FlameIcon, Rss } from 'lucide-react';
+import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles, Info, Brain, FlameIcon, Rss, Microscope } from 'lucide-react';
 import { SheetClose } from '@/components/ui/sheet';
 
 const menuSections = [
@@ -13,6 +13,7 @@ const menuSections = [
       { label: 'Upload Image', path: '/Upload', icon: UploadIcon },
       { label: 'Check Out My AI', path: '/CheckOutMyAI', icon: Sparkles },
       { label: 'AI Feed', path: '/AIFeed', icon: Rss },
+      { label: 'Forensics Lab', path: '/AIForensicsLab', icon: Microscope },
       { label: 'About & Sources', path: '/About', icon: Info },
     ]
   },

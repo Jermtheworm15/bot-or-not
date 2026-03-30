@@ -85,10 +85,15 @@ export default function Layout({ children, currentPageName }) {
           0 0 15px rgba(34, 197, 94, 1),
           0 0 25px rgba(34, 197, 94, 0.8),
           0 0 35px rgba(34, 197, 94, 0.6),
-          3px 3px 6px rgba(0, 0, 0, 0.9),
-          6px 6px 12px rgba(0, 0, 0, 0.7),
+          1px 1px 0px rgba(0,0,0,0.9),
+          2px 2px 0px rgba(0,0,0,0.8),
+          3px 3px 0px rgba(0,0,0,0.7),
+          4px 4px 0px rgba(0,0,0,0.6),
+          5px 5px 0px rgba(0,0,0,0.4),
+          6px 6px 8px rgba(0,0,0,0.5),
           0 8px 16px rgba(34, 197, 94, 0.3) !important;
-        letter-spacing: 0.05em !important;
+        letter-spacing: 0.07em !important;
+        transform: perspective(400px) rotateX(2deg);
       }
 
       @keyframes gridMove {

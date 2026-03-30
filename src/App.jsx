@@ -30,6 +30,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import PredictionArena from './pages/PredictionArena';
 import HiveMind from './pages/HiveMind';
 import AIFeed from './pages/AIFeed';
+import AIForensicsLab from './pages/AIForensicsLab';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -103,6 +104,7 @@ const AuthenticatedApp = () => {
       <Route path="/PredictionArena" element={<LayoutWrapper currentPageName="PredictionArena"><PredictionArena /></LayoutWrapper>} />
       <Route path="/HiveMind" element={<LayoutWrapper currentPageName="HiveMind"><HiveMind /></LayoutWrapper>} />
       <Route path="/AIFeed" element={<LayoutWrapper currentPageName="AIFeed"><AIFeed /></LayoutWrapper>} />
+      <Route path="/AIForensicsLab" element={<LayoutWrapper currentPageName="AIForensicsLab"><AIForensicsLab /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

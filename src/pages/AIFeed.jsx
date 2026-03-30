@@ -137,11 +137,13 @@ export default function AIFeed() {
   const generateFeed = async (silent = false) => {
     if (!silent) setGenerating(true);
     else setLoading(true);
-    await base44.functions.invoke('generateDailyFeed', {});
+    try {
+      await base44.functions.invoke('generateDailyFeed', {});
+    } catch(e) { console.error('generateDailyFeed error', e); }
     const items = await base44.entities.FeedItem.filter({ is_active: true });
     setFeedItems(items);
-    if (!silent) setGenerating(false);
-    else setLoading(false);
+    setLoading(false);
+    setGenerating(false);
   };
 
   // Track engagement and update personalization
