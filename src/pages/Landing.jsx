@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Zap, Eye, Trophy, Users, Gamepad2, ArrowRight } from 'lucide-react';
-import SplashScreen from '@/components/onboarding/SplashScreen';
+import { ArrowRight, FlaskConical, BarChart3, Brain, ShieldCheck } from 'lucide-react';
 import AppFooter from '@/components/common/AppFooter';
+import AIResearchStats from '@/components/research/AIResearchStats';
 
 const SPLASH_KEY = 'splash_seen_v1';
 
@@ -37,128 +37,103 @@ export default function Landing() {
     base44.auth.redirectToLogin(nextUrl);
   };
 
-  if (showSplash) return <SplashScreen onComplete={handleSplashComplete} />;
-
   return (
-    <div className="min-h-screen bg-zinc-950 text-white overflow-hidden flex flex-col">
-      {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-violet-950/40 via-zinc-950 to-emerald-950/30 pointer-events-none" />
-      <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
-      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-green-600/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+    <div className="min-h-screen bg-zinc-950 text-white overflow-x-hidden flex flex-col">
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-b from-zinc-950 via-zinc-950 to-violet-950/20 pointer-events-none" />
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-emerald-900/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Animated Grid */}
-      <div className="fixed inset-0 opacity-10 pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(147,51,234,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.2)_1px,transparent_1px)] bg-[60px_60px]" />
-      </div>
-
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16 max-w-2xl"
-        >
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center shadow-lg shadow-purple-500/50 border-2 border-purple-500/50">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/60edcef10_d5e77535-5a3b-4139-8a3f-6489d39444dc.jpg" 
-                alt="Bot or Not Logo" 
-                className="w-full h-full object-cover"
-              />
+      <div className="relative z-10 flex flex-col">
+        {/* Hero */}
+        <section className="flex flex-col items-center justify-center text-center px-6 pt-20 pb-16 max-w-3xl mx-auto w-full">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+            <div className="flex justify-center mb-8">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-zinc-700 shadow-xl">
+                <img
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698d8f79de41b00a2a2dd6e3/60edcef10_d5e77535-5a3b-4139-8a3f-6489d39444dc.jpg"
+                  alt="Bot or Not"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-          </div>
 
-          <h1 className="text-5xl md:text-6xl font-black mb-4 tracking-wider uppercase">
-            <span className="bg-gradient-to-r from-purple-400 via-green-400 to-purple-400 bg-clip-text text-transparent">
-              Bot or Not
-            </span>
-          </h1>
-          
-          <p className="text-xl text-zinc-300 mb-6">
-            Test your AI detection skills in the ultimate guessing game
-          </p>
-          
-          <p className="text-sm text-zinc-400 mb-8">
-            Compete on leaderboards, earn badges, and prove you can spot the difference between human and AI
-          </p>
-        </motion.div>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500 mb-4 font-semibold">AI Detection Platform</p>
 
-        {/* Features Grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="grid md:grid-cols-2 gap-6 mb-16 max-w-2xl w-full"
-        >
-          <div className="bg-zinc-900/50 backdrop-blur-md border border-purple-500/30 rounded-lg p-6 hover:border-purple-500/60 transition-colors">
-            <Eye className="w-8 h-8 text-green-400 mb-3" />
-            <h3 className="font-bold text-lg mb-2">Vote & Analyze</h3>
-            <p className="text-sm text-zinc-400">
-              Guess whether images are AI-generated or human
+            <h1 className="text-5xl md:text-6xl font-black mb-5 tracking-tight leading-none">
+              Can You Tell the{' '}
+              <span className="bg-gradient-to-r from-violet-400 to-emerald-400 bg-clip-text text-transparent">
+                Difference?
+              </span>
+            </h1>
+
+            <p className="text-lg text-zinc-300 mb-4 leading-relaxed max-w-xl mx-auto">
+              Research shows humans identify AI-generated images at near-random accuracy.
+              This platform measures your detection ability against global benchmarks and peer-reviewed studies.
             </p>
-          </div>
 
-          <div className="bg-zinc-900/50 backdrop-blur-md border border-purple-500/30 rounded-lg p-6 hover:border-purple-500/60 transition-colors">
-            <Trophy className="w-8 h-8 text-amber-400 mb-3" />
-            <h3 className="font-bold text-lg mb-2">Climb Rankings</h3>
-            <p className="text-sm text-zinc-400">
-              Compete globally and earn your place on the leaderboard
+            <p className="text-sm text-zinc-500 mb-10 max-w-lg mx-auto">
+              Crowd-sourced data from our users is compared in real time against results from published Turing Test experiments, cognitive science research, and AI capability assessments.
             </p>
-          </div>
 
-          <div className="bg-zinc-900/50 backdrop-blur-md border border-purple-500/30 rounded-lg p-6 hover:border-purple-500/60 transition-colors">
-            <Gamepad2 className="w-8 h-8 text-pink-400 mb-3" />
-            <h3 className="font-bold text-lg mb-2">Challenge Friends</h3>
-            <p className="text-sm text-zinc-400">
-              Battle other players in real-time AI detection showdowns
-            </p>
-          </div>
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              onClick={handleSignIn}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-semibold py-3.5 px-10 rounded-xl shadow-lg shadow-violet-900/50 transition-all text-base"
+            >
+              {isLoading ? 'Signing in…' : 'Begin Your Assessment'}
+              {!isLoading && <ArrowRight className="w-4 h-4" />}
+            </motion.button>
 
-          <div className="bg-zinc-900/50 backdrop-blur-md border border-purple-500/30 rounded-lg p-6 hover:border-purple-500/60 transition-colors">
-            <Zap className="w-8 h-8 text-orange-400 mb-3" />
-            <h3 className="font-bold text-lg mb-2">Earn Rewards</h3>
-            <p className="text-sm text-zinc-400">
-              Unlock badges, points, and premium features
-            </p>
-          </div>
-        </motion.div>
+            <p className="mt-4 text-xs text-zinc-600">Free to join · No advertising · Your data contributes to research</p>
+          </motion.div>
+        </section>
 
-        {/* CTA Button */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          onClick={handleSignIn}
-          disabled={isLoading}
-          className="bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-500 hover:to-green-500 disabled:opacity-50 text-white font-bold py-4 px-12 rounded-lg shadow-lg shadow-purple-500/50 transition-all flex items-center gap-2 text-lg"
-        >
-          {isLoading ? 'Signing In...' : 'Start Playing'}
-          {!isLoading && <ArrowRight className="w-5 h-5" />}
-        </motion.button>
+        {/* Feature pillars */}
+        <section className="max-w-4xl mx-auto w-full px-4 pb-12">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="grid md:grid-cols-4 gap-4"
+          >
+            {[
+              { icon: <Brain className="w-5 h-5" />, title: 'Cognitive Benchmark', desc: 'Measure and track your AI detection accuracy over time.', color: 'text-violet-400' },
+              { icon: <FlaskConical className="w-5 h-5" />, title: 'Live Research Data', desc: 'Your votes feed a real-time dataset compared against published studies.', color: 'text-emerald-400' },
+              { icon: <BarChart3 className="w-5 h-5" />, title: 'Performance Analytics', desc: 'Detailed breakdowns by image type, gender, and AI generation method.', color: 'text-sky-400' },
+              { icon: <ShieldCheck className="w-5 h-5" />, title: 'Leaderboards', desc: 'Global and demographic rankings updated in real time.', color: 'text-amber-400' },
+            ].map((f, i) => (
+              <div key={i} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-colors">
+                <div className={`mb-3 ${f.color}`}>{f.icon}</div>
+                <p className="font-semibold text-white text-sm mb-1">{f.title}</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </motion.div>
+        </section>
 
-        {/* Stats Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="mt-16 grid grid-cols-3 gap-8 text-center"
-        >
-          <div>
-            <p className="text-3xl font-black text-green-400">10K+</p>
-            <p className="text-sm text-zinc-400">Active Players</p>
-          </div>
-          <div>
-            <p className="text-3xl font-black text-purple-400">50K+</p>
-            <p className="text-sm text-zinc-400">AI Images</p>
-          </div>
-          <div>
-            <p className="text-3xl font-black text-pink-400">24/7</p>
-            <p className="text-sm text-zinc-400">Gameplay</p>
-          </div>
-        </motion.div>
+        {/* Research stats section */}
+        <AIResearchStats />
+
+        {/* Bottom CTA */}
+        <section className="text-center px-6 py-16">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            <p className="text-zinc-400 text-sm mb-4">Ready to test your perception?</p>
+            <button
+              onClick={handleSignIn}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-semibold py-3 px-8 rounded-xl transition-all text-sm"
+            >
+              {isLoading ? 'Signing in…' : 'Create Free Account'}
+              {!isLoading && <ArrowRight className="w-4 h-4" />}
+            </button>
+          </motion.div>
+        </section>
       </div>
+
       <AppFooter />
     </div>
   );

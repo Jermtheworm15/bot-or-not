@@ -36,17 +36,17 @@ export default function TrustSignals() {
       className="flex items-center justify-center gap-2 flex-wrap px-3 py-1.5"
     >
       <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 rounded-full px-3 py-1 text-[11px] text-zinc-400 backdrop-blur-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
-        <span className="font-bold text-green-400">{fmt(stats.totalVotes)}</span>
-        <span>votes</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+        <span className="font-semibold text-emerald-400">{fmt(stats.totalVotes)}</span>
+        <span>assessments logged</span>
       </div>
       <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 rounded-full px-3 py-1 text-[11px] text-zinc-400 backdrop-blur-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse inline-block" />
-        <span className="font-bold text-purple-400">{fmt(stats.activeThisWeek)}</span>
-        <span>playing</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block" />
+        <span className="font-semibold text-violet-400">{fmt(stats.activeThisWeek)}</span>
+        <span>active this week</span>
       </div>
-      <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-green-500/30 rounded-full px-3 py-1 text-[11px] text-green-400 font-semibold backdrop-blur-sm">
-        ✓ Free · No Ads
+      <div className="flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800/60 rounded-full px-3 py-1 text-[11px] text-zinc-500 backdrop-blur-sm">
+        Benchmark: 50.2% baseline · Nightingale &amp; Farid 2022
       </div>
     </motion.div>
   );
