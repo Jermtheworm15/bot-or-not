@@ -12,9 +12,10 @@ Return ONLY a JSON array of objects. Each object must have:
 - "detail": one sentence of context (max 25 words)  
 - "company": primary company or topic
 - "category": one of: "model-release" | "funding" | "regulation" | "research" | "product" | "acquisition"
+- "ticker": the real NASDAQ/NYSE stock ticker symbol for the primary company if it is publicly traded (e.g. NVDA, MSFT, GOOGL, META, AMZN, AAPL, TSLA, AMD, INTC, QCOM, IBM, CRM, ORCL, PLTR, AI, SOUN, BBAI). Use null if the company is private (e.g. OpenAI, Anthropic, Mistral, xAI, Figure).
 
 Example format:
-[{"headline":"OpenAI releases GPT-5 with real-time reasoning","detail":"The flagship model achieves near-human scores on graduate-level reasoning benchmarks.","company":"OpenAI","category":"model-release"}]`,
+[{"headline":"NVIDIA H200 demand surges as AI training scales","detail":"Data centers are ordering record quantities of H200 chips for LLM training runs.","company":"NVIDIA","category":"product","ticker":"NVDA"}]`,
       add_context_from_internet: true,
       response_json_schema: {
         type: "object",
