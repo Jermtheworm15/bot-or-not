@@ -21,13 +21,7 @@ import RewardHistory from './pages/RewardHistory';
 import SocialFeed from './pages/SocialFeed';
 import DailyRewards from './pages/DailyRewards';
 import BlitzMode from './pages/BlitzMode';
-import ArcadeHub from './pages/ArcadeHub.jsx';
-import ArcadeGame from './pages/ArcadeGame';
-import ArcadeChallenges from './pages/ArcadeChallenges';
-import ProfileSearch from './pages/ProfileSearch';
-import ArcadeAdmin from './pages/ArcadeAdmin';
-import SystemHealth from './pages/SystemHealth';
-import VideoVoting from './pages/VideoVoting';
+import CheckOutMyAI from './pages/CheckOutMyAI';
 import AdminDashboard from './pages/AdminDashboard';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -93,12 +87,7 @@ const AuthenticatedApp = () => {
       <Route path="/SocialFeed" element={<LayoutWrapper currentPageName="SocialFeed"><SocialFeed /></LayoutWrapper>} />
       <Route path="/DailyRewards" element={<LayoutWrapper currentPageName="DailyRewards"><DailyRewards /></LayoutWrapper>} />
       <Route path="/BlitzMode" element={<LayoutWrapper currentPageName="BlitzMode"><BlitzMode /></LayoutWrapper>} />
-      <Route path="/ArcadeHub" element={<LayoutWrapper currentPageName="ArcadeHub"><ArcadeHub /></LayoutWrapper>} />
-      <Route path="/ArcadeGame/:gameId" element={<LayoutWrapper currentPageName="ArcadeGame"><ArcadeGame /></LayoutWrapper>} />
-      <Route path="/ArcadeChallenges" element={<LayoutWrapper currentPageName="ArcadeChallenges"><ArcadeChallenges /></LayoutWrapper>} />
-      <Route path="/ProfileSearch" element={<LayoutWrapper currentPageName="ProfileSearch"><ProfileSearch /></LayoutWrapper>} />
-      <Route path="/ArcadeAdmin" element={<LayoutWrapper currentPageName="ArcadeAdmin"><ArcadeAdmin /></LayoutWrapper>} />
-      <Route path="/SystemHealth" element={<LayoutWrapper currentPageName="SystemHealth"><SystemHealth /></LayoutWrapper>} />
+      <Route path="/CheckOutMyAI" element={<LayoutWrapper currentPageName="CheckOutMyAI"><CheckOutMyAI /></LayoutWrapper>} />
       <Route path="/VideoVoting" element={<LayoutWrapper currentPageName="VideoVoting"><VideoVoting /></LayoutWrapper>} />
       <Route path="/admin" element={<LayoutWrapper currentPageName="admin"><AdminDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />

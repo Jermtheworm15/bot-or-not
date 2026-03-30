@@ -1,0 +1,27 @@
+{
+  "name": "AIShowcaseComment",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "ID of the AIShowcase post"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Commenter email"
+    },
+    "username": {
+      "type": "string",
+      "description": "Commenter display name"
+    },
+    "text": {
+      "type": "string",
+      "description": "Comment text"
+    }
+  },
+  "required": [
+    "post_id",
+    "user_email",
+    "text"
+  ]
+}

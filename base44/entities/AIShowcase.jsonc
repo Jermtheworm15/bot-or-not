@@ -1,0 +1,41 @@
+{
+  "name": "AIShowcase",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the poster"
+    },
+    "username": {
+      "type": "string",
+      "description": "Display username"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of the uploaded AI image"
+    },
+    "caption": {
+      "type": "string",
+      "description": "User's description or prompt"
+    },
+    "ai_tool": {
+      "type": "string",
+      "description": "AI tool used to generate the image"
+    },
+    "votes": {
+      "type": "number",
+      "default": 0,
+      "description": "Net vote score"
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of comments"
+    }
+  },
+  "required": [
+    "user_email",
+    "image_url",
+    "caption"
+  ]
+}

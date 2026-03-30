@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video } from 'lucide-react';
+import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles } from 'lucide-react';
 import { SheetClose } from '@/components/ui/sheet';
 
 const menuSections = [
@@ -11,13 +11,13 @@ const menuSections = [
       { label: 'Image Voting', path: '/Home', icon: Gamepad2 },
       { label: 'Video Voting', path: '/VideoVoting', icon: Video },
       { label: 'Upload Image', path: '/Upload', icon: UploadIcon },
+      { label: 'Check Out My AI', path: '/CheckOutMyAI', icon: Sparkles },
     ]
   },
   {
     title: 'Games',
     icon: Gamepad2,
     items: [
-      { label: 'Arcade Hub', path: '/ArcadeHub', icon: Gamepad2 },
       { label: 'Blitz Mode', path: '/BlitzMode', icon: Zap },
       { label: 'Tournaments', path: '/TournamentHub', icon: Swords },
       { label: 'AI Battle', path: '/AIChallenge', icon: Target },
@@ -63,7 +63,6 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
     setExpandedSection(expandedSection === title ? null : title);
   };
 
-  // Check if current page is in a section
   const isPageInSection = (section) => {
     return section.items.some(item => {
       const pagePath = item.path.replace('/', '');
@@ -80,12 +79,11 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
 
         return (
           <div key={section.title}>
-            {/* Section Header */}
             <button
               onClick={() => toggleSection(section.title)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all cursor-pointer ${
-                isActive 
-                  ? 'bg-purple-900/40 text-white' 
+                isActive
+                  ? 'bg-purple-900/40 text-white'
                   : 'text-green-400 hover:bg-purple-900/20 hover:text-white'
               }`}
             >
@@ -96,7 +94,6 @@ export default function SectionalMenu({ currentPageName, isMobile = false }) {
               <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Submenu Items */}
             {isExpanded && (
               <div className="ml-4 mt-1 space-y-1 border-l-2 border-purple-500/20 pl-2">
                 {section.items.map((item) => {
