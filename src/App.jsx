@@ -22,6 +22,10 @@ import SocialFeed from './pages/SocialFeed';
 import DailyRewards from './pages/DailyRewards';
 import BlitzMode from './pages/BlitzMode';
 import CheckOutMyAI from './pages/CheckOutMyAI';
+import VideoVoting from './pages/VideoVoting';
+import SystemHealth from './pages/SystemHealth';
+import ProfileSearch from './pages/ProfileSearch';
+import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -89,6 +93,9 @@ const AuthenticatedApp = () => {
       <Route path="/BlitzMode" element={<LayoutWrapper currentPageName="BlitzMode"><BlitzMode /></LayoutWrapper>} />
       <Route path="/CheckOutMyAI" element={<LayoutWrapper currentPageName="CheckOutMyAI"><CheckOutMyAI /></LayoutWrapper>} />
       <Route path="/VideoVoting" element={<LayoutWrapper currentPageName="VideoVoting"><VideoVoting /></LayoutWrapper>} />
+      <Route path="/SystemHealth" element={<LayoutWrapper currentPageName="SystemHealth"><SystemHealth /></LayoutWrapper>} />
+      <Route path="/ProfileSearch" element={<LayoutWrapper currentPageName="ProfileSearch"><ProfileSearch /></LayoutWrapper>} />
+      <Route path="/About" element={<LayoutWrapper currentPageName="About"><About /></LayoutWrapper>} />
       <Route path="/admin" element={<LayoutWrapper currentPageName="admin"><AdminDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

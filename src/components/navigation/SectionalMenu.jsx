@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles } from 'lucide-react';
+import { ChevronDown, Gamepad2, Trophy, ShoppingCart, Users, Zap, Swords, Target, Coins, Gift, Award, WalletIcon, Repeat, Package, Activity, MessageCircle, User as UserIcon, Search, Upload as UploadIcon, Video, Sparkles, Info } from 'lucide-react';
 import { SheetClose } from '@/components/ui/sheet';
 
 const menuSections = [
@@ -12,6 +12,7 @@ const menuSections = [
       { label: 'Video Voting', path: '/VideoVoting', icon: Video },
       { label: 'Upload Image', path: '/Upload', icon: UploadIcon },
       { label: 'Check Out My AI', path: '/CheckOutMyAI', icon: Sparkles },
+      { label: 'About & Sources', path: '/About', icon: Info },
     ]
   },
   {

@@ -168,9 +168,9 @@ function CommentsPanel({ postId, userEmail, userName, isOpen }) {
   );
 }
 
-function PostCard({ post, userEmail, userName, onVote }) {
+function PostCard({ post, userEmail, userName, onVote, rank }) {
   const [showComments, setShowComments] = useState(false);
-  const [userVote, setUserVote] = useState(0); // -1, 0, 1
+  const [userVote, setUserVote] = useState(0);
 
   const vote = async (dir) => {
     const newVote = userVote === dir ? 0 : dir;
@@ -182,8 +182,16 @@ function PostCard({ post, userEmail, userName, onVote }) {
 
   return (
     <Card className="bg-zinc-900 border-zinc-800 overflow-hidden hover:border-zinc-700 transition-colors">
-      <img src={post.image_url} alt={post.caption}
-        className="w-full object-cover" style={{ maxHeight: 400 }} />
+      <div className="relative">
+        {rank <= 3 && (
+          <div className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
+            <span className="text-sm">{['🥇', '🥈', '🥉'][rank - 1]}</span>
+            <span className="text-[10px] font-bold text-white">{rank === 1 ? 'Top Rated' : rank === 2 ? '2nd Place' : '3rd Place'}</span>
+          </div>
+        )}
+        <img src={post.image_url} alt={post.caption}
+          className="w-full object-cover" style={{ maxHeight: 400 }} />
+      </div>
       <CardContent className="p-4 space-y-3">
         {/* Header */}
         <div className="flex items-center gap-2">
@@ -326,11 +334,16 @@ export default function CheckOutMyAI() {
           </div>
         ) : (
           <div className="space-y-4">
-            {sorted.map((post, i) => (
-              <motion.div key={post.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                <PostCard post={post} userEmail={userEmail} userName={userName} onVote={handleVote} />
-              </motion.div>
-            ))}
+            {sorted.map((post, i) => {
+              // rank is position in top-votes order (regardless of current sort)
+              const topVotedIdx = [...posts].sort((a,b) => (b.votes||0)-(a.votes||0)).findIndex(p => p.id === post.id);
+              const rank = topVotedIdx + 1;
+              return (
+                <motion.div key={post.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                  <PostCard post={post} userEmail={userEmail} userName={userName} onVote={handleVote} rank={rank} />
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
